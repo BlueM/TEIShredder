@@ -12,12 +12,6 @@
 class TEIShredder_Text {
 
 	/**
-	 * Database table prefix.
-	 * @var string
-	 */
-	public static $prefix = '';
-
-	/**
 	 * Returns all structure entries / sections as associative array.
 	 * @param TEIShredder_Setup $setup
 	 * @param int $volume Volume number.

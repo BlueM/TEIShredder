@@ -1,0 +1,5 @@
+#!/bin/bash
+
+/usr/local/bin/phpunit --coverage-html=/tmp/phpunit-coverage /Users/Shared/Dev/TEIShredder/_TESTS/TEIShredder
+
+rm -rf /tmp/phpunit.*

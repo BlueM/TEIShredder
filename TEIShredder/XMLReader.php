@@ -3,8 +3,8 @@
 /**
  * XMLReader subclass that adds a few convenience methods
  * @package TETool
- * @author Carsten Bluem <bluem@sandrart.net>
- * @version SVN: $Id: XMLReader.php 1278 2012-03-13 09:53:26Z cb $
+ * @author Carsten Bluem <carsten@bluem.net>
+ * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 class TEIShredder_XMLReader extends XMLReader {
 
