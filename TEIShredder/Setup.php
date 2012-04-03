@@ -28,13 +28,13 @@ class TEIShredder_Setup {
 	/**
 	 * Callback function/method/Closure for extracting the
 	 * title from a given piece of TEI.
-	 * @var String|Array|Closure
+	 * @var string|array|Closure
 	 */
 	protected $titleCallback;
 
 	/**
 	 * Callback function/method/Closure for converting to plaintext
-	 * @var String|Array|Closure
+	 * @var string|array|Closure
 	 */
 	protected $plaintextCallback;
 
@@ -56,15 +56,19 @@ class TEIShredder_Setup {
 	 *                             to plaintext using the plaintext conversion callback.
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct(PDO $db, $prefix = '', $ptcallb = 'strip_tags', $ttlcallb = '') {
+	public function __construct(PDO $db, $prefix = '', $ptcallb = null, $ttlcallb = null) {
 
 		$this->database = $db;
 		$this->prefix = $prefix;
 
-		if (!is_callable($ptcallb)) {
-			throw new InvalidArgumentException('Plaintext conversion callback is invalid');
+		if ($ptcallb) {
+			if (!is_callable($ptcallb)) {
+				throw new InvalidArgumentException('Plaintext conversion callback is invalid');
+			}
+			$this->plaintextCallback = $ptcallb;
+		} else {
+			$this->plaintextCallback = 'strip_tags';
 		}
-		$this->plaintextCallback = $ptcallb;
 
 		if ($ttlcallb) {
 			if (!is_callable($ttlcallb)) {
@@ -84,8 +88,9 @@ class TEIShredder_Setup {
 	}
 
 	/**
+	 * #todo
 	 * @param $name
-	 * @return PDO|string
+	 * @return mixed
 	 * @throws UnexpectedValueException
 	 */
 	public function __get($name) {
