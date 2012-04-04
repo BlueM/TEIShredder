@@ -29,13 +29,6 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	protected $poststack = array();
 
 	/**
-	 * Contains the stack of sections a given chunk is in, with the
-	 * top-level sections first.
-	 * @var array Indexed array
-	 */
-	protected $sectionstack = array();
-
-	/**
 	 * Tracks which type of section (tag name: "div", "front" etc.) a given
 	 * section is
 	 * @var array Assoc. array
@@ -64,15 +57,6 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	 * @var int
 	 */
 	protected $currentVolume = 0;
-
-	/**
-	 * Counter for section-level elements, will be incremented to make
-	 * sure each item gets a unique number
-	 * @var int
-	 * @todo Get rid of. Must be higher than the number of pages in the
-	 *       source document, which is crap.
-	 */
-	protected $idCounter = 1800;
 
 	/**
 	 * Array of element types / tag names that are regarded as block
@@ -113,6 +97,8 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	 */
 	protected function nodeOpen() {
 
+		static $sectionid = 0;
+
 		if (in_array($this->r->localName, self::$chunktags) or
 			in_array($this->r->localName, self::$nostacktags)) {
 
@@ -139,8 +125,9 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 				$this->column = $this->r->getAttribute('unit');
 			} elseif ('div' == $this->r->localName or
 					  'text' == $this->r->localName or
+					  'titlePage' == $this->r->localName or
 					  'front' == $this->r->localName) {
-				$this->currentSection = $this->idCounter ++;
+				$this->currentSection = ++$sectionid;
 
 				if ('text' == $this->r->localName) {
 					$this->currentVolume ++;
@@ -152,8 +139,12 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 					}
 				}
 
+				if ('div' == $this->r->localName or
+				    'titlePage' == $this->r->localName) {
+					$this->level ++;
+				}
+
 				$this->startSection();
-				array_push($this->sectionstack, $this->currentSection);
 				$this->sectionTypes[$this->currentSection] = $this->r->localName;
 
 			} elseif ('group' == $this->r->localName) {
@@ -161,27 +152,14 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 				// as it was just the enclosure of some inner <text> inside the
 				// <group>.
 				$this->currentVolume = 0;
-				$this->level --;
+				//$this->level --;
 			}
 
 			if (in_array($this->r->localName, self::$chunktags)) {
 				$this->startChunk();
 			}
 		} elseif ('titlePart' == $this->r->localName) {
-			if (!$this->r->getAttribute('type') or
-				'main' == $this->r->getAttribute('type')) {
-				// Main title of this volume
-				$title = $this->r->readOuterXML();
-
-				$title = call_user_func($this->setup->plaintextCallback, $title);
-
-				$db = $this->setup->database;
-				$db->exec(
-					'INSERT INTO '.$this->setup->prefix.'volume'.' (number, title, pagenum)
-					 VALUES('.$db->quote($this->currentVolume).',
-					 '.$db->quote($title).', '.$this->data['currTextStart'].')'
-				);
-			}
+			$this->processTitlePart();
 		}
 
 		if (!$this->insidetext) {
@@ -262,10 +240,8 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 			}
 		}
 
-		if('div' == $this->r->localName or
-		   'front' == $this->r->localName or
-		   'text' == $this->r->localName) {
-			array_pop($this->sectionstack);
+		if ('div' == $this->r->localName or
+		    'titlePage' == $this->r->localName) {
 			$this->level --;
 		}
 
@@ -290,8 +266,6 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 
 		static $sth = null;
 
-		$this->level ++;
-
 		if (!$sth) {
 			$db = $this->setup->database;
 			$prefix = $this->setup->prefix;
@@ -305,62 +279,41 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 		    'front' == $this->r->localName) {
 			// <text> must not contain <head> directly
 			$title = '';
+		} elseif ('titlePage' == $this->r->localName) {
+			// <text> must not contain <head> directly
+			$title = 'Titelseite';
 		} else {
 			$title = call_user_func($this->setup->titleCallback, $this->r->readOuterXML());
 		}
 
 		$level = $this->level;
 
-		if (count($this->sectionstack)) {
-			$parent = end($this->sectionstack);
-			if ('front' == $this->sectionTypes[$parent] and
-			    $parent == $this->currentSection - 1) {
-				// 1st section below <front>: decrease level by 2
-				// #todo
-				// Currently, it's a ugly workaround to expect that
-				// the parent's ID is 1 less than the items's ID
-				// Should be fixed ASAP and replaced by something
-				// more reliable.
-				$level -= 2;
-			}
-		}
-
-		try {
-			$sth->execute(array(
-				$this->currentSection,
-				$this->currentVolume,
-				$title,
-				$this->page ? $this->page : 1,
-				$level,
-				$this->r->localName,
-				$this->r->getAttribute('xml:id')
-			));
-		} catch (Exception $e) {
-			echo $e->getMessage()."\n";
-			exit;
-		}
+		$sth->execute(array(
+			$this->currentSection,
+			$this->currentVolume,
+			$title,
+			$this->page ? $this->page : 1,
+			$level,
+			$this->r->localName,
+			$this->r->getAttribute('xml:id')
+		));
 	}
 
 	/**
 	 * Method that's called when a new chunk is encountered
 	 */
 	protected function startChunk() {
-		try {
-			$db = $this->setup->database;
-			$prestackstr = join(' ', $this->prestack);
-			$db->exec(
-				'INSERT INTO '.$this->setup->prefix.'xmlchunk'.'
-				 (id, volume, page, section, col, prestack)
-				 VALUES ('. $db->quote($this->currentChunk).',
-				         '. $db->quote($this->currentVolume).',
-				         '. $db->quote($this->page).',
-				         '. $db->quote($this->currentSection).',
-				         '. $db->quote($this->column).',
-				         '. $db->quote($prestackstr).')');
-		} catch (Exception $e) {
-			echo $e->getMessage()."\n";
-			exit;
-		}
+		$db = $this->setup->database;
+		$prestackstr = join(' ', $this->prestack);
+		$db->exec(
+			'INSERT INTO '.$this->setup->prefix.'xmlchunk'.'
+			 (id, volume, page, section, col, prestack)
+			 VALUES ('. $db->quote($this->currentChunk).',
+					 '. $db->quote($this->currentVolume).',
+					 '. $db->quote($this->page).',
+					 '. $db->quote($this->currentSection).',
+					 '. $db->quote($this->column).',
+					 '. $db->quote($prestackstr).')');
 	}
 
 	/**
@@ -416,4 +369,37 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 		$db->exec('DELETE FROM '.$prefix.'volume');
 	}
 
+	/**
+	 * #todo
+	 * @throws RuntimeException
+	 */
+	protected function processTitlePart() {
+		static $voltitles = array();
+
+		if ($this->r->getAttribute('type') and
+			'main' != $this->r->getAttribute('type')) {
+			// Not a main title
+			return;
+		}
+
+		$title = call_user_func(
+			$this->setup->plaintextCallback,
+			$this->r->readOuterXML()
+		);
+
+		// Check for uniqueness
+		if (!empty($voltitles[$this->currentVolume])) {
+			throw new RuntimeException('Multiple <titlePart>...</titlePart>s for volume '.$this->currentVolume.":\n");
+		}
+
+		$voltitles[$this->currentVolume] = true;
+
+		$db = $this->setup->database;
+		$db->exec(
+			'INSERT INTO '.$this->setup->prefix.'volume'.' (number, title, pagenum)
+			 VALUES('.$db->quote($this->currentVolume).',
+			 '.$db->quote($title).', '.$this->data['currTextStart'].')'
+		);
+
+	}
 }

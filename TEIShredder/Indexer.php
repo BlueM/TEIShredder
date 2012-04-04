@@ -31,7 +31,7 @@ abstract class TEIShredder_Indexer {
 	 * a new chunk of text (can be either empty or non-empty elements).
 	 * @var array Indexed array of element names
 	 */
-	static $chunktags = array('pb', 'milestone', 'div', 'front', 'body');
+	static $chunktags = array('pb', 'milestone', 'div', 'front', 'body', 'titlePage');
 
 	/**
 	 * Array of element types / tag names that mark the beginning of

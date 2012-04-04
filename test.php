@@ -50,7 +50,7 @@ function xmlToPlainText($xml) {
 	// Remove hyphenation at EOL when character after hyphen is lowercase
 	$xml = preg_replace('#-<lb */>\s+([a-z])#', '$1', $xml);
 	// Also remove hyphenation if the whole word is uppercase
-	$xml = preg_replace('#([A-Z]{3,})-<lb */>\s+([A-Z]{2,})#', '$1$2', $xml);
+	$xml = preg_replace('#([A-Z]+)-<lb */>\s+([A-Z]+)#', '$1$2', $xml);
 
 	$xml = preg_replace('#<lb\s*/\s*>#s', ' ', $xml);
 	$xml = preg_replace('#<sic\b[^>]*>.*?</sic>#s', ' ', $xml);

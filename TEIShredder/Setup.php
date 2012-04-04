@@ -52,8 +52,8 @@ class TEIShredder_Setup {
 	 *                             to plaintext. If none given, default: 'strip_tags'
 	 * @param string|array|Closure $ttlcallb [optional] Callback for extracting the title
 	 *                             from part of a TEI document. If none given, defaults
-	 *                             to extracting the first <head> and converting it
-	 *                             to plaintext using the plaintext conversion callback.
+	 *                             to extracting the first <head> child of the section and
+	 *                             converting it to plaintext using the plaintext callback.
 	 * @throws InvalidArgumentException
 	 */
 	public function __construct(PDO $db, $prefix = '', $ptcallb = null, $ttlcallb = null) {
@@ -77,11 +77,14 @@ class TEIShredder_Setup {
 			$this->titleCallback = $ttlcallb;
 		} else {
 			$this->titleCallback = function($xml) use ($ptcallb) {
-				if (!preg_match('#<head(?:\s+[^>]*)?>(.*?)</head>#s', $xml, $matches)) {
-					// No match, return empty string
+
+				$sx = new SimpleXMLElement($xml);
+				if (!isset($sx->head[0])) {
+					// No <head>
 					return '';
 				}
-				return call_user_func($ptcallb, $xml);
+				$head = $sx->head[0]->asXml();
+				return call_user_func($ptcallb, $head);
 			};
 		}
 
