@@ -12,20 +12,91 @@
 class TEIShredder_Text {
 
 	/**
-	 * Returns all structure entries / sections as associative array.
+	 * Returns the numerical page number for an xml:id attribute
+	 * value in the source text.
+	 * @param TEIShredder_Setup $setup
+	 * @param string $elmntid XML element ID
+	 * @return int|false Page number or false, if there's no such xml:id.
+	 */
+	public static function fetchPageNumberForElementId(TEIShredder_Setup $setup, $elmntid) {
+		static $cache = array();
+		static $sth = null;
+		if (!$sth) {
+			$db = $setup->database;
+			$sth = $db->prepare('SELECT page FROM '.$setup->prefix.'element WHERE xmlid = ?');
+		}
+		if (!array_key_exists($elmntid, $cache)) {
+			$sth->execute(array($elmntid));
+			if (false === $pagenum = $sth->fetchColumn(0)) {
+				return false;
+			}
+			$cache[$elmntid] = $pagenum;
+		}
+		return (int)$cache[$elmntid];
+	}
+
+	/**
+	 * Returns all structure entries/sections as associative array.
 	 * @param TEIShredder_Setup $setup
 	 * @param int $volume Volume number.
 	 * @return array Indexed array of associative arrays with keys "page",
 	 *               "title", 'xmlid' and "level".
 	 */
 	public static function fetchStructure(TEIShredder_Setup $setup, $volume) {
+
 		$db = $setup->database;
-		$prefix = $setup->prefix;
-		$res = $db->query('SELECT page, title, level, xmlid '.
-		                  'FROM '.$prefix.'structure '.
-		                  "WHERE title != '' AND volume = ? ".
-		                  "ORDER BY id", $volume);
-		return $res->fetchAll(PDO::FETCH_ASSOC);
+		$res = $db->query("SELECT page, title, level, xmlid ".
+		                  "FROM ".$setup->prefix.'structure '.
+		                  "WHERE level > 0 AND volume = ".$db->quote($volume)." ".
+		                  "ORDER BY id");
+
+		$sections = $res->fetchAll(PDO::FETCH_ASSOC);
+		$lastlevel = 0;
+
+		for ($i = 0, $ii = count($sections); $i < $ii; $i ++) {
+
+			if (empty($sections[$i + 1]) or
+			    $sections[$i + 1]['level'] <= $sections[$i]['level']) {
+				$sections[$i]['children'] = false;
+			} else {
+				$sections[$i]['children'] = true;
+			}
+
+			if ($sections[$i]['level'] > $lastlevel) {
+				$sections[$i]['first'] = true;
+			} else {
+				$sections[$i]['first'] = false;
+			}
+
+			$offset = 1;
+			do {
+
+				if (empty($sections[$i + $offset])) {
+					$sections[$i]['last'] = true;
+					break;
+				}
+
+				if ($sections[$i + $offset]['level'] == $sections[$i]['level']) {
+					// On same level >> this is not the last one
+					$sections[$i]['last'] = false;
+					break;
+				}
+
+				if ($sections[$i + $offset]['level'] < $sections[$i]['level']) {
+					// On upper level >> this is the last one
+					$sections[$i]['last'] = true;
+					break;
+				}
+
+				// Else: subordinate, proceed to next
+				$offset ++;
+
+			} while (1);
+
+			$lastlevel = $sections[$i]['level'];
+		}
+
+		return $sections;
 	}
 
 	/**
@@ -64,6 +135,28 @@ class TEIShredder_Text {
 			$notations[$row[0]] = $row[1];
 		}
 		return $notations;
+	}
+
+	/**
+	 * Returns the xml:id value(s) of the <pb /> element, the volume number and
+	 * values of @n and @rend attributes of the page with the given page number.
+	 * @param TEIShredder_Setup $setup
+	 * @param int $pagenum Internal page number
+	 * @return array Array with indexes 0 = volume, 1 = xml:id value, 2 = page name.
+	 * @throws InvalidArgumentException
+	 */
+	public static function fetchPageData(TEIShredder_Setup $setup, $pagenum) {
+		static $sth = null;
+		if (!$sth) {
+			$sth = $setup->database->prepare(
+				'SELECT volume, xmlid, n, rend FROM '.$setup->prefix."page WHERE page = ?"
+			);
+		}
+		$sth->execute(array($pagenum));
+		if (false === $data = $sth->fetch(PDO::FETCH_NUM)) {
+			throw new InvalidArgumentException('Invalid page number');
+		}
+		return $data;
 	}
 
 	/**
