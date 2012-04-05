@@ -1,20 +1,14 @@
 <?php
 
 /**
- * Class for retrieving the edition's prepared text
+ * Class for retrieving well-formed parts from the source TEI document.
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
  * @link http://www.sandrart.net/
  * @version SVN: $Id: TextChunk.php 1289 2012-03-20 15:17:53Z cb $
  */
-class TEIShredder_Chunk {
-
-	/**
-	 * Prefix for the database tables' names
-	 * @var string
-	 */
-	public static $prefix = '';
+class TEIShredder_XMLChunk {
 
 	/**
 	 * Object properties
@@ -35,22 +29,22 @@ class TEIShredder_Chunk {
 
 	/**
 	 * Returns all chunks that are on a given page.
-	 * @param PDO $db
-	 * @param int Page number.
+	 * @param TEIShredder_Setup $setup
+	 * @param int $page Page number
 	 * @return TEIShredder_Chunk[]
 	 */
-	public static function fetchObjectsByPageNumber(PDO $db, $page) {
+	public static function fetchObjectsByPageNumber(TEIShredder_Setup $setup, $page) {
 
 		$objects = array();
-		$page = $db->quote($page);
-		$res = $db->query("SELECT eid.id, eid.volume, eid.page, eid.col,
-		                          eid.prestack, eid.poststack, eid.xml,
-		                          pg.pagenotation, eid.section, eid.plaintext
-		                   FROM ".static::$prefix."xmlchunk AS eid, ".static::$prefix."page AS pg
-		                   WHERE xml != '' AND
-		                         eid.page = $page AND
-		                         pg.page = eid.page
-		                   ORDER BY eid.id");
+		$page = $setup->database->quote($page);
+		$res = $setup->database->query(
+			"SELECT eid.id, eid.volume, eid.page, eid.col, eid.prestack, eid.poststack,
+			        eid.xml, pg.n, eid.section, eid.plaintext
+		     FROM ".$setup->prefix."xmlchunk AS eid, ".$setup->prefix."page AS pg
+		     WHERE xml != '' AND
+		           eid.page = $page AND
+		           pg.page = eid.page
+		     ORDER BY eid.id");
 
 		foreach ($res->fetchAll(PDO::FETCH_ASSOC) as $row) {
 			$obj = new self;
