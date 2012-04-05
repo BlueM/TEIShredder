@@ -194,27 +194,24 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	}
 
 	/**
-	 * Called when a new page (<pb/> tag) is encountered
-	 * @throws RuntimeException
+	 * Called when a new page (<pb/> tag) is encountered.
 	 */
 	protected function registerNewPage() {
 
-		if ('' == $idvalue = $this->r->getAttribute('xml:id')) {
-			throw new RuntimeException('Missing xml:id-Attr. for <pb /> with n='.$this->r->getAttribute('n'));
-		}
-
 		$this->page ++;
-		$this->pageNotation = $this->r->getAttribute('n');
 		$this->plaintext[$this->page] = '';
 
 		$db = $this->setup->database;
 		$db->exec(
 			'INSERT INTO '.$this->setup->prefix.'page'.'
-			 (page, xmlid, volume, pagenotation)
+			 (page, xmlid, volume, n, rend, facs)
 			 VALUES('. $db->quote($this->page).',
-			        '. $db->quote($idvalue).',
+			        '. $db->quote($this->r->getAttribute('xml:id')).',
 			        '. $db->quote($this->currentVolume).',
-			        '. $db->quote($this->r->getAttribute('n')).')');
+			        '. $db->quote($this->r->getAttribute('n')).',
+			        '. $db->quote($this->r->getAttribute('rend')).',
+			        '. $db->quote($this->r->getAttribute('facs')).')'
+		);
 
 	}
 
