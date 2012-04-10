@@ -22,10 +22,16 @@ Part of TEIShredder is production-ready, but at the moment some parts are rather
 Using it
 ===========
 
+Getting started
+----------------
+For a first quick test, open a shell, “cd” to the top TEIShredder directory and execute …
+	sed 's/&lt;prefix&gt;//g' create-sqlite.sql | sqlite3 test.sqlite
+…, which means: “Take the contents of ‘create-sqlite.sql’ in this directory, remove &lt;prefix&gt; from the tables’ names and create an empty SQLite database called ‘test.sqlite’ in this directory which contains these tables”.
+Then, you can run “test.php”, which takes an input XML file from the “_TESTS” directory, indexes it and saves the result in that database. (If you are more familiar with MySQL and/or don’t have an sqlite3 executable at hand, you could of course also use MySQL by changing the PDO constructor in “test.php”.)
+
 TEI != TEI
 ----------
 TEI can be used in many different ways. In my eyes, this is one of the very appealing features of TEI, but on the other hand, it makes developing generic tools much harder or impossible. TEIShredder is, to some extent, a generic tool insofar as it just processes TEI – but on the other hand, it has certain expectations of the TEI. You may find that a TEI document you wish to process does not meet TEIShredder’s expectations, and for cases like these, I suggest pre-processing the TEI in a way that will result in a processable document.
-
 
 Exluding sections from being indexed
 ------------------------------------
