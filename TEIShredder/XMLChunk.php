@@ -4,9 +4,8 @@
  * Class for retrieving well-formed parts from the source TEI document.
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
+ * @link https://github.com/TEIShredder/
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @link http://www.sandrart.net/
- * @version SVN: $Id: TextChunk.php 1289 2012-03-20 15:17:53Z cb $
  */
 class TEIShredder_XMLChunk {
 
@@ -60,7 +59,7 @@ class TEIShredder_XMLChunk {
 	 * @return int
 	 */
 	public function getId() {
-		return $this->properties['id'];
+		return (int)$this->properties['id'];
 	}
 
 	/**
@@ -68,7 +67,7 @@ class TEIShredder_XMLChunk {
 	 * @return int
 	 */
 	public function getVolume() {
-		return $this->properties['volume'];
+		return (int)$this->properties['volume'];
 	}
 
 	/**
@@ -123,7 +122,7 @@ class TEIShredder_XMLChunk {
 	 * Returns the chunk's XML source.
 	 * @return string
 	 */
-	public function getXml() {
+	public function getXML() {
 		return $this->properties['xml'];
 	}
 
@@ -132,52 +131,12 @@ class TEIShredder_XMLChunk {
 	 * pre-stack and post-stack tags added, with Unix-style line endings.
 	 * @return string
 	 */
-	public function getWellFormedXml() {
+	public function getWellFormedXML() {
 		$xml = $this->properties['prestack'].
 		       $this->properties['xml'].
 		       $this->properties['poststack'];
 		$xml = str_replace("\r", "\n", str_replace("\r\n", "\n", $xml));
 		return $xml;
-	}
-
-	/**
-	 * Returns properties as name=>value array.
-	 * @return array Ass. array of instance variable=>value pairs.
-	 */
-	public function toArray() {
-		$array = array();
-		foreach (array_keys($this->properties) as $property) {
-			$array[$property] = $this->{"get$property"}();
-		}
-		return $array;
-	}
-
-	/**
-	 * Returns an HTML representation of this chunk, primarily for
-	 * debugging and development purposes.
-	 * @return string Short HTML representation.
-	 */
-	public function __toString() {
-		$xml = trim($this->properties['xml']);
-		if ($xml) {
-			$xml = preg_replace('#[\n\r]+#', ' ', htmlspecialchars($xml));
-			$xml = "\n      ".substr($xml, 0, 80);
-			$text = trim(strip_tags($xml));
-			if ($text) {
-				$text = preg_replace('#[\n\r]+#', ' ', htmlspecialchars($text));
-				$text = "\n      &ldquo;".substr($text, 0, 70)."&rdquo;";
-			}
-		} else {
-			$text = '';
-		}
-		return sprintf(
-			"<pre> %s #%d, p. %d [%s]%s</pre>",
-			__CLASS__,
-			$this->properties['id'],
-			$this->properties['page'],
-			$this->properties['col'],
-			$text
-		);
 	}
 
 }

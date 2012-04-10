@@ -5,9 +5,8 @@
  * transferring them to a RDBMS.
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
+ * @link https://github.com/TEIShredder/
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @link http://www.sandrart.net/
- * @version SVN: $Id: Extractor.php 1289 2012-03-20 15:17:53Z cb $
  */
 class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 

@@ -15,9 +15,7 @@ class TEIShredder_Indexer_ChunkerTest extends PHPUnit_Framework_TestCase {
 	 * Sets up the fixture
 	 */
 	function setUp() {
-		$this->setup = new TEIShredder_Setup(
-			new PDO('sqlite::memory:')
-		);
+		$this->setup = prepare_default_data();
 	}
 
 	/**
@@ -31,11 +29,21 @@ class TEIShredder_Indexer_ChunkerTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function testCreatingAChunker() {
+
 		$chunker = new TEIShredder_Indexer_Chunker(
 			$this->setup,
-			TESTDIR.'/Sample-1.xml'
+			file_get_contents(TESTDIR.'/Sample-1.xml')
 		);
 		$this->assertInstanceOf('TEIShredder_Indexer_Chunker', $chunker);
+		return $chunker;
+	}
+
+	/**
+	 * @test
+	 * @depends testCreatingAChunker
+	 */
+	function testRunningAChunker(TEIShredder_Indexer_Chunker $chunker) {
+		$chunker->process();
 	}
 
 }

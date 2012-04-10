@@ -1,16 +1,14 @@
 <?php
 
 /**
- * Class for splitting a source TEI document in a series of
- * well-formed XML chunks.
+ * Class for splitting a TEI document in well-formed XML chunks.
  *
  * Known shortcomings: Cannot handle nested <group> tags.
- * Unknown shortcomings: Lots!
+ * Unknown shortcomings: Surely lots!
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
+ * @link https://github.com/TEIShredder/
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @link http://www.sandrart.net/
- * @version SVN: $Id: Chunker.php 1299 2012-03-21 20:53:00Z cb $
  */
 class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 
@@ -29,21 +27,19 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	protected $poststack = array();
 
 	/**
-	 * Tracks which type of section (tag name: "div", "front" etc.) a given
-	 * section is
-	 * @var array Assoc. array
-	 */
-	protected $sectionTypes = array();
-
-	/**
 	 * Flag: are we inside of a chunk tag?
 	 * @var bool
 	 */
 	protected $insidetext = false;
 
-	#todo
+	/**
+	 * Array for keeping track of various internal variables.
+	 * @var array
+	 */
 	protected $data = array(
-		'currTextStart'=>0, // Page number at which the current <text> started
+		'currTextStart'=>0,   // Page number at which the current <text> started
+		'currentVolume'=>0,   // Current volume number
+		'volTitles'=>array(), // Titles of the volumes
 	);
 
 	/**
@@ -51,12 +47,6 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	 * @var int
 	 */
 	protected $currentSection = null;
-
-	/**
-	 * Current volume number
-	 * @var int
-	 */
-	protected $currentVolume = 0;
 
 	/**
 	 * Array of element types / tag names that are regarded as block
@@ -130,7 +120,7 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 				$this->currentSection = ++$sectionid;
 
 				if ('text' == $this->r->localName) {
-					$this->currentVolume ++;
+					$this->data['currentVolume'] ++;
 
 					if ($this->settings['textbeforepb']) {
 						$this->data['currTextStart'] = $this->page + 1;
@@ -145,14 +135,12 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 				}
 
 				$this->startSection();
-				$this->sectionTypes[$this->currentSection] = $this->r->localName;
 
 			} elseif ('group' == $this->r->localName) {
 				// A group of <text>s, i.e. forget the <text> we saw previously,
 				// as it was just the enclosure of some inner <text> inside the
 				// <group>.
-				$this->currentVolume = 0;
-				//$this->level --;
+				$this->data['currentVolume'] = 0;
 			}
 
 			if (in_array($this->r->localName, self::$chunktags)) {
@@ -207,7 +195,7 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 			 (page, xmlid, volume, n, rend, facs)
 			 VALUES('. $db->quote($this->page).',
 			        '. $db->quote($this->r->getAttribute('xml:id')).',
-			        '. $db->quote($this->currentVolume).',
+			        '. $db->quote($this->data['currentVolume']).',
 			        '. $db->quote($this->r->getAttribute('n')).',
 			        '. $db->quote($this->r->getAttribute('rend')).',
 			        '. $db->quote($this->r->getAttribute('facs')).')'
@@ -272,6 +260,11 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 			);
 		}
 
+		if ($this->r->getAttribute('noindex')) {
+			// Should not be indexed
+			return;
+		}
+
 		if ('text'  == $this->r->localName or
 		    'front' == $this->r->localName) {
 			// <text> must not contain <head> directly
@@ -287,7 +280,7 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 
 		$sth->execute(array(
 			$this->currentSection,
-			$this->currentVolume,
+			$this->data['currentVolume'],
 			$title,
 			$this->page ? $this->page : 1,
 			$level,
@@ -306,7 +299,7 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 			'INSERT INTO '.$this->setup->prefix.'xmlchunk'.'
 			 (id, volume, page, section, col, prestack)
 			 VALUES ('. $db->quote($this->currentChunk).',
-					 '. $db->quote($this->currentVolume).',
+					 '. $db->quote($this->data['currentVolume']).',
 					 '. $db->quote($this->page).',
 					 '. $db->quote($this->currentSection).',
 					 '. $db->quote($this->column).',
@@ -371,7 +364,11 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	 * @throws RuntimeException
 	 */
 	protected function processTitlePart() {
-		static $voltitles = array();
+
+		if ($this->r->getAttribute('noindex')) {
+			// Should not be indexed
+			return;
+		}
 
 		if ($this->r->getAttribute('type') and
 			'main' != $this->r->getAttribute('type')) {
@@ -385,16 +382,16 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 		);
 
 		// Check for uniqueness
-		if (!empty($voltitles[$this->currentVolume])) {
-			throw new RuntimeException('Multiple <titlePart>...</titlePart>s for volume '.$this->currentVolume.":\n");
+		if (!empty($this->data['volTitles'][$this->data['currentVolume']])) {
+			throw new RuntimeException('Multiple <titlePart>...</titlePart>s for volume '.$this->data['currentVolume'].":\n");
 		}
 
-		$voltitles[$this->currentVolume] = true;
+		$this->data['volTitles'][$this->data['currentVolume']] = true;
 
 		$db = $this->setup->database;
 		$db->exec(
 			'INSERT INTO '.$this->setup->prefix.'volume'.' (number, title, pagenum)
-			 VALUES('.$db->quote($this->currentVolume).',
+			 VALUES('.$db->quote($this->data['currentVolume']).',
 			 '.$db->quote($title).', '.$this->data['currTextStart'].')'
 		);
 

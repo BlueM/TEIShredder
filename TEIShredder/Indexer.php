@@ -4,9 +4,8 @@
  * Base class for processing a TEI document by stream-reading it
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
+ * @link https://github.com/TEIShredder/
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @link http://www.sandrart.net/
- * @version SVN: $Id: TEIProcessor.php 1289 2012-03-20 15:17:53Z cb $
  */
 abstract class TEIShredder_Indexer {
 
@@ -86,29 +85,13 @@ abstract class TEIShredder_Indexer {
 	/**
 	 * Constructor
 	 * @param TEIShredder_Setup $setup
-	 * @param string $path Filesystem path to the source XML file
-	 * @param Closure $modify [optional] Closure that will be called with
-	 *                        the XML as argument to perform XML pre-processing.
+	 * @param string $xml Input XML
 	 * @throws InvalidArgumentException
 	 * @throws RuntimeException
 	 */
-	public function __construct(TEIShredder_Setup $setup, $path, Closure $modify = null) {
-
-		if (!file_exists($path)) {
-			throw new InvalidArgumentException("Invalid path $path");
-		}
+	public function __construct(TEIShredder_Setup $setup, $xml) {
 
 		$this->setup = $setup;
-
-		if (!file_exists($path) or
-		    !is_readable($path)) {
-			throw new InvalidArgumentException("There is no readable file at $path");
-		}
-		$xml = file_get_contents($path);
-
-		if ($modify) {
-			$xml = $modify($xml);
-		}
 
 		// Create the XML reader
 		$this->r = new TEIShredder_XMLReader;
@@ -147,7 +130,7 @@ abstract class TEIShredder_Indexer {
 	 * all subclasses. This default implementation does nothing.
 	 */
 	protected function save() {
-
+		return null;
 	}
 
 	/**

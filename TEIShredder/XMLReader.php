@@ -2,8 +2,9 @@
 
 /**
  * XMLReader subclass that adds a few convenience methods
- * @package TETool
+ * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
+ * @link https://github.com/TEIShredder/
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 class TEIShredder_XMLReader extends XMLReader {

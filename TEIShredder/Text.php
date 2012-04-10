@@ -5,9 +5,8 @@
  * text structure, page numbers, page names/notations etc.
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
+ * @link https://github.com/TEIShredder/
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @link http://www.sandrart.net/
- * @version SVN: $Id: Text.php 1289 2012-03-20 15:17:53Z cb $
  */
 class TEIShredder_Text {
 
@@ -39,13 +38,14 @@ class TEIShredder_Text {
 	 * Returns all structure entries/sections as associative array.
 	 * @param TEIShredder_Setup $setup
 	 * @param int $volume Volume number.
-	 * @return array Indexed array of associative arrays with keys "page",
-	 *               "title", 'xmlid' and "level".
+	 * @return array Indexed array of associative arrays with keys "id", "page",
+	 *               "title", "xmlid", "level", and moreover "children", "first",
+	 *               "last" (the last three keys being boolean)
 	 */
 	public static function fetchStructure(TEIShredder_Setup $setup, $volume) {
 
 		$db = $setup->database;
-		$res = $db->query("SELECT page, title, level, xmlid ".
+		$res = $db->query("SELECT id, page, title, level, xmlid ".
 		                  "FROM ".$setup->prefix.'structure '.
 		                  "WHERE level > 0 AND volume = ".$db->quote($volume)." ".
 		                  "ORDER BY id");
@@ -130,7 +130,7 @@ class TEIShredder_Text {
 		$prefix = $setup->prefix;
 		$notations = array();
 		$where = $volume ? 'volume = '.$db->quote($volume) : '1';
-		$res = $db->query("SELECT page, pagenotation FROM ".$prefix."page WHERE $where ORDER BY page");
+		$res = $db->query("SELECT page, n FROM ".$prefix."page WHERE $where ORDER BY page");
 		foreach ($res->fetchAll(PDO::FETCH_NUM) as $row) {
 			$notations[$row[0]] = $row[1];
 		}
@@ -181,72 +181,61 @@ class TEIShredder_Text {
 
 	/**
 	 * Returns the page's unique notation/title by its unique page number
-	 * @param CBDIContainer $dic
-	 * @param mixed Page number as int or indexed array of page numbers.
-	 * @return mixed If a scalar is passed as argument, returns the page
-	 *               notation as string, otherwise an associative array, sorted
-	 *               by the page number, with the page number as key and the
-	 *               notation as value.
+	 * @param TEIShredder_Setup $setup
+	 * @param array $nums Indexed array of page numbers.
+	 * @return array Associative array, sorted by the page number, with
+	 *               the page number as key and @n as the value.
 	 */
-	public static function fetchPageNotationById(CBDIContainer $dic, $page) {
-		$db = $dic->database;
-		if (is_scalar($page)) {
-			return $db->getOne('SELECT pagenotation FROM '.self::$prefix.'page WHERE page = ?', $page);
-		}
-		$ids = join(', ', array_map('intval', $page));
-		if (empty($ids)) {
-			return null;
-		}
-		$res = $db->query("SELECT page, pagenotation
-		                   FROM ".self::$prefix."page
-		                   WHERE page IN ($ids)
+	public static function fetchNAttributesForPageNumbers(TEIShredder_Setup $setup, array $nums) {
+		$db = $setup->database;
+		$res = $db->query("SELECT page, n
+		                   FROM ".$setup->prefix."page
+		                   WHERE page IN (".join(', ', array_map('intval', $nums)).")
 		                   ORDER BY page");
-		$notations = array();
+		$n = array();
 		foreach ($res->fetchAll(PDO::FETCH_NUM) as $row) {
-			$notations[$row[0]] = $row[1];
+			$n[$row[0]] = $row[1];
 		}
-		unset($res, $row);
-		return $notations;
+		return $n;
 	}
 
 	/**
 	 * Returns info on the given section, on the previous and next section
-	 * @param CBDIContainer $dic
+	 * @param TEIShredder_Setup $setup
 	 * @param int $section Section ID
 	 * @return array Associative array with keys "this", "prev" and "next",
 	 *               each one being an associative array itself. Additionally,
 	 *               includes a key "volstart" whose value is the number of
 	 *               the first page in the current volume
 	 * @throws InvalidArgumentException
+	 * @todo Does not work yet with SQLite
 	 */
-	public static function fetchStructureDataForSection(CBDIContainer $dic, $section) {
-		$db = $dic->database;
-		$structtable = self::$prefix.'structure';
-		$pagetable = self::$prefix.'page';
-		$res = $db->query("(SELECT 'this' AS type, id, title, p.pagenotation,
-		                            s.volume, s.page, s.xmlid
-		                    FROM $structtable AS s, $pagetable AS p
-		                    WHERE p.page = s.page AND
-		                    id = ?
-		                    LIMIT 0, 1)
-		                   UNION
-		                   (SELECT 'prev' AS type, id, title, p.pagenotation,
-		                            s.volume, s.page, s.xmlid
-		                    FROM $structtable AS s, $pagetable AS p
-		                    WHERE p.page = s.page AND
-		                    id < ? AND title != ''
-		                    ORDER BY id DESC
-		                    LIMIT 0, 1)
-		                   UNION
-		                   (SELECT 'next' AS type, id, title, p.pagenotation,
-		                            s.volume, s.page, s.xmlid
-		                    FROM $structtable AS s, $pagetable AS p
-		                    WHERE p.page = s.page AND
-		                    id > ? AND title != ''
-		                    ORDER BY id
-		                    LIMIT 0, 1)
-		                   ",
-		                   array($section, $section, $section));
+	public static function fetchStructureDataForSection(TEIShredder_Setup $setup, $section) {
+		$db = $setup->database;
+		$structtable = $setup->prefix.'structure';
+		$pagetable = $setup->prefix.'page';
+		$section = $db->quote($section);
+		$sql = "(SELECT 'this' AS type, id, title, p.n, s.volume, s.page, s.xmlid
+		         FROM $structtable AS s, $pagetable AS p
+		         WHERE p.page = s.page AND
+		               id = $section
+		         LIMIT 0, 1)
+		        UNION
+		        (SELECT 'prev' AS type, id, title, p.n, s.volume, s.page, s.xmlid
+		         FROM $structtable AS s, $pagetable AS p
+		         WHERE p.page = s.page AND
+		               id < $section AND title != ''
+		         ORDER BY id DESC
+		         LIMIT 0, 1)
+		        UNION
+		        (SELECT 'next' AS type, id, title, p.n, s.volume, s.page, s.xmlid
+		         FROM $structtable AS s, $pagetable AS p
+		         WHERE p.page = s.page AND
+		               id > $section AND title != ''
+		         ORDER BY id
+		         LIMIT 0, 1)";
+
+		$res = $db->query($sql);
 		$data = array('this'=>null, 'next'=>null, 'prev'=>null);
 		foreach ($res->fetchAll(PDO::FETCH_ASSOC) as $row) {
 			$type = $row['type'];

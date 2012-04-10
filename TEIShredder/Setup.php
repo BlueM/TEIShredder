@@ -1,12 +1,12 @@
 <?php
 
 /**
- * #todo
+ * Dependency injection class whose instances are to be passed to
+ * a number of other TEIShredder classes.
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
+ * @link https://github.com/TEIShredder/
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @link http://www.sandrart.net/
- * @version SVN: $Id: Chunker.php 1299 2012-03-21 20:53:00Z cb $
  * @property $database
  * @property $prefix
  * @property $plaintextCallback
@@ -76,6 +76,7 @@ class TEIShredder_Setup {
 			}
 			$this->titleCallback = $ttlcallb;
 		} else {
+			$ptcallb = $this->plaintextCallback;
 			$this->titleCallback = function($xml) use ($ptcallb) {
 
 				$sx = new SimpleXMLElement($xml);
@@ -87,11 +88,10 @@ class TEIShredder_Setup {
 				return call_user_func($ptcallb, $head);
 			};
 		}
-
 	}
 
 	/**
-	 * #todo
+	 * Returns one of the class properties' values
 	 * @param $name
 	 * @return mixed
 	 * @throws UnexpectedValueException
@@ -103,3 +103,4 @@ class TEIShredder_Setup {
 		throw new UnexpectedValueException("Unexpected member name “".$name."”");
 	}
 }
+
