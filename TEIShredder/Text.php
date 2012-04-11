@@ -209,6 +209,7 @@ class TEIShredder_Text {
 	 *               the first page in the current volume
 	 * @throws InvalidArgumentException
 	 * @todo Does not work yet with SQLite
+	 * @todo Contains non-PDO API
 	 */
 	public static function fetchStructureDataForSection(TEIShredder_Setup $setup, $section) {
 		$db = $setup->database;
