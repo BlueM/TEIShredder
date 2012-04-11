@@ -17,7 +17,7 @@ There is no end-user documentation yet, but the code is fully documented with PH
 
 Status of the project
 ---------------------
-Part of TEIShredder is production-ready, but at the moment some parts are rather fragmentary, as it was forked from a larger project. Please keep that in mind when considering to use it.
+Part of TEIShredder is production-ready, but at the moment some parts are rather fragmentary or inflexible, as it was forked from a larger project. Personally, I’d suggest waiting some more time before considering to use it, as the API is not yet stable.
 
 Using it
 ===========
@@ -46,3 +46,4 @@ Conventions / expectations
 * The main title of a volume is enclosed by a &lt;titlePart&gt; element that has either no @type attribute or the @type attribute’s value is “main”. Additionally, @noindex must not be set to 1.
 * There must not be more than one &lt;titlePart&gt; element in each volume that fulfills to the abovementioned conditions.
 * Text structure is encoded by nested &lt;div&gt; elements with &lt;head&gt; containing the section title.
+

@@ -1,4 +1,0 @@
-CFBundleName = "Run Tests";
-CFBundleShortVersionString = "1.0";
-CFBundleGetInfoString = "Run Tests version 1.0 Copyright 2011 Carsten";
-NSHumanReadableCopyright = "Copyright 2011 Carsten.";
