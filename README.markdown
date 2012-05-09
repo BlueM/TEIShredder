@@ -31,7 +31,14 @@ For a first quick test, open a shell on a Unix-oid system (Mac OS X, Linux, BSD,
 	sed 's/<prefix>//g' create-sqlite.sql | sqlite3 test.sqlite
 
 …, which means: “Take the contents of ‘create-sqlite.sql’ in this directory, remove &lt;prefix&gt; from the tables’ names and create an empty SQLite database called ‘test.sqlite’ in this directory which contains these tables”.
+
 Then, you can run “test.php”, which takes an input XML file from the “_TESTS” directory, indexes it and saves the result in that database. (If you are more familiar with MySQL and/or don’t have an sqlite3 executable at hand, you could of course also use MySQL by changing the PDO constructor in “test.php”.)
+
+If you like, you can now inspect the database’s contents. For instance, you can view the elements that were indexed by executing ...
+
+	sqlite3 test.sqlite 'SELECT * FROM element'
+
+... at the shell.
 
 TEI != TEI
 ----------
