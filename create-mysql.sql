@@ -43,16 +43,16 @@ CREATE TABLE `<prefix>page` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Contains text on a per-page-basis';
 
 CREATE TABLE `<prefix>structure` (
-  `id` int(11) unsigned NOT NULL DEFAULT '0',
-  `volume` int(11) unsigned NOT NULL,
-  `title` text NOT NULL,
-  `page` int(11) unsigned NOT NULL,
-  `level` int(10) unsigned DEFAULT '0',
-  `type` varchar(20) DEFAULT NULL,
-  `xmlid` varchar(20) DEFAULT NULL,
+  `id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Unique strucuture element ID/PK',
+  `volume` int(11) unsigned NOT NULL COMMENT 'Volume number',
+  `title` text NOT NULL COMMENT 'Title of the structure element',
+  `page` int(11) unsigned NOT NULL COMMENT 'Page number (of digitized page, not source text)',
+  `level` int(10) unsigned DEFAULT '0' COMMENT 'Element''s text structure level',
+  `element` varchar(20) DEFAULT NULL COMMENT 'Element/tag name',
+  `xmlid` varchar(20) DEFAULT NULL COMMENT 'Element''s xml:id attribute value',
   PRIMARY KEY (`id`),
   KEY `type` (`type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Information on elements that are relevant for the text structure';
 
 CREATE TABLE `<prefix>volume` (
   `number` int(11) unsigned NOT NULL COMMENT 'Number of the volume',

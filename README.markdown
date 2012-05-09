@@ -5,6 +5,8 @@ What is it?
 --------------
 TEIShredder is a set of PHP classes for indexing TEI XML documents and retrieving specific information later. The information extracted from the source document is saved in a relational database, i.e. it is a form of XML shredding – hence the name.
 
+TEIShredder is based on code that was written for a scholarly project called “Sandrart.net” (www.sandrart.net, cooperation project between Goethe-Universität Frankfurt am Main, Germany, and the Kunsthistorisches Institut, Florence, Italy, funded by the Deutsche Forschungsgemeinschaft [DFG]), but was heavily refactored to make it a stand-alone project/library. As Sandrart.net initially used TEI Lite, but later moved on to a custom TEI schema (actually, this hasn’t been finished yet), the expected TEI (see below) input is subject to change.
+
 System requirements
 -----------------
 
@@ -17,14 +19,14 @@ There is no end-user documentation yet, but the code is fully documented with PH
 
 Status of the project
 ---------------------
-Part of TEIShredder is production-ready, but at the moment some parts are rather fragmentary or inflexible, as it was forked from a larger project. Personally, I’d suggest waiting some more time before considering to use it, as the API is not yet stable.
+Part of TEIShredder is production-ready, but at the moment some parts are rather fragmentary or inflexible, as it was forked from a larger project. Personally, I’d suggest waiting some more time before considering to use it, as the API is not yet stable and the expectations regarding the input TEI (see below) will change.
 
 Using it
 ===========
 
 Getting started
 ----------------
-For a first quick test, open a shell, “cd” to the top TEIShredder directory and execute …
+For a first quick test, open a shell on a Unix-oid system (Mac OS X, Linux, BSD, …), “cd” to the top TEIShredder directory and execute …
 
 	sed 's/<prefix>//g' create-sqlite.sql | sqlite3 test.sqlite
 
@@ -33,11 +35,11 @@ Then, you can run “test.php”, which takes an input XML file from the “_TES
 
 TEI != TEI
 ----------
-TEI can be used in many different ways. In my eyes, this is one of the very appealing features of TEI, but on the other hand, it makes developing generic tools much harder or impossible. TEIShredder is, to some extent, a generic tool insofar as it just processes TEI – but on the other hand, it has certain expectations of the TEI. You may find that a TEI document you wish to process does not meet TEIShredder’s expectations, and for cases like these, I suggest pre-processing the TEI in a way that will result in a processable document.
+TEI can be used in many different ways. In my eyes, this is one of the very appealing features of TEI, but on the other hand, it makes developing generic tools much harder or impossible. TEIShredder is, to some extent, a generic tool insofar as it just processes TEI – but on the other hand, it has certain expectations of the TEI. Therefore, most likely, TEIShredder will not be able to process your unmodified TEI document, but it will be necessary to pre-process the document (for instance, using XSL-T) to match these expectations.
 
 Exluding sections from being indexed
 ------------------------------------
-By default, TEIShredder (currently, this might be subject to change) collects information of a text’s structure based on &lt;div&gt;, &lt;text&gt;, &lt;titlePage&gt; and &lt;front&gt; tags. If you want any of these not included, you can add a @noindex attribute with value of 1. As, of course, @noindex is not a valid TEI attribute, you should transform the source XML document before passing it to TEIShredder, for instance using XSL-T.
+By default, TEIShredder (this might be subject to change) collects information of a text’s structure based on &lt;div&gt;, &lt;text&gt;, &lt;titlePage&gt; and &lt;front&gt; tags. If you want any of these not included, you can add a @noindex attribute with value of 1. As, of course, @noindex is not a valid TEI attribute, you should transform the source XML document before passing it to TEIShredder, for instance using XSL-T.
 
 Conventions / expectations
 --------------------------
@@ -46,4 +48,5 @@ Conventions / expectations
 * The main title of a volume is enclosed by a &lt;titlePart&gt; element that has either no @type attribute or the @type attribute’s value is “main”. Additionally, @noindex must not be set to 1.
 * There must not be more than one &lt;titlePart&gt; element in each volume that fulfills to the abovementioned conditions.
 * Text structure is encoded by nested &lt;div&gt; elements with &lt;head&gt; containing the section title.
+* Currently, columns are expected to be indicated by &lt;milestone/&gt; elements, where the @unit attribute contains the column specification (something like “left”, “2” or similar value). This will change!
 

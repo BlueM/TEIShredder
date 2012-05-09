@@ -47,15 +47,7 @@ class TEIShredder_XMLChunkTest extends PHPUnit_Framework_TestCase {
 	 * @depends getTheChunksForPage2
 	 */
 	function getTheIdForAChunk(TEIShredder_XMLChunk $chunk) {
-		$this->assertSame(8, $chunk->getId());
-	}
-
-	/**
-	 * @test
-	 * @depends getTheChunksForPage2
-	 */
-	function getTheVolumeNumberForAChunk(TEIShredder_XMLChunk $chunk) {
-		$this->assertSame(1, $chunk->getVolume());
+		$this->assertSame(7, $chunk->getId());
 	}
 
 	/**
@@ -65,6 +57,47 @@ class TEIShredder_XMLChunkTest extends PHPUnit_Framework_TestCase {
 	function getTheChunksWellformedXml(TEIShredder_XMLChunk $chunk) {
 		$xml = $chunk->getWellFormedXML();
 		$xml = new SimpleXMLElement($xml);
+	}
+
+	/**
+	 * @test
+	 * @depends getTheChunksForPage2
+	 */
+	function getTheChunksXml(TEIShredder_XMLChunk $chunk) {
+		$xml = $chunk->getXML();
+		$this->assertInternalType('string', $xml);
+		// Make sure the XML is really part of the well-formed XML
+		$this->assertTrue(0 < strpos($chunk->getWellFormedXML(), $chunk->getXML()));
+	}
+
+	/**
+	 * @test
+	 * @depends getTheChunksForPage2
+	 */
+	function getTheChunksPlaintext(TEIShredder_XMLChunk $chunk) {
+		$text = $chunk->getPlaintext();
+		$this->assertInternalType('string', $text);
+		$this->assertFalse(strpos($text, '<'));
+	}
+
+	/**
+	 * @test
+	 * @depends getTheChunksForPage2
+	 */
+	function getTheChunksSection(TEIShredder_XMLChunk $chunk) {
+		$section = $chunk->getSection();
+		$this->assertInternalType('integer', $section);
+		$this->assertSame(67, $section);
+	}
+
+	/**
+	 * @test
+	 * @depends getTheChunksForPage2
+	 */
+	function getTheChunksColumn(TEIShredder_XMLChunk $chunk) {
+		$section = $chunk->getColumn();
+		$this->assertInternalType('string', $section);
+		$this->assertSame('', $section);
 	}
 
 }

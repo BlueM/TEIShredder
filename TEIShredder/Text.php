@@ -15,7 +15,7 @@ class TEIShredder_Text {
 	 * value in the source text.
 	 * @param TEIShredder_Setup $setup
 	 * @param string $elmntid XML element ID
-	 * @return int|false Page number or false, if there's no such xml:id.
+	 * @return int|bool Page number or false, if there's no such xml:id.
 	 */
 	public static function fetchPageNumberForElementId(TEIShredder_Setup $setup, $elmntid) {
 		static $cache = array();
@@ -43,7 +43,6 @@ class TEIShredder_Text {
 	 *               "last" (the last three keys being boolean)
 	 */
 	public static function fetchStructure(TEIShredder_Setup $setup, $volume) {
-
 		$db = $setup->database;
 		$res = $db->query("SELECT id, page, title, level, xmlid ".
 		                  "FROM ".$setup->prefix.'structure '.
@@ -208,55 +207,44 @@ class TEIShredder_Text {
 	 *               includes a key "volstart" whose value is the number of
 	 *               the first page in the current volume
 	 * @throws InvalidArgumentException
-	 * @todo Does not work yet with SQLite
-	 * @todo Contains non-PDO API
+	 * @todo Test fails due to incomplete test isolation.
 	 */
 	public static function fetchStructureDataForSection(TEIShredder_Setup $setup, $section) {
 		$db = $setup->database;
 		$structtable = $setup->prefix.'structure';
 		$pagetable = $setup->prefix.'page';
 		$section = $db->quote($section);
-		$sql = "(SELECT 'this' AS type, id, title, p.n, s.volume, s.page, s.xmlid
-		         FROM $structtable AS s, $pagetable AS p
-		         WHERE p.page = s.page AND
-		               id = $section
-		         LIMIT 0, 1)
-		        UNION
-		        (SELECT 'prev' AS type, id, title, p.n, s.volume, s.page, s.xmlid
-		         FROM $structtable AS s, $pagetable AS p
-		         WHERE p.page = s.page AND
-		               id < $section AND title != ''
-		         ORDER BY id DESC
-		         LIMIT 0, 1)
-		        UNION
-		        (SELECT 'next' AS type, id, title, p.n, s.volume, s.page, s.xmlid
-		         FROM $structtable AS s, $pagetable AS p
-		         WHERE p.page = s.page AND
-		               id > $section AND title != ''
-		         ORDER BY id
-		         LIMIT 0, 1)";
 
-		$res = $db->query($sql);
-		$data = array('this'=>null, 'next'=>null, 'prev'=>null);
-		foreach ($res->fetchAll(PDO::FETCH_ASSOC) as $row) {
-			$type = $row['type'];
-			unset($row['type']);
+		$statements = array(
+			'this'=>"id = $section",
+			'prev'=>"id < $section AND title != '' ORDER BY id DESC",
+			'next'=>"id > $section AND title != '' ORDER BY id ASC",
+		);
+
+		$data = array();
+
+		foreach ($statements as $type=>$statement) {
+			$sql = "SELECT s.id, s.title, s.volume, s.page, s.xmlid, p.n
+                               FROM $structtable AS s, $pagetable AS p
+                               WHERE p.page = s.page AND $statement
+                               LIMIT 0, 1";
+			echo "$sql\n\n";
+			$res = $db->query($sql);
+			$row = $res->fetch(PDO::FETCH_ASSOC);
 			if (!$row['title']) {
-				$row['title'] = $row['pagenotation'];
+				$row['title'] = $row['n'];
 			}
 			$data[$type] = $row;
 		}
-		unset($res, $row);
-		if (array() === $data) {
+
+		if (empty($data['this']['page'])) {
 			throw new InvalidArgumentException("Invalid section ID $section");
 		}
 
 		// Current section's start page
-		$data['volstart'] = $db->getOne("SELECT page
-		                                 FROM $structtable
-		                                 WHERE volume = ?
-		                                 ORDER BY id
-		                                 LIMIT 1", $data['this']['volume']);
+		$res = $db->query("SELECT page FROM $structtable WHERE volume = ".
+					      $db->quote($data['this']['volume'])." ORDER BY id LIMIT 1");
+		$data['volstart'] = $res->fetchColumn();
 
 		return $data;
 	}

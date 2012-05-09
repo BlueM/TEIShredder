@@ -297,7 +297,7 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 			' containerid, notationhash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 		);
 
-		foreach ($this->tags as $id=>$tag) {
+		foreach (array_values($this->tags) as $tag) {
 
 			if ('annotation' == $this->containerTypes[$tag['container']]) {
 				// Do not include anything inside scholarly annotations.
@@ -425,10 +425,7 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 	}
 
 	/**
-	 * Will be called right before processing starts. Can be used to
-	 * check certain conditions (should throw an exception if it fails)
-	 * or to perform initialization steps.
-	 * @throws RuntimeException
+	 * Setup method that will be called right before processing starts.
 	 */
 	protected function preProcessAction() {
 		$db = $this->setup->database;

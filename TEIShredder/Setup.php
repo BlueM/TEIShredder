@@ -71,20 +71,17 @@ class TEIShredder_Setup {
 		}
 
 		if ($ttlcallb) {
+			// Custom title extraction callback
 			if (!is_callable($ttlcallb)) {
 				throw new InvalidArgumentException('Title extraction callback is invalid');
 			}
 			$this->titleCallback = $ttlcallb;
 		} else {
+			// Default title extraction callback
 			$ptcallb = $this->plaintextCallback;
 			$this->titleCallback = function($xml) use ($ptcallb) {
-
 				$sx = new SimpleXMLElement($xml);
-				if (!isset($sx->head[0])) {
-					// No <head>
-					return '';
-				}
-				$head = $sx->head[0]->asXml();
+				$head = isset($sx->head[0]) ? $sx->head[0]->asXml() : '';
 				return call_user_func($ptcallb, $head);
 			};
 		}
@@ -102,5 +99,6 @@ class TEIShredder_Setup {
 		}
 		throw new UnexpectedValueException("Unexpected member name “".$name."”");
 	}
+
 }
 

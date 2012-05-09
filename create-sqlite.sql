@@ -10,7 +10,6 @@ CREATE TABLE "<prefix>element" (
 	"data" TEXT
 );
 
-
 CREATE TABLE "<prefix>notation" (
 	"xmlid" TEXT,
 	"page" INTEGER NOT NULL,
@@ -36,17 +35,15 @@ CREATE TABLE "<prefix>page" (
 	"facs" TEXT
 );
 
-
 CREATE TABLE "<prefix>structure" (
 	"id" INTEGER PRIMARY KEY,
 	"volume" INTEGER,
 	"title" TEXT,
 	"page" INTEGER NOT NULL,
 	"level" INTEGER NOT NULL,
-	"type" TEXT NOT NULL,
+	"element" TEXT NOT NULL,
 	"xmlid" TEXT
 );
-
 
 CREATE TABLE "<prefix>volume" (
 	  "number" INTEGER NOT NULL,
@@ -54,7 +51,6 @@ CREATE TABLE "<prefix>volume" (
 	  "pagenum" INTEGER NOT NULL,
 	  PRIMARY KEY ("number")
 );
-
 
 CREATE TABLE "<prefix>xmlchunk" (
 	"id" INTEGER PRIMARY KEY ASC,

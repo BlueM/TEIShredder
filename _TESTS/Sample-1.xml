@@ -22,23 +22,40 @@
   	</front>
 
   	<body>
-  		<pb xml:id="page-01"/>
+
+  		<pb xml:id="page-01" n="I" />
+  		<div>
+  			<head>Foreword</head>
+  			<p>The pages in this foreword have Roman page numbers, just to demonstrate the @n attribute is independent from the page numbering.</p>
+
+ 	 		<pb xml:id="page-02" n="II" />
+			<p>For demonstration purposes, we include these few lines of verse from the beginning of “Macbeth”:</p>
+			<lg>
+			<l>When shall we three meet again?</l>
+			<l>In thunder, lightning, or in rain?</l>
+			<l>When the hurlyburly’s done,</l>
+			<l>When the battle's lost and won.</l>
+			<l>That will be ere the set of sun.</l>
+			</lg>
+		</div>
+
+  		<pb xml:id="page-03" n="1" />
   		<div>
   			<head>Chapter 1</head>
       		<p>Some text here.</p>
       		<figure><graphic url="http://www.tei-c.org/logos/TEI-glow.png"/></figure>
   		</div>
 
-  		<pb xml:id="page-02"/>
+  		<pb xml:id="page-04" n="2"/>
   		<div>
   			<head>Chapter 2</head>
   			<p>More text.</p>
   			<p>And a second paragraph. The text of this second paragraph is so long, …
 
-  			<pb xml:id="page-03"/>
+  			<pb xml:id="page-05" n="3"/>
   			… that it continues on the next page …
 
-  			<pb xml:id="page-04"/>
+  			<pb xml:id="page-06" n="4"/>
   			… and only ends on page 4!</p>
 
   		</div>
@@ -47,7 +64,7 @@
   			<head>Chapter 2</head>
 			<p>Yet another useless paragraph.</p>
 
-  			<pb xml:id="page-05"/>
+  			<pb xml:id="page-07" n="5"/>
 			<p>And another one.</p>
 		</div>
 

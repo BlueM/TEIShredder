@@ -92,8 +92,8 @@ class TEIShredder_TextTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function fetchTheStructureDataForASection() {
-// 		$n = TEIShredder_Text::fetchStructureDataForSection($this->setup, 1);
-// 		$this->assertInternalType('array', $n);
+ 		$n = TEIShredder_Text::fetchStructureDataForSection($this->setup, 5);
+ 		$this->assertInternalType('array', $n);
 	}
 
 }

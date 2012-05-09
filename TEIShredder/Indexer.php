@@ -125,21 +125,28 @@ abstract class TEIShredder_Indexer {
 		$this->save();
 	}
 
+	// @codeCoverageIgnoreStart
+
 	/**
-	 * Saves all the text data accumulated. May not be needed by
-	 * all subclasses. This default implementation does nothing.
+	 * Saves all the text data accumulated.
+	 *
+	 * May not be needed by subclasses. Empty default implementation.
 	 */
 	protected function save() {
-		return null;
+
 	}
 
 	/**
-	 * Will be called right before processing starts. Can be used to
-	 * check certain conditions (should throw an exception if it fails)
-	 * or to perform initialization steps. This default implementation is empty.
+	 * Will be called right before processing starts.
+	 *
+	 * Can be used to check certain conditions (should throw an exception
+	 * if it fails) or to perform initialization steps. May not be needed by
+	 * subclasses. This default implementation is empty.
 	 */
 	protected function preProcessAction() {
 
 	}
+
+	// @codeCoverageIgnoreEnd
 
 }

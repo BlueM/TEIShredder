@@ -255,7 +255,7 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 			$db = $this->setup->database;
 			$prefix = $this->setup->prefix;
 			$sth = $db->prepare(
-				'INSERT INTO '.$prefix.'structure (id, volume, title, page, level, type, xmlid) '.
+				'INSERT INTO '.$prefix.'structure (id, volume, title, page, level, element, xmlid) '.
 				'VALUES (?, ?, ?, ?, ?, ?, ?)'
 			);
 		}
@@ -270,7 +270,7 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 			// <text> must not contain <head> directly
 			$title = '';
 		} elseif ('titlePage' == $this->r->localName) {
-			// <text> must not contain <head> directly
+			// #todo
 			$title = 'Titelseite';
 		} else {
 			$title = call_user_func($this->setup->titleCallback, $this->r->readOuterXML());
@@ -347,7 +347,6 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	 * Will be called right before processing starts. Can be used to
 	 * check certain conditions (should throw an exception if it fails)
 	 * or to perform initialization steps.
-	 * @throws RuntimeException
 	 */
 	protected function preProcessAction() {
 		// Empty the tables
