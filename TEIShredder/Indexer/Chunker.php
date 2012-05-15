@@ -7,10 +7,16 @@
  * Unknown shortcomings: Surely lots!
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
- * @link https://github.com/TEIShredder/
+ * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
+
+	/**
+	 * String that will be used as title for <titlePage> sections
+	 * @var string
+	 */
+	public $titlePageLabel = 'Title page';
 
 	/**
 	 * Array of tags that are yet unclosed at the point
@@ -81,13 +87,13 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	 */
 	protected $plaintext = array(0=>'');
 
+	protected $sectionid = 0;
+
 	/**
 	 * Method that's called when the input stream reaches an opening
 	 * tag (or an empty tag)
 	 */
 	protected function nodeOpen() {
-
-		static $sectionid = 0;
 
 		if (in_array($this->r->localName, self::$chunktags) or
 			in_array($this->r->localName, self::$nostacktags)) {
@@ -117,7 +123,7 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 					  'text' == $this->r->localName or
 					  'titlePage' == $this->r->localName or
 					  'front' == $this->r->localName) {
-				$this->currentSection = ++$sectionid;
+				$this->currentSection = ++$this->sectionid;
 
 				if ('text' == $this->r->localName) {
 					$this->data['currentVolume'] ++;
@@ -245,20 +251,9 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	}
 
 	/**
-	 * Method which will called when a new section is encountered
+	 * Method which will called when a new section is encountered.
 	 */
 	protected function startSection() {
-
-		static $sth = null;
-
-		if (!$sth) {
-			$db = $this->setup->database;
-			$prefix = $this->setup->prefix;
-			$sth = $db->prepare(
-				'INSERT INTO '.$prefix.'structure (id, volume, title, page, level, element, xmlid) '.
-				'VALUES (?, ?, ?, ?, ?, ?, ?)'
-			);
-		}
 
 		if ($this->r->getAttribute('noindex')) {
 			// Should not be indexed
@@ -270,22 +265,26 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 			// <text> must not contain <head> directly
 			$title = '';
 		} elseif ('titlePage' == $this->r->localName) {
-			// #todo
-			$title = 'Titelseite';
+			$title = $this->titlePageLabel;
 		} else {
 			$title = call_user_func($this->setup->titleCallback, $this->r->readOuterXML());
 		}
 
 		$level = $this->level;
 
-		$sth->execute(array(
+		$db = $this->setup->database;
+
+		$db->exec(sprintf(
+			'INSERT INTO %sstructure (id, volume, title, page, level, element, xmlid) '.
+		    'VALUES (%d, %d, %s, %d, %d, %s, %s)',
+			$this->setup->prefix,
 			$this->currentSection,
 			$this->data['currentVolume'],
-			$title,
+			$db->quote($title),
 			$this->page ? $this->page : 1,
 			$level,
-			$this->r->localName,
-			$this->r->getAttribute('xml:id')
+			$db->quote($this->r->localName),
+			$db->quote($this->r->getAttribute('xml:id'))
 		));
 	}
 
@@ -351,6 +350,7 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	protected function preProcessAction() {
 		// Empty the tables
 		$db = $this->setup->database;
+#		echo '? '.$db->inTransaction()." ?\n";
 		$prefix = $this->setup->prefix;
 		$db->exec('DELETE FROM '.$prefix.'page');
 		$db->exec("DELETE FROM ".$prefix.'xmlchunk');

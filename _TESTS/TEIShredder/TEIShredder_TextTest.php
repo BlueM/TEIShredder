@@ -15,7 +15,9 @@ class TEIShredder_TextTest extends PHPUnit_Framework_TestCase {
 	 * Sets up the fixture
 	 */
 	function setUp() {
+
 		$this->setup = prepare_default_data();
+
 		$chunker = new TEIShredder_Indexer_Chunker(
 			$this->setup,
 			file_get_contents(TESTDIR.'/Sample-1.xml')
@@ -33,16 +35,16 @@ class TEIShredder_TextTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	function fetchTheStructure() {
-		$structure = TEIShredder_Text::fetchStructure($this->setup, 1);
-		$this->assertInternalType('array', $structure);
+	function fetchTheNumberOfPages() {
+		$num = TEIShredder_Text::fetchNumberOfPages($this->setup);
+		$this->assertInternalType('int', $num);
 	}
 
 	/**
 	 * @test
 	 */
-	function fetchTheNumberOfPages() {
-		$num = TEIShredder_Text::fetchNumberOfPages($this->setup);
+	function fetchTheNumberOfPagesOfTheFirstVolume() {
+		$num = TEIShredder_Text::fetchNumberOfPages($this->setup, 1);
 		$this->assertInternalType('int', $num);
 	}
 
@@ -61,6 +63,14 @@ class TEIShredder_TextTest extends PHPUnit_Framework_TestCase {
 	 */
 	function fetchingDataForAPageByItsPagenumberThrowsAnExceptionIfThePageNotExists() {
 		TEIShredder_Text::fetchPageData($this->setup, 12345);
+	}
+
+	/**
+	 * @test
+	 */
+	function fetchingDataForAPageByItsPagenumberWorks() {
+		$data = TEIShredder_Text::fetchPageData($this->setup, 2);
+		$this->assertInternalType('array', $data);
 	}
 
 	/**
@@ -87,6 +97,13 @@ class TEIShredder_TextTest extends PHPUnit_Framework_TestCase {
 		$this->assertInternalType('array', $n);
 	}
 
+	/**
+	 * @test
+	 */
+	function fetchTheStructure() {
+		$structure = TEIShredder_Text::fetchStructure($this->setup, 1);
+		$this->assertInternalType('array', $structure);
+	}
 
 	/**
 	 * @test

@@ -4,7 +4,7 @@
  * Base class for processing a TEI document by stream-reading it
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
- * @link https://github.com/TEIShredder/
+ * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 abstract class TEIShredder_Indexer {

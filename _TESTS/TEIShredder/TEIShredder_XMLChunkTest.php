@@ -86,8 +86,7 @@ class TEIShredder_XMLChunkTest extends PHPUnit_Framework_TestCase {
 	 */
 	function getTheChunksSection(TEIShredder_XMLChunk $chunk) {
 		$section = $chunk->getSection();
-		$this->assertInternalType('integer', $section);
-		$this->assertSame(67, $section);
+		$this->assertSame(4, $section);
 	}
 
 	/**

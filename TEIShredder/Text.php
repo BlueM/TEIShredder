@@ -5,33 +5,22 @@
  * text structure, page numbers, page names/notations etc.
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
- * @link https://github.com/TEIShredder/
+ * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 class TEIShredder_Text {
 
 	/**
-	 * Returns the numerical page number for an xml:id attribute
-	 * value in the source text.
+	 * Returns the numerical page number for an xml:id attribute value.
 	 * @param TEIShredder_Setup $setup
 	 * @param string $elmntid XML element ID
 	 * @return int|bool Page number or false, if there's no such xml:id.
 	 */
 	public static function fetchPageNumberForElementId(TEIShredder_Setup $setup, $elmntid) {
-		static $cache = array();
-		static $sth = null;
-		if (!$sth) {
-			$db = $setup->database;
-			$sth = $db->prepare('SELECT page FROM '.$setup->prefix.'element WHERE xmlid = ?');
-		}
-		if (!array_key_exists($elmntid, $cache)) {
-			$sth->execute(array($elmntid));
-			if (false === $pagenum = $sth->fetchColumn(0)) {
-				return false;
-			}
-			$cache[$elmntid] = $pagenum;
-		}
-		return (int)$cache[$elmntid];
+		$sth = $setup->database->query(
+			'SELECT page FROM '.$setup->prefix.'element WHERE xmlid = '.$setup->database->quote($elmntid)
+		);
+		return $sth->fetchColumn(0);
 	}
 
 	/**
@@ -145,13 +134,10 @@ class TEIShredder_Text {
 	 * @throws InvalidArgumentException
 	 */
 	public static function fetchPageData(TEIShredder_Setup $setup, $pagenum) {
-		static $sth = null;
-		if (!$sth) {
-			$sth = $setup->database->prepare(
-				'SELECT volume, xmlid, n, rend FROM '.$setup->prefix."page WHERE page = ?"
-			);
-		}
-		$sth->execute(array($pagenum));
+		$db = $setup->database;
+		$sth = $db->query(
+			'SELECT volume, xmlid, n, rend FROM '.$setup->prefix."page WHERE page = ".$db->quote($pagenum)
+		);
 		if (false === $data = $sth->fetch(PDO::FETCH_NUM)) {
 			throw new InvalidArgumentException('Invalid page number');
 		}
@@ -186,11 +172,10 @@ class TEIShredder_Text {
 	 *               the page number as key and @n as the value.
 	 */
 	public static function fetchNAttributesForPageNumbers(TEIShredder_Setup $setup, array $nums) {
-		$db = $setup->database;
-		$res = $db->query("SELECT page, n
-		                   FROM ".$setup->prefix."page
-		                   WHERE page IN (".join(', ', array_map('intval', $nums)).")
-		                   ORDER BY page");
+		$res = $setup->database->query(
+			"SELECT page, n FROM ".$setup->prefix."page ".
+			"WHERE page IN (".join(', ', array_map('intval', $nums)).") ORDER BY page"
+		);
 		$n = array();
 		foreach ($res->fetchAll(PDO::FETCH_NUM) as $row) {
 			$n[$row[0]] = $row[1];
@@ -205,9 +190,8 @@ class TEIShredder_Text {
 	 * @return array Associative array with keys "this", "prev" and "next",
 	 *               each one being an associative array itself. Additionally,
 	 *               includes a key "volstart" whose value is the number of
-	 *               the first page in the current volume
+	 *               the first page in the current volume.
 	 * @throws InvalidArgumentException
-	 * @todo Test fails due to incomplete test isolation.
 	 */
 	public static function fetchStructureDataForSection(TEIShredder_Setup $setup, $section) {
 		$db = $setup->database;
@@ -228,13 +212,13 @@ class TEIShredder_Text {
                                FROM $structtable AS s, $pagetable AS p
                                WHERE p.page = s.page AND $statement
                                LIMIT 0, 1";
-			echo "$sql\n\n";
 			$res = $db->query($sql);
 			$row = $res->fetch(PDO::FETCH_ASSOC);
 			if (!$row['title']) {
 				$row['title'] = $row['n'];
 			}
 			$data[$type] = $row;
+			$res->closeCursor();
 		}
 
 		if (empty($data['this']['page'])) {
