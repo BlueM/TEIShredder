@@ -29,7 +29,7 @@
   			<p>The pages in this foreword have Roman page numbers, just to demonstrate the @n attribute is independent from the page numbering.</p>
 
  	 		<pb xml:id="page-02" n="II" />
-			<p>For demonstration purposes, we include these few lines of verse from the beginning of “Macbeth”:</p>
+			<p>For demonstration purposes, we include these few lines of verse from the beginning of “Macbeth”, written by <rs type="person" key="http://d-nb.info/gnd/118613723">William Shakespeare</rs>:</p>
 			<lg>
 			<l>When shall we three meet again?</l>
 			<l>In thunder, lightning, or in rain?</l>
@@ -56,16 +56,17 @@
   			… that it continues on the next page …
 
   			<pb xml:id="page-06" n="4"/>
-  			… and only ends on page 4!</p>
+  			… and finally ends on page 4!</p>
 
   		</div>
 
   		<div>
-  			<head>Chapter 2</head>
-			<p>Yet another useless paragraph.</p>
+  			<head>Named entities</head>
+			<p><rs type="person" key="http://d-nb.info/gnd/118613723">William Shakespeare</rs> was mentioned earlier in this document, but to get a little more content to play with, we add a few more people: <rs type="person" key="http://d-nb.info/gnd/11879440X">John Montagu, the 4th Earl of Sandwich</rs> (and alleged inventor of the Sandwich), <rs type="person" key="http://d-nb.info/gnd/159981727">Tim Berners-Lee</rs> and <rs type="person" key="http://d-nb.info/gnd/118802976">Alan Turing</rs>.</p>
 
   			<pb xml:id="page-07" n="5"/>
 			<p>And another one.</p>
+
 		</div>
 
     </body>
