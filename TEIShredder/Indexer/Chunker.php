@@ -52,7 +52,7 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	 * ID of section currently being processed
 	 * @var int
 	 */
-	protected $currentSection = null;
+	protected $currentSection = 0;
 
 	/**
 	 * Array of element types / tag names that are regarded as block
@@ -86,8 +86,6 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	 * @var array
 	 */
 	protected $plaintext = array(0=>'');
-
-	protected $sectionid = 0;
 
 	/**
 	 * Method that's called when the input stream reaches an opening
@@ -123,7 +121,7 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 					  'text' == $this->r->localName or
 					  'titlePage' == $this->r->localName or
 					  'front' == $this->r->localName) {
-				$this->currentSection = ++$this->sectionid;
+				$this->currentSection ++;
 
 				if ('text' == $this->r->localName) {
 					$this->data['currentVolume'] ++;
@@ -170,7 +168,12 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 
 		if (!$this->r->isEmptyElement and
 			!in_array($this->r->localName, self::$nostacktags)) {
-			array_push($this->prestack, $string);
+			// Note: in the next line, we record the opening element without
+			// @xml:id attribute, as when outputting several chunks of XML on
+			// one HTML page, there could be easily be a conflict due to
+			// non-unique @id attributes. And we dont't need it anyway, as
+			// the pre-stack is only for wellformedness.
+			array_push($this->prestack, $this->r->nodeOpenString(true));
 			array_unshift($this->poststack, '</'.$this->r->localName.'>');
 		}
 	}
