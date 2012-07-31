@@ -209,9 +209,9 @@ class TEIShredder_Text {
 
 		foreach ($statements as $type=>$statement) {
 			$sql = "SELECT s.id, s.title, s.volume, s.page, s.xmlid, p.n
-                               FROM $structtable AS s, $pagetable AS p
-                               WHERE p.page = s.page AND $statement
-                               LIMIT 0, 1";
+                    FROM $structtable AS s, $pagetable AS p
+                    WHERE p.page = s.page AND $statement
+                    LIMIT 0, 1";
 			$res = $db->query($sql);
 			$row = $res->fetch(PDO::FETCH_ASSOC);
 			if (!$row['title']) {
