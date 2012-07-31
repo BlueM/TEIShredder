@@ -11,10 +11,11 @@ class TEIShredder_XMLReader extends XMLReader {
 
 	/**
 	 * Returns the full open tag for the current element
+	 * @param bool $skipxmlid [optional] Should @xml:id attributes be suppressed?
 	 * @return string Opening tag including attributes
 	 * @throws InvalidArgumentException
 	 */
-	public function nodeOpenString() {
+	public function nodeOpenString($skipxmlid = false) {
 		if (XMLREADER::ELEMENT != $this->nodeType) {
 			throw new InvalidArgumentException('This node is not an opening element.');
 		}
@@ -22,8 +23,11 @@ class TEIShredder_XMLReader extends XMLReader {
 		if ($this->hasAttributes) {
 			$this->moveToFirstAttribute();
 			do {
-				$str .= ' '.($this->prefix ? $this->prefix.':' : '').
-				        $this->localName.'="'.htmlspecialchars($this->value).'"';
+				$attr = ($this->prefix ? $this->prefix.':' : '').$this->localName;
+				if ($skipxmlid and 'xml:id' == $skipxmlid) {
+					continue;
+				}
+				$str .= ' '.$attr.'="'.htmlspecialchars($this->value).'"';
 			} while ($this->moveToNextAttribute());
 			$this->moveToElement();
 		}
