@@ -7,10 +7,10 @@
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @property $database
  * @property $prefix
- * @property $plaintextCallback
  * @property $titleCallback
+ * @property $plaintextCallback
+ * @property PDO $database
  */
 class TEIShredder_Setup {
 
