@@ -3,13 +3,13 @@
 
 set_include_path(__DIR__.'/TEIShredder');
 
-require_once 'TEIShredder/Setup.php';
-require_once 'TEIShredder/Indexer.php';
-require_once 'TEIShredder/Indexer/Chunker.php';
-require_once 'TEIShredder/Indexer/Extractor.php';
-require_once 'TEIShredder/XMLReader.php';
+require_once 'lib/TEIShredder/Setup.php';
+require_once 'lib/TEIShredder/Indexer.php';
+require_once 'lib/TEIShredder/Indexer/Chunker.php';
+require_once 'lib/TEIShredder/Indexer/Extractor.php';
+require_once 'lib/TEIShredder/XMLReader.php';
 
-$xml = file_get_contents(__DIR__.'/_TESTS/Sample-1.xml');
+$xml = file_get_contents(__DIR__.'/test/Sample-1.xml');
 
 $db = new PDO('sqlite:'.__DIR__.'/test.sqlite');
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

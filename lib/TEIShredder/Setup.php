@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Dependency injection class whose instances are to be passed to
+ * Service locator class whose instances are to be passed to
  * a number of other TEIShredder classes.
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
