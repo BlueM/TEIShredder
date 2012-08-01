@@ -10,18 +10,47 @@
 class TEIShredder_XMLChunk {
 
 	/**
-	 * Object properties
-	 * @var array
+	 * Chunk ID
+	 * @var int
 	 */
-	protected $properties = array(
-		'id'=>null,            // Chunk ID
-		'col'=>null,           // Info on column that contains this chunk
-		'prestack'=>null,      // Open XML tags
-		'xml'=>null,           // Chunk's XML source (probably not well-formed)
-		'poststack'=>null,     // XML tags to be closed behind
-		'section'=>null,       // ID of the chunk's section in the text structure
-		'plaintext'=>null,     // ID of the chunk's section in the text structure
-	);
+	protected $id = 0;
+
+	/**
+	 * Info on column that contains this chunk
+	 * @var string
+	 */
+	protected $col;
+
+	/**
+	 * Open XML tags at the point in the source document where this
+	 * chunk of XML starts.
+	 * @var
+	 */
+	protected $prestack;
+
+	/**
+	 * Chunk's XML source (probably not well-formed)
+	 * @var string
+	 */
+	protected $xml;
+
+	/**
+	 * XML tags to be closed after this chunk of XML.
+	 * @var
+	 */
+	protected $poststack;
+
+	/**
+	 * ID of the chunk's section in the text structure
+	 * @var int
+	 */
+	protected $section;
+
+	/**
+	 * ID of the chunk's section in the text structure
+	 * @var string
+	 */
+	protected $plaintext;
 
 	/**
 	 * Returns all chunks that are on a given page.
@@ -30,24 +59,15 @@ class TEIShredder_XMLChunk {
 	 * @return TEIShredder_XMLChunk[]
 	 */
 	public static function fetchObjectsByPageNumber(TEIShredder_Setup $setup, $page) {
-
-		$objects = array();
-		$page = $setup->database->quote($page);
-		$res = $setup->database->query(
-			"SELECT eid.id, eid.page, eid.col, eid.prestack,
-			        eid.poststack, eid.xml, eid.section, eid.plaintext
+		$stm = $setup->database->prepare(
+			"SELECT ?, eid.id, eid.col, eid.prestack, eid.xml, eid.poststack, eid.section, eid.plaintext
 		     FROM ".$setup->prefix."xmlchunk AS eid
 		     WHERE xml != '' AND
-		           eid.page = $page
-		     ORDER BY eid.id");
-
-		foreach ($res->fetchAll(PDO::FETCH_ASSOC) as $row) {
-			$obj = new self;
-			$obj->properties = $row;
-			$objects[] = $obj;
-		}
-
-		return $objects;
+		           eid.page = ?
+		     ORDER BY eid.id"
+		);
+		$stm->execute(array(__CLASS__, $page));
+		return $stm->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_CLASSTYPE);
 	}
 
 	/**
@@ -55,7 +75,7 @@ class TEIShredder_XMLChunk {
 	 * @return int
 	 */
 	public function getId() {
-		return (int)$this->properties['id'];
+		return (int)$this->id;
 	}
 
 	/**
@@ -63,7 +83,7 @@ class TEIShredder_XMLChunk {
 	 * @return int
 	 */
 	public function getSection() {
-		return (int)$this->properties['section'];
+		return (int)$this->section;
 	}
 
 	/**
@@ -71,7 +91,7 @@ class TEIShredder_XMLChunk {
 	 * @return string
 	 */
 	public function getColumn() {
-		return $this->properties['col'];
+		return $this->col;
 	}
 
 	/**
@@ -79,7 +99,7 @@ class TEIShredder_XMLChunk {
 	 * @return string
 	 */
 	public function getPlaintext() {
-		return $this->properties['plaintext'];
+		return $this->plaintext;
 	}
 
 	/**
@@ -87,7 +107,7 @@ class TEIShredder_XMLChunk {
 	 * @return string
 	 */
 	public function getXML() {
-		return $this->properties['xml'];
+		return $this->xml;
 	}
 
 	/**
@@ -96,10 +116,7 @@ class TEIShredder_XMLChunk {
 	 * @return string
 	 */
 	public function getWellFormedXML() {
-		$xml = $this->properties['prestack'].
-		       $this->properties['xml'].
-		       $this->properties['poststack'];
-		return str_replace("\r", "\n", str_replace("\r\n", "\n", $xml));
+		return str_replace(array("\r\n", "\n"), "\n", $this->prestack.$this->xml.$this->poststack);
 	}
 
 }
