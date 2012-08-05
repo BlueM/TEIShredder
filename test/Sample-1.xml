@@ -29,7 +29,7 @@
   			<p>The pages in this foreword have Roman page numbers, just to demonstrate the @n attribute is independent from the page numbering.</p>
 
  	 		<pb xml:id="page-02" n="II" />
-			<p>For demonstration purposes, we include these few lines of verse from the beginning of “Macbeth”, written by <rs type="person" key="http://d-nb.info/gnd/118613723">William Shakespeare</rs>:</p>
+			<p>For demonstration purposes, we include these few lines of verse from the beginning of “Macbeth”, written by <rs type="person" key="http://d-nb.info/gnd/118613723" xml:id="rs01">William Shakespeare</rs>:</p>
 			<lg>
 			<l>When shall we three meet again?</l>
 			<l>In thunder, lightning, or in rain?</l>
@@ -62,10 +62,27 @@
 
   		<div>
   			<head>Named entities</head>
-			<p><rs type="person" key="http://d-nb.info/gnd/118613723">William Shakespeare</rs> was mentioned earlier in this document, but to get a little more content to play with, we add a few more people: <rs type="person" key="http://d-nb.info/gnd/11879440X">John Montagu, the 4th Earl of Sandwich</rs> (and alleged inventor of the Sandwich), <rs type="person" key="http://d-nb.info/gnd/159981727">Tim Berners-Lee</rs> and <rs type="person" key="http://d-nb.info/gnd/118802976">Alan Turing</rs>.</p>
+			<p><rs type="person" key="http://d-nb.info/gnd/118613723" xml:id="rs02">William Shakespeare</rs> was mentioned earlier in this document, but to get a little more content to play with, we add a few more people: <rs type="person" key="http://d-nb.info/gnd/11879440X" xml:id="rs03">John Montagu, the 4th Earl of Sandwich</rs> (and alleged inventor of the Sandwich), <rs type="person" key="http://d-nb.info/gnd/159981727" xml:id="rs04">Tim Berners-Lee</rs> and <rs type="person" key="http://d-nb.info/gnd/118802976" xml:id="rs05">Alan Turing</rs>.</p>
 
   			<pb xml:id="page-07" n="5"/>
 			<p>And another one.</p>
+
+		</div>
+
+ 		<pb xml:id="page-08" n="6"/>
+
+  		<div>
+  			<head>@index</head>
+			<p>If we want to, we can also index the &lt;index&gt; element. This element can, for instance, be used to define a <index indexName="glossary" xml:id="index01">term</index> for a glossary.</p>
+
+		</div>
+
+ 		<pb xml:id="page-09" n="7"/>
+
+  		<div>
+  			<head>Handling of &lt;sic&gt;, &lt;del&gt; etc.</head>
+			<p>Certain tags are exluded when extracting parts of the text. For instance, consider the following code:<lb /><rs type="person" key="http://d-nb.info/gnd/118613723" xml:id="rs06"><choice><sic>Shakspear</sic><corr>Shakespeare</corr></choice></rs>. Here, we have an obvious error in the text (marked using &lt;sic&gt;) and its correction. When indexing, TEIShredder will drop the &lt;sic&gt;...&lt;/sic&gt; part of the text. The same is true for elements &lt;del&gt; and &lt;orig&gt;.</p>
+			<p>If you don’t like this behaviour, you can modify the public class member TEIShredder_Indexer_Extractor::$ignorabletags.</p>
 
 		</div>
 
