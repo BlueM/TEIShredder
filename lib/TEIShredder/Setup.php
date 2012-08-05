@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Service locator class whose instances are to be passed to
- * a number of other TEIShredder classes.
+ * Service locator and configuration class.
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
@@ -15,11 +14,6 @@
 class TEIShredder_Setup {
 
 	/**
-	 * @var bool
-	 */
-	public $verbose = false;
-
-	/**
 	 * Database table prefix.
 	 * @var string
 	 */
@@ -29,12 +23,14 @@ class TEIShredder_Setup {
 	 * Callback function/method/Closure for extracting the
 	 * title from a given piece of TEI.
 	 * @var string|array|Closure
+	 * @todo This is only used by the chunker. Move out of here.
 	 */
 	protected $titleCallback;
 
 	/**
 	 * Callback function/method/Closure for converting to plaintext
 	 * @var string|array|Closure
+	 * @todo This is only used by the chunker and the extractor. Move out of here.
 	 */
 	protected $plaintextCallback;
 

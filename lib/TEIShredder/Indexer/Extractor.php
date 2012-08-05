@@ -138,13 +138,6 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 		if ('pb' == $this->r->localName) {
 			// Increase the page number
 			$this->page ++;
-			if ($this->setup->verbose) {
-				$msg = "Page ".$this->page;
-				if ('' != $idattr = $this->r->getAttribute('xml:id')) {
-					$msg .= " @xml:id=$idattr";
-				}
-				fwrite(STDERR, $msg."\n");
-			}
 		}
 
 		// Save the element's xml:id attribute (if it exists)
@@ -287,12 +280,6 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 	 */
 	protected function save() {
 
-		if ($this->setup->verbose) {
-			fwrite(STDERR, "Start saving\n");
-		}
-
-		$count = 0;
-
 		$sth = $this->setup->database->prepare(
 			'INSERT INTO '.$this->setup->prefix.'notation'.
 			' (xmlid, page, chunk, domain, object, notation, context, container,'.
@@ -360,10 +347,6 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 						substr(md5(mb_convert_case(trim($notation), MB_CASE_LOWER)), 0, 8),
 					)
 				);
-			}
-
-			if ($this->setup->verbose) {
-				fwrite(STDERR, "$count\n");
 			}
 		}
 	}
