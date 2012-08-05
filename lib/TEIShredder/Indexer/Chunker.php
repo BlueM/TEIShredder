@@ -59,8 +59,8 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	 * elements, i.e. after which whitespace is inserted
 	 * @var array Indexed array of element names
 	 */
-	static $blocktags = array('p', 'pb', 'div', 'milestone', 'figure',
-	                          'text', 'body', 'argument', 'lb', 'head');
+	protected $blocktags = array('p', 'pb', 'div', 'milestone', 'figure',
+	                             'text', 'body', 'argument', 'lb', 'head');
 
 	/**
 	 * Variable used to collect current chunk's contents
@@ -162,7 +162,7 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 		$string = $this->r->nodeOpenString();
 
 		$this->xml .= $string;
-		if (in_array($this->r->localName, self::$blocktags)) {
+		if (in_array($this->r->localName, $this->blocktags)) {
 			$this->xml .= "\n";
 		}
 
@@ -242,7 +242,7 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 		if ($this->currentChunk and
 			!in_array($this->r->localName, self::$nostacktags)) {
 			$this->xml .= '</'.$this->r->localName.'>';
-			if (in_array($this->r->localName, self::$blocktags)) {
+			if (in_array($this->r->localName, $this->blocktags)) {
 				$this->xml .= "\n";
 			}
 		}
@@ -353,7 +353,6 @@ class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
 	protected function preProcessAction() {
 		// Empty the tables
 		$db = $this->setup->database;
-#		echo '? '.$db->inTransaction()." ?\n";
 		$prefix = $this->setup->prefix;
 		$db->exec('DELETE FROM '.$prefix.'page');
 		$db->exec("DELETE FROM ".$prefix.'xmlchunk');
