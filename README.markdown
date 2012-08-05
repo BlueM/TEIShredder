@@ -56,4 +56,4 @@ Conventions / expectations
 * There must not be more than one &lt;titlePart&gt; element in each volume that fulfills to the abovementioned conditions.
 * Text structure is encoded by nested &lt;div&gt; elements with &lt;head&gt; containing the section title.
 * Currently, columns are expected to be indicated by &lt;milestone/&gt; elements, where the @unit attribute contains the column specification (something like “left”, “2” or similar value). This will change!
-
+* TEIShredder expects any element that should be indexed to have an @xml:id attribute, which means that elements without one will not be indexed. (Indexing such an element would be useless, as it could not be addressed, anyway.)
