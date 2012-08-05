@@ -40,10 +40,32 @@ class TEIShredder_Indexer_ExtractorTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @depends testCreatingAnExtractor
+	 * @expectedException InvalidArgumentException
+	 */
+	function tryingToSetAnInvalidElementCallbackThrowsAnException(TEIShredder_Indexer_Extractor $extractor) {
+		$extractor->setElementCallback('pb', 'invalid');
+	}
+
+	/**
+	 * @test
+	 * @depends testCreatingAnExtractor
 	 */
 	function testRunningAnExtractor(TEIShredder_Indexer_Extractor $extractor) {
+
+		// Set an element callback for <index> tags
+		$extractor->setElementCallback('index', function(XMLReader $r) {
+			// For the purpose of this test, we simply return the markup-less
+			// content of the tag
+			return array(
+				'data'=>$r->readString(),
+				'attrn'=>'',
+				'attrtargetend'=>'',
+			);
+		});
+
 		$extractor->process();
 	}
+
 
 }
 

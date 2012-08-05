@@ -13,23 +13,43 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 	/**
 	 * Maximum number of characters to use for the context before a match and
 	 * the context behind a match.
-	 * #todo Move to setup class
 	 * @var int
 	 */
 	public $contextlen = 100;
 
 	/**
 	 * String to use for marking omissions in a notation's context
-	 * #todo Move to setup class
 	 * @var string
 	 */
 	public $omissionStr = "\342\200\246";
 
 	/**
-	 * #todo
-	 * @var $elementCallbacks
+	 * Callbacks (function, method or closure) for elements.
+	 * @var array Associative array containing element name=>callback pairs
 	 */
 	public $elementCallbacks = array();
+
+	/**
+	 * Array of elements that are regarded as distinct text containers
+	 * @var string[] Indexed array of element names
+	 * @todo Move to setup class?
+	 */
+	public $containertags = array('l', 'p', 'head', 'note', 'docImprint',
+	                                     'byLine', 'titlePart', 'byline', 'item');
+
+	/**
+	 * Text that's inside these tags will not be included in the
+	 * notations' context strings
+	 * @var string[]
+	 */
+	public $ignorabletags = array('sic', 'del', 'orig');
+
+	/**
+	 * The tag that we're interested in; the one whose occurrences and
+	 * attributes should be extracted
+	 * @var string
+	 */
+	public $notationtag = 'rs';
 
 	/**
 	 * Keeps track of whether we are currently inside a <figure> tag or
@@ -88,36 +108,34 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 	protected $containerids = array();
 
 	/**
-	 * Indexed array that contains the container name / description,
-	 * such as the tag name or another arbitrary name given
+	 * Indexed array that contains the container name/description,
+	 * such as the tag name or another arbitrary name.
 	 * @var array
 	 */
 	protected $containerTypes = array();
 
 	/**
-	 * Array of elements that are regarded as distinct text containers
-	 * @var string[] Indexed array of element names
-	 * #todo Move to setup class
+	 * Prepared statment to be used by saveId()
+	 * @var PDOStatement
 	 */
-	static $containertags = array('l', 'p', 'head', 'note', 'docImprint',
-	                              'byLine', 'titlePart', 'byline', 'item');
+	protected $insertstm;
 
 	/**
-	 * Text that's inside these tags will not be included in the
-	 * notations' context strings
-	 * @var string[]
+	 *
+	 * @param TEIShredder_Setup $setup
+	 * @param string $xml
 	 */
-	static $ignorabletags = array('sic', 'del', 'orig');
+	public function __construct(TEIShredder_Setup $setup, $xml) {
+		parent::__construct($setup, $xml);
+		$this->insertstm = $this->setup->database->prepare(
+			'INSERT INTO '.$this->setup->prefix.'element'.
+			' (xmlid, element, page, chunk, attrn, attrtargetend, data)'.
+			' VALUES (?, ?, ?, ?, ?, ?, ?)'
+		);
+	}
 
 	/**
-	 * The tag that we're interested in; the one whose occurrences and
-	 * attributes should be extracted
-	 * @var string
-	 */
-	static $notationtag = 'rs';
-
-	/**
-	 * Method that's called when the readerstream reaches an opening or empty tag.
+	 * Method that's called when the stream reaches an opening or empty tag.
 	 * @return mixed
 	 * @throws RuntimeException
 	 */
@@ -162,7 +180,7 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 			$this->insideFigure ++;
 		}
 
-		if (in_array($this->r->localName, self::$containertags)) {
+		if (in_array($this->r->localName, $this->containertags)) {
 			$index ++;
 			$this->containerStack[] = $index;
 			$this->currContainerIndex = end($this->containerStack);
@@ -190,7 +208,7 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 			}
 		}
 
-		if ($this->r->localName != self::$notationtag) {
+		if ($this->r->localName != $this->notationtag) {
 			return;
 		}
 
@@ -233,8 +251,7 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 			return;
 		}
 
-		$tag = end($this->elementStack);
-		if (in_array($tag, self::$ignorabletags)) {
+		if (in_array(end($this->elementStack), $this->ignorabletags)) {
 			return;
 		}
 
@@ -253,12 +270,12 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 		// Update the elements stack
 		array_pop($this->elementStack);
 
-		if (in_array($this->r->localName, self::$containertags)) {
+		if (in_array($this->r->localName, $this->containertags)) {
 			array_pop($this->containerStack);
 			$this->currContainerIndex = end($this->containerStack);
 		}
 
-		if ($this->r->localName == self::$notationtag) {
+		if ($this->r->localName == $this->notationtag) {
 			// Closing notation tag
 			$this->containers[$this->currContainerIndex] .= '</'.$this->currNotatIndex.'>';
 			array_pop($this->notationStack);
@@ -296,9 +313,7 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 			$context = $this->containers[$tag['container']];
 
 			// Insert marker for "own" notation, then remove other notations
-			$id = $tag['id'];
-			$context = str_replace("<$id>", '###', $context);
-			$context = str_replace("</$id>", '###', $context);
+			$context = str_replace(array('<'.$tag['id'].'>', '</'.$tag['id'].'>'), '###', $context);
 			$context = preg_replace('#</?\d+>#', '', $context);
 
 			// Convert the context to plaintext
@@ -359,32 +374,19 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 	 */
 	protected function saveId() {
 
-		static $sth = null;
-
 		if ('' == $idattr = $this->r->getAttribute('xml:id')) {
 			// No xml:id attribute >> nothing to do
 			return;
 		}
 
 		// Add attributes we need for various purposes
+		$n = $targetend = $data = '';
 		if (isset($this->elementCallbacks[$this->r->localName])) {
-			$tmp = call_user_func($this->elementCallbacks[$this->r->localName], $this->r);
-			$n = $tmp['n'];
-			$targetend = $tmp['targetend'];
-			$data = $tmp['data'];
-		} else {
-			$n = $targetend = $data = '';
+			// Set $n, $targetend and $data from a callback return value
+			extract(call_user_func($this->elementCallbacks[$this->r->localName], $this->r));
 		}
 
-		if (null === $sth) {
-			$sth = $this->setup->database->prepare(
-				'INSERT INTO '.$this->setup->prefix.'element'.
-				' (xmlid, element, page, chunk, attrn, attrtargetend, data)'.
-				' VALUES (?, ?, ?, ?, ?, ?, ?)'
-			);
-		}
-
-		$sth->execute(array(
+		$this->insertstm->execute(array(
 			$idattr,
 			$this->r->localName,
 			(int)$this->page,
@@ -397,6 +399,11 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 
 	/**
 	 * Defines a callback for specific elements.
+	 *
+	 * This callback is expected to return an array with three keys: "data" is arbitrary
+	 * data to index, "attrn" is the value of the "n" attribute (if present) and "attrtargetend"
+	 * (the value of the @targetEnd attribute). The callback is given one argument, which is
+	 * an XMLReader instance of the node.
 	 * @param string $element
 	 * @param mixed $callback
 	 * @throws InvalidArgumentException
