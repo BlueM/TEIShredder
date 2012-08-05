@@ -97,7 +97,7 @@ class TEIShredder_XMLReaderTest extends PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * @expectedException InvalidArgumentException
+	 * @expectedException RuntimeException
 	 */
 	function tryingToGetTheOpeningTagForAClosingTagThrowsAnException() {
 		$this->reader->xml('<root><b></b></root>');
