@@ -14,13 +14,13 @@ $xml = file_get_contents(__DIR__.'/test/Sample-1.xml');
 $db = new PDO('sqlite:'.__DIR__.'/test.sqlite');
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-$setup = new TEIShredder_Setup($db);
+$setup = new \TEIShredder\Setup($db);
 
 // Create chunks and structure
-$chunker = new TEIShredder_Indexer_Chunker($setup, $xml);
+$chunker = new \TEIShredder\Indexer_Chunker($setup, $xml);
 $chunker->process();
 
 // Extract more information
-$extractor = new TEIShredder_Indexer_Extractor($setup, $xml);
+$extractor = new \TEIShredder\Indexer_Extractor($setup, $xml);
 $extractor->process();
 

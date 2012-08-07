@@ -1,5 +1,10 @@
 <?php
 
+namespace TEIShredder;
+
+use \InvalidArgumentException;
+use \RuntimeException;
+
 /**
  * Base class for processing a TEI document by stream-reading it
  * @package TEIShredder
@@ -7,11 +12,11 @@
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
-abstract class TEIShredder_Indexer {
+abstract class Indexer {
 
 	/**
 	 * Configuration
-	 * @var TEIShredder_Setup
+	 * @var Setup
 	 */
 	protected $setup;
 
@@ -60,7 +65,7 @@ abstract class TEIShredder_Indexer {
 
 	/**
 	 * XMLReader instance
-	 * @var TEIShredder_XMLReader
+	 * @var XMLReader
 	 */
 	protected $r;
 
@@ -84,17 +89,17 @@ abstract class TEIShredder_Indexer {
 
 	/**
 	 * Constructor
-	 * @param TEIShredder_Setup $setup
+	 * @param Setup $setup
 	 * @param string $xml Input XML
 	 * @throws InvalidArgumentException
 	 * @throws RuntimeException
 	 */
-	public function __construct(TEIShredder_Setup $setup, $xml) {
+	public function __construct(Setup $setup, $xml) {
 
 		$this->setup = $setup;
 
 		// Create the XML reader
-		$this->r = new TEIShredder_XMLReader;
+		$this->r = new XMLReader;
 		$this->r->xml($xml);
 	}
 

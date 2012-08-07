@@ -1,5 +1,10 @@
 <?php
 
+namespace TEIShredder;
+
+use \TEIShredder;
+use \PDO;
+
 require_once __DIR__.'/../bootstrap.php';
 
 /**
@@ -7,16 +12,14 @@ require_once __DIR__.'/../bootstrap.php';
  * @package TEIShredder
  * @subpackage Tests
  */
-class TEIShredder_SetupTest extends PHPUnit_Framework_TestCase {
+class SetupTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
 	 */
 	function creatingAnObjectWithDefaultCallbacksWorks() {
-		$setup = new TEIShredder_Setup(
-			new PDO('sqlite::memory:')
-		);
-		$this->assertInstanceOf('TEIShredder_Setup', $setup);
+		$setup = new Setup(new PDO('sqlite::memory:'));
+		$this->assertInstanceOf('\\'.__NAMESPACE__.'\\Setup', $setup);
 		return $setup;
 	}
 
@@ -26,23 +29,19 @@ class TEIShredder_SetupTest extends PHPUnit_Framework_TestCase {
 	 * @expectedExceptionMessage Plaintext conversion callback is invalid
 	 */
 	function tryingToCreateAnObjectWithAnInvalidPlaintextCallbackThrowsAnException() {
-		$setup = new TEIShredder_Setup(
-			new PDO('sqlite::memory:'),
-			'',
-			'abc'
-		);
+		new Setup(new PDO('sqlite::memory:'), '', 'abc');
 	}
 
 	/**
 	 * @test
 	 */
 	function creatingAnObjectWithACustomPlaintextCallbacksWorks() {
-		$setup = new TEIShredder_Setup(
+		$setup = new Setup(
 			new PDO('sqlite::memory:'),
 			'',
 			function($str) { return $str; } // Dummy plaintext conversion callback closure
 		);
-		$this->assertInstanceOf('TEIShredder_Setup', $setup);
+		$this->assertInstanceOf('\\'.__NAMESPACE__.'\\Setup', $setup);
 	}
 
 	/**
@@ -51,25 +50,20 @@ class TEIShredder_SetupTest extends PHPUnit_Framework_TestCase {
 	 * @expectedExceptionMessage Title extraction callback is invalid
 	 */
 	function tryingToCreateAnObjectWithAnInvalidTitleExtractionCallbackThrowsAnException() {
-		$setup = new TEIShredder_Setup(
-			new PDO('sqlite::memory:'),
-			'',
-			null,
-			'abc'
-		);
+		new Setup(new PDO('sqlite::memory:'), '', null, 'abc');
 	}
 
 	/**
 	 * @test
 	 */
 	function creatingAnObjectWithACustomTitleExtractionCallbacksWorks() {
-		$setup = new TEIShredder_Setup(
+		$setup = new Setup(
 			new PDO('sqlite::memory:'),
 			'',
 			null,
 			function($str) { return $str; } // Dummy title extraction callback closure
 		);
-		$this->assertInstanceOf('TEIShredder_Setup', $setup);
+		$this->assertInstanceOf('\\'.__NAMESPACE__.'\\Setup', $setup);
 	}
 
 	/**
@@ -78,7 +72,7 @@ class TEIShredder_SetupTest extends PHPUnit_Framework_TestCase {
 	 * @expectedException UnexpectedValueException
 	 * @expectedExceptionMessage Unexpected member name
 	 */
-	function tryingToGetAnInvalidClassMemberThrowsAnException(TEIShredder_Setup $setup) {
+	function tryingToGetAnInvalidClassMemberThrowsAnException(Setup $setup) {
 		$setup->foobar;
 	}
 }

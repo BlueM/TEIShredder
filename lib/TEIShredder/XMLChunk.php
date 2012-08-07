@@ -1,5 +1,9 @@
 <?php
 
+namespace TEIShredder;
+
+use \PDO;
+
 /**
  * Class for retrieving well-formed parts from the source TEI document.
  * @package TEIShredder
@@ -7,7 +11,7 @@
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
-class TEIShredder_XMLChunk {
+class XMLChunk {
 
 	/**
 	 * Chunk ID
@@ -54,11 +58,11 @@ class TEIShredder_XMLChunk {
 
 	/**
 	 * Returns all chunks that are on a given page.
-	 * @param TEIShredder_Setup $setup
+	 * @param Setup $setup
 	 * @param int $page Page number
-	 * @return TEIShredder_XMLChunk[]
+	 * @return XMLChunk[]
 	 */
-	public static function fetchObjectsByPageNumber(TEIShredder_Setup $setup, $page) {
+	public static function fetchObjectsByPageNumber(Setup $setup, $page) {
 		$stm = $setup->database->prepare(
 			"SELECT ?, eid.id, eid.col, eid.prestack, eid.xml, eid.poststack, eid.section, eid.plaintext
 		     FROM ".$setup->prefix."xmlchunk AS eid

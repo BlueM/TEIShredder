@@ -1,5 +1,12 @@
 <?php
 
+namespace TEIShredder;
+
+use \PDO;
+use \PDOStatement;
+use \InvalidArgumentException;
+use \RuntimeException;
+
 /**
  * Class for extracting some tags from a TEI Lite document and for
  * transferring them to a RDBMS.
@@ -8,7 +15,7 @@
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
-class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
+class Indexer_Extractor extends Indexer {
 
 	/**
 	 * Maximum number of characters to use for the context before a match and
@@ -122,10 +129,10 @@ class TEIShredder_Indexer_Extractor extends TEIShredder_Indexer {
 
 	/**
 	 *
-	 * @param TEIShredder_Setup $setup
+	 * @param Setup $setup
 	 * @param string $xml
 	 */
-	public function __construct(TEIShredder_Setup $setup, $xml) {
+	public function __construct(Setup $setup, $xml) {
 		parent::__construct($setup, $xml);
 		$this->insertstm = $this->setup->database->prepare(
 			'INSERT INTO '.$this->setup->prefix.'element'.

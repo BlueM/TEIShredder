@@ -20,7 +20,7 @@ function prepare_default_data() {
 	$pdo = new PDO('sqlite::memory:');
 	$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-	$setup = new TEIShredder_Setup(
+	$setup = new \TEIShredder\Setup(
 		$pdo,
 		'prefix_'
 	);

@@ -1,5 +1,10 @@
 <?php
 
+namespace TEIShredder;
+
+use \TEIShredder;
+#use \RuntimeException;
+
 require_once __DIR__.'/../../bootstrap.php';
 
 /**
@@ -7,7 +12,7 @@ require_once __DIR__.'/../../bootstrap.php';
  * @package TEIShredder
  * @subpackage Tests
  */
-class TEIShredder_Indexer_ExtractorTest extends PHPUnit_Framework_TestCase {
+class Indexer_ExtractorTest extends \PHPUnit_Framework_TestCase {
 
 	var $setup;
 
@@ -29,11 +34,11 @@ class TEIShredder_Indexer_ExtractorTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function testCreatingAnExtractor() {
-		$extractor = new TEIShredder_Indexer_Extractor(
+		$extractor = new Indexer_Extractor(
 			$this->setup,
 			file_get_contents(TESTDIR.'/Sample-1.xml')
 		);
-		$this->assertInstanceOf('TEIShredder_Indexer_Extractor', $extractor);
+		$this->assertInstanceOf('\\'.__NAMESPACE__.'\\Indexer_Extractor', $extractor);
 		return $extractor;
 	}
 
@@ -42,7 +47,7 @@ class TEIShredder_Indexer_ExtractorTest extends PHPUnit_Framework_TestCase {
 	 * @depends testCreatingAnExtractor
 	 * @expectedException InvalidArgumentException
 	 */
-	function tryingToSetAnInvalidElementCallbackThrowsAnException(TEIShredder_Indexer_Extractor $extractor) {
+	function tryingToSetAnInvalidElementCallbackThrowsAnException(Indexer_Extractor $extractor) {
 		$extractor->setElementCallback('pb', 'invalid');
 	}
 
@@ -50,7 +55,7 @@ class TEIShredder_Indexer_ExtractorTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 * @depends testCreatingAnExtractor
 	 */
-	function testRunningAnExtractor(TEIShredder_Indexer_Extractor $extractor) {
+	function testRunningAnExtractor(Indexer_Extractor $extractor) {
 
 		// Set an element callback for <index> tags
 		$extractor->setElementCallback('index', function(XMLReader $r) {

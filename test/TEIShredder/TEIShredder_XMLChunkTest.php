@@ -1,5 +1,11 @@
 <?php
 
+namespace TEIShredder;
+
+use \TEIShredder;
+use \SimpleXMLElement;
+#use \RuntimeException;
+
 require_once __DIR__.'/../bootstrap.php';
 
 /**
@@ -7,7 +13,7 @@ require_once __DIR__.'/../bootstrap.php';
  * @package TEIShredder
  * @subpackage Tests
  */
-class TEIShredder_XMLChunkTest extends PHPUnit_Framework_TestCase {
+class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 
 	var $setup;
 
@@ -16,7 +22,7 @@ class TEIShredder_XMLChunkTest extends PHPUnit_Framework_TestCase {
 	 */
 	function setUp() {
 		$this->setup = prepare_default_data();
-		$chunker = new TEIShredder_Indexer_Chunker(
+		$chunker = new Indexer_Chunker(
 			$this->setup,
 			file_get_contents(TESTDIR.'/Sample-1.xml')
 		);
@@ -32,13 +38,13 @@ class TEIShredder_XMLChunkTest extends PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * @return TEIShredder_XMLChunk
+	 * @return XMLChunk
 	 */
 	function getTheChunksForPage2() {
-		$chunks = TEIShredder_XMLChunk::fetchObjectsByPageNumber($this->setup, 2);
+		$chunks = XMLChunk::fetchObjectsByPageNumber($this->setup, 2);
 		$this->assertInternalType('array', $chunks);
 		$this->assertSame(1, count($chunks));
-		$this->assertInstanceOf('TEIShredder_XMLChunk', $chunks[0]);
+		$this->assertInstanceOf('\\'.__NAMESPACE__.'\\XMLChunk', $chunks[0]);
 		return $chunks[0];
 	}
 
@@ -46,7 +52,7 @@ class TEIShredder_XMLChunkTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 * @depends getTheChunksForPage2
 	 */
-	function getTheIdForAChunk(TEIShredder_XMLChunk $chunk) {
+	function getTheIdForAChunk(XMLChunk $chunk) {
 		$this->assertSame(7, $chunk->getId());
 	}
 
@@ -54,16 +60,16 @@ class TEIShredder_XMLChunkTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 * @depends getTheChunksForPage2
 	 */
-	function getTheChunksWellformedXml(TEIShredder_XMLChunk $chunk) {
+	function getTheChunksWellformedXml(XMLChunk $chunk) {
 		$xml = $chunk->getWellFormedXML();
-		$xml = new SimpleXMLElement($xml);
+		new SimpleXMLElement($xml);
 	}
 
 	/**
 	 * @test
 	 * @depends getTheChunksForPage2
 	 */
-	function getTheChunksXml(TEIShredder_XMLChunk $chunk) {
+	function getTheChunksXml(XMLChunk $chunk) {
 		$xml = $chunk->getXML();
 		$this->assertInternalType('string', $xml);
 		// Make sure the XML is really part of the well-formed XML
@@ -74,7 +80,7 @@ class TEIShredder_XMLChunkTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 * @depends getTheChunksForPage2
 	 */
-	function getTheChunksPlaintext(TEIShredder_XMLChunk $chunk) {
+	function getTheChunksPlaintext(XMLChunk $chunk) {
 		$text = $chunk->getPlaintext();
 		$this->assertInternalType('string', $text);
 		$this->assertFalse(strpos($text, '<'));
@@ -84,7 +90,7 @@ class TEIShredder_XMLChunkTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 * @depends getTheChunksForPage2
 	 */
-	function getTheChunksSection(TEIShredder_XMLChunk $chunk) {
+	function getTheChunksSection(XMLChunk $chunk) {
 		$section = $chunk->getSection();
 		$this->assertSame(4, $section);
 	}
@@ -93,7 +99,7 @@ class TEIShredder_XMLChunkTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 * @depends getTheChunksForPage2
 	 */
-	function getTheChunksColumn(TEIShredder_XMLChunk $chunk) {
+	function getTheChunksColumn(XMLChunk $chunk) {
 		$section = $chunk->getColumn();
 		$this->assertInternalType('string', $section);
 		$this->assertSame('', $section);

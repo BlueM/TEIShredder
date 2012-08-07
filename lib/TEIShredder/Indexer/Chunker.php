@@ -1,5 +1,9 @@
 <?php
 
+namespace TEIShredder;
+
+use \RuntimeException;
+
 /**
  * Class for splitting a TEI document in well-formed XML chunks.
  *
@@ -10,7 +14,7 @@
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
-class TEIShredder_Indexer_Chunker extends TEIShredder_Indexer {
+class Indexer_Chunker extends Indexer {
 
 	/**
 	 * String that will be used as title for <titlePage> sections

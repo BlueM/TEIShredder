@@ -1,5 +1,10 @@
 <?php
 
+namespace TEIShredder;
+
+use \TEIShredder;
+use \RuntimeException;
+
 require_once __DIR__.'/../bootstrap.php';
 
 /**
@@ -7,7 +12,7 @@ require_once __DIR__.'/../bootstrap.php';
  * @package TEIShredder
  * @subpackage Tests
  */
-class TEIShredder_XMLReaderTest extends PHPUnit_Framework_TestCase {
+class XMLReaderTest extends \PHPUnit_Framework_TestCase {
 
 	var $reader;
 
@@ -15,7 +20,7 @@ class TEIShredder_XMLReaderTest extends PHPUnit_Framework_TestCase {
 	 * Sets up the fixture
 	 */
 	function setUp() {
-		$this->reader = new TEIShredder_XMLReader;
+		$this->reader = new XMLReader;
 	}
 
 	/**
@@ -43,13 +48,13 @@ class TEIShredder_XMLReaderTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function getTheOpeningTagForAnEmptyNodeWithAttributesAndNamespace() {
-		$this->reader->xml('<root xmlns:abc="http://example.org/abc"><b foo="bar" x="y" abc:bla="bla" /></root>');
+		$this->reader->xml('<root xmlns:abc="http://example.org/abc"><'.'b foo="bar" x="y" abc:bla="bla" /></root>');
 		while ($this->reader->read()) {
 			if ('root' == $this->reader->localName or
 			    XMLReader::ELEMENT != $this->reader->nodeType) {
 				continue;
 			}
-			$this->assertSame('<b foo="bar" x="y" abc:bla="bla"/>', $this->reader->nodeOpenString());
+			$this->assertSame('<'.'b foo="bar" x="y" abc:bla="bla"/>', $this->reader->nodeOpenString());
 		}
 	}
 
@@ -71,13 +76,13 @@ class TEIShredder_XMLReaderTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function getTheOpeningTagForANonEmptyNodeWithAttributesAndNamespace() {
-		$this->reader->xml('<root xmlns:abc="http://example.org/abc"><b foo="bar" x="y" abc:bla="bla">Hallo Welt</b></root>');
+		$this->reader->xml('<root xmlns:abc="http://example.org/abc"><'.'b foo="bar" x="y" abc:bla="bla">Hallo Welt</b></root>');
 		while ($this->reader->read()) {
 			if ('root' == $this->reader->localName or
 			    XMLReader::ELEMENT != $this->reader->nodeType) {
 				continue;
 			}
-			$this->assertSame('<b foo="bar" x="y" abc:bla="bla">', $this->reader->nodeOpenString());
+			$this->assertSame('<'.'b foo="bar" x="y" abc:bla="bla">', $this->reader->nodeOpenString());
 		}
 	}
 

@@ -1,5 +1,10 @@
 <?php
 
+namespace TEIShredder;
+
+use \PDO;
+use \InvalidArgumentException;
+
 /**
  * Class for obtaining info on the source XML document, including
  * text structure, page numbers, page names/notations etc.
@@ -8,15 +13,15 @@
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
-class TEIShredder_Text {
+class Text {
 
 	/**
 	 * Returns the numerical page number for an xml:id attribute value.
-	 * @param TEIShredder_Setup $setup
+	 * @param Setup $setup
 	 * @param string $elmntid XML element ID
 	 * @return int|bool Page number or false, if there's no such xml:id.
 	 */
-	public static function fetchPageNumberForElementId(TEIShredder_Setup $setup, $elmntid) {
+	public static function fetchPageNumberForElementId(Setup $setup, $elmntid) {
 		$sth = $setup->database->query(
 			'SELECT page FROM '.$setup->prefix.'element WHERE xmlid = '.$setup->database->quote($elmntid)
 		);
@@ -25,13 +30,13 @@ class TEIShredder_Text {
 
 	/**
 	 * Returns all structure entries/sections as associative array.
-	 * @param TEIShredder_Setup $setup
+	 * @param Setup $setup
 	 * @param int $volume Volume number.
 	 * @return array Indexed array of associative arrays with keys "id", "page",
 	 *               "title", "xmlid", "level", and moreover "children", "first",
 	 *               "last" (the last three keys being boolean)
 	 */
-	public static function fetchStructure(TEIShredder_Setup $setup, $volume) {
+	public static function fetchStructure(Setup $setup, $volume) {
 		$db = $setup->database;
 		$res = $db->query("SELECT id, page, title, level, xmlid ".
 		                  "FROM ".$setup->prefix.'structure '.
@@ -90,11 +95,11 @@ class TEIShredder_Text {
 	/**
 	 * Returns the total number of pages in the source text, either for
 	 * all volumes or for a specific volume
-	 * @param TEIShredder_Setup $setup
+	 * @param Setup $setup
 	 * @param int $volume [optional] Volume number
 	 * @return int Number of pages
 	 */
-	public static function fetchNumberOfPages(TEIShredder_Setup $setup, $volume = null) {
+	public static function fetchNumberOfPages(Setup $setup, $volume = null) {
 		$db = $setup->database;
 		$prefix = $setup->prefix;
 		$query = 'SELECT MAX(page) FROM '.$prefix.'page';
@@ -108,12 +113,12 @@ class TEIShredder_Text {
 	/**
 	 * Returns all page numbers and corresponding page notations of
 	 * the given volume.
-	 * @param TEIShredder_Setup $setup
+	 * @param Setup $setup
 	 * @param int $volume [optional] Volume number.
 	 * @return array Associative array with the page number as key and the page
 	 *               notation as value.
 	 */
-	public static function fetchPageNotations(TEIShredder_Setup $setup, $volume = null) {
+	public static function fetchPageNotations(Setup $setup, $volume = null) {
 		$db = $setup->database;
 		$prefix = $setup->prefix;
 		$notations = array();
@@ -128,12 +133,12 @@ class TEIShredder_Text {
 	/**
 	 * Returns the xml:id value(s) of the <pb /> element, the volume number and
 	 * values of @n and @rend attributes of the page with the given page number.
-	 * @param TEIShredder_Setup $setup
+	 * @param Setup $setup
 	 * @param int $pagenum Internal page number
 	 * @return array Array with indexes 0 = volume, 1 = xml:id value, 2 = page name.
 	 * @throws InvalidArgumentException
 	 */
-	public static function fetchPageData(TEIShredder_Setup $setup, $pagenum) {
+	public static function fetchPageData(Setup $setup, $pagenum) {
 		$db = $setup->database;
 		$sth = $db->query(
 			'SELECT volume, xmlid, n, rend FROM '.$setup->prefix."page WHERE page = ".$db->quote($pagenum)
@@ -146,11 +151,11 @@ class TEIShredder_Text {
 
 	/**
 	 * Returns the volumes' numbers and titles.
-	 * @param TEIShredder_Setup $setup
+	 * @param Setup $setup
 	 * @return array Associative array containing number=>array() pairs,
 	 *               where the array has keys "title" and "pagenum"
 	 */
-	public static function fetchVolumes(TEIShredder_Setup $setup) {
+	public static function fetchVolumes(Setup $setup) {
 		$volumes = array();
 		$res = $setup->database->query(
 			'SELECT number, title, pagenum FROM '.$setup->prefix.'volume ORDER BY number'
@@ -166,12 +171,12 @@ class TEIShredder_Text {
 
 	/**
 	 * Returns the page's unique notation/title by its unique page number
-	 * @param TEIShredder_Setup $setup
+	 * @param Setup $setup
 	 * @param array $nums Indexed array of page numbers.
 	 * @return array Associative array, sorted by the page number, with
 	 *               the page number as key and @n as the value.
 	 */
-	public static function fetchNAttributesForPageNumbers(TEIShredder_Setup $setup, array $nums) {
+	public static function fetchNAttributesForPageNumbers(Setup $setup, array $nums) {
 		$res = $setup->database->query(
 			"SELECT page, n FROM ".$setup->prefix."page ".
 			"WHERE page IN (".join(', ', array_map('intval', $nums)).") ORDER BY page"
@@ -185,7 +190,7 @@ class TEIShredder_Text {
 
 	/**
 	 * Returns info on the given section, on the previous and next section
-	 * @param TEIShredder_Setup $setup
+	 * @param Setup $setup
 	 * @param int $section Section ID
 	 * @return array Associative array with keys "this", "prev" and "next",
 	 *               each one being an associative array itself. Additionally,
@@ -193,7 +198,7 @@ class TEIShredder_Text {
 	 *               the first page in the current volume.
 	 * @throws InvalidArgumentException
 	 */
-	public static function fetchStructureDataForSection(TEIShredder_Setup $setup, $section) {
+	public static function fetchStructureDataForSection(Setup $setup, $section) {
 		$db = $setup->database;
 		$structtable = $setup->prefix.'structure';
 		$pagetable = $setup->prefix.'page';

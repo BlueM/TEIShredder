@@ -1,5 +1,9 @@
 <?php
 
+namespace TEIShredder;
+
+use \RuntimeException;
+
 /**
  * XMLReader subclass which adds a convenience method.
  * @package TEIShredder
@@ -7,7 +11,7 @@
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
-class TEIShredder_XMLReader extends XMLReader {
+class XMLReader extends \XMLReader {
 
 	/**
 	 * Returns the full open tag for the current element

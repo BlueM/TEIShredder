@@ -1,5 +1,13 @@
 <?php
 
+namespace TEIShredder;
+
+use \PDO;
+use \Closure;
+use \InvalidArgumentException;
+use \SimpleXMLElement;
+use \UnexpectedValueException;
+
 /**
  * Service locator and configuration class.
  * @package TEIShredder
@@ -11,7 +19,7 @@
  * @property $plaintextCallback
  * @property PDO $database
  */
-class TEIShredder_Setup {
+class Setup {
 
 	/**
 	 * Database table prefix.
