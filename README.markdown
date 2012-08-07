@@ -17,7 +17,7 @@ Documentation
 -------------
 There is no end-user documentation yet, but the code is fully documented with PHPDoc-style doc comments.
 
-Status of the project
+State of the project
 ---------------------
 Part of TEIShredder (primarily the indexing) is production-ready, but other parts are fragmentary, missing or inflexible. Personally, I’d suggest waiting some more time before considering to use it, as the API is not yet stable and the expectations regarding the input TEI (see below) will change.
 
