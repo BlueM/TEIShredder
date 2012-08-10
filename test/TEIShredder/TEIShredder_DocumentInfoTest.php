@@ -8,11 +8,11 @@ use \TEIShredder;
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for TEIShredder_Text.
+ * Test class for TEIShredder_DocumentInfo.
  * @package TEIShredder
  * @subpackage Tests
  */
-class TextTest extends \PHPUnit_Framework_TestCase {
+class DocumentInfoTest extends \PHPUnit_Framework_TestCase {
 
 	var $setup;
 
@@ -41,7 +41,7 @@ class TextTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function fetchTheNumberOfPages() {
-		$num = Text::fetchNumberOfPages($this->setup);
+		$num = DocumentInfo::fetchNumberOfPages($this->setup);
 		$this->assertInternalType('int', $num);
 	}
 
@@ -49,7 +49,7 @@ class TextTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function fetchTheNumberOfPagesOfTheFirstVolume() {
-		$num = Text::fetchNumberOfPages($this->setup, 1);
+		$num = DocumentInfo::fetchNumberOfPages($this->setup, 1);
 		$this->assertInternalType('int', $num);
 	}
 
@@ -57,7 +57,7 @@ class TextTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function fetchThePageNotations() {
-		$notations = Text::fetchPageNotations($this->setup);
+		$notations = DocumentInfo::fetchPageNotations($this->setup);
 		$this->assertInternalType('array', $notations);
 	}
 
@@ -67,14 +67,14 @@ class TextTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedExceptionMessage Invalid page number
 	 */
 	function fetchingDataForAPageByItsPagenumberThrowsAnExceptionIfThePageNotExists() {
-		Text::fetchPageData($this->setup, 12345);
+		DocumentInfo::fetchPageData($this->setup, 12345);
 	}
 
 	/**
 	 * @test
 	 */
 	function fetchingDataForAPageByItsPagenumberWorks() {
-		$data = Text::fetchPageData($this->setup, 2);
+		$data = DocumentInfo::fetchPageData($this->setup, 2);
 		$this->assertInternalType('array', $data);
 	}
 
@@ -82,7 +82,7 @@ class TextTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function fetchTheVolumes() {
-		$notations = Text::fetchVolumes($this->setup);
+		$notations = DocumentInfo::fetchVolumes($this->setup);
 		$this->assertInternalType('array', $notations);
 	}
 
@@ -90,7 +90,7 @@ class TextTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function fetchThePageNumberForAnElementId() {
-		$pagenumber = Text::fetchPageNumberForElementId($this->setup, 'p123');
+		$pagenumber = DocumentInfo::fetchPageNumberForElementId($this->setup, 'p123');
 		$this->assertFalse($pagenumber);
 	}
 
@@ -98,7 +98,7 @@ class TextTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function fetchNAttributesForPageNumbers() {
-		$n = Text::fetchNAttributesForPageNumbers($this->setup, array(1, 2, 3));
+		$n = DocumentInfo::fetchNAttributesForPageNumbers($this->setup, array(1, 2, 3));
 		$this->assertInternalType('array', $n);
 	}
 
@@ -106,7 +106,7 @@ class TextTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function fetchTheStructure() {
-		$structure = Text::fetchStructure($this->setup, 1);
+		$structure = DocumentInfo::fetchStructure($this->setup, 1);
 		$this->assertInternalType('array', $structure);
 	}
 
@@ -114,7 +114,7 @@ class TextTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function fetchTheStructureDataForASection() {
- 		$n = Text::fetchStructureDataForSection($this->setup, 5);
+ 		$n = DocumentInfo::fetchStructureDataForSection($this->setup, 5);
  		$this->assertInternalType('array', $n);
 	}
 

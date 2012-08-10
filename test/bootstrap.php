@@ -6,14 +6,14 @@ require_once __DIR__.'/../lib/TEIShredder/Indexer.php';
 require_once __DIR__.'/../lib/TEIShredder/Indexer/Chunker.php';
 require_once __DIR__.'/../lib/TEIShredder/Indexer/Extractor.php';
 require_once __DIR__.'/../lib/TEIShredder/Setup.php';
-require_once __DIR__.'/../lib/TEIShredder/Text.php';
+require_once __DIR__.'/../lib/TEIShredder/DocumentInfo.php';
 require_once __DIR__.'/../lib/TEIShredder/XMLChunk.php';
 require_once __DIR__.'/../lib/TEIShredder/XMLReader.php';
 
 /**
  * Creates a new in-memory SQLite database, creates the default
  * tables and returns it, wrapped in a TEIShredder_Setup instance.
- * @return TEIShredder_Setup
+ * @return \TEIShredder\Setup
  */
 function prepare_default_data() {
 

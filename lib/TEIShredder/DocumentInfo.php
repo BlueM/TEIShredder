@@ -13,7 +13,7 @@ use \InvalidArgumentException;
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
-class Text {
+class DocumentInfo {
 
 	/**
 	 * Returns the numerical page number for an xml:id attribute value.
@@ -170,9 +170,9 @@ class Text {
 	}
 
 	/**
-	 * Returns the page's unique notation/title by its unique page number
+	 * Returns several pages' numbers or titles (whatever @n contains)
 	 * @param Setup $setup
-	 * @param array $nums Indexed array of page numbers.
+	 * @param array|int $nums Indexed array of page numbers.
 	 * @return array Associative array, sorted by the page number, with
 	 *               the page number as key and @n as the value.
 	 */
