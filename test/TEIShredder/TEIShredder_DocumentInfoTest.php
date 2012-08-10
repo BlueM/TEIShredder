@@ -3,7 +3,6 @@
 namespace TEIShredder;
 
 use \TEIShredder;
-#use \RuntimeException;
 
 require_once __DIR__.'/../bootstrap.php';
 
@@ -105,9 +104,33 @@ class DocumentInfoTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	function fetchTheStructure() {
+	function fetchingTheStructureReturnsAnArray() {
 		$structure = DocumentInfo::fetchStructure($this->setup, 1);
 		$this->assertInternalType('array', $structure);
+	}
+
+	/**
+	 * @test
+	 */
+	function forASectionWithSubsectionsTheChildrenFlagIsTrue() {
+		$structure = DocumentInfo::fetchStructure($this->setup, 1);
+		$this->assertTrue($structure[3]['children']);
+	}
+
+	/**
+	 * @test
+	 */
+	function forASectionWithoutSubsectionsTheChildrenFlagIsFalse() {
+		$structure = DocumentInfo::fetchStructure($this->setup, 1);
+		$this->assertFalse($structure[4]['children']);
+	}
+
+	/**
+	 * @test
+	 */
+	function escapedSpecialCharactersInSectionTitlesAreUnescaped() {
+		$structure = DocumentInfo::fetchStructure($this->setup, 1);
+		$this->assertSame('Handling of <sic>, <del> etc.', $structure[7]['title']);
 	}
 
 	/**

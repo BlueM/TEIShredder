@@ -53,10 +53,14 @@
   			<p>And a second paragraph. The text of this second paragraph is so long, …
 
   			<pb xml:id="page-05" n="3"/>
-  			… that it continues on the next page …
+  			… that it continues on the next page</p>
 
   			<pb xml:id="page-06" n="4"/>
-  			… and finally ends on page 4!</p>
+			<div>
+				<head>Chapter 2, subsection 1</head>
+  				<p>Finally, chapter 2 ends on page 4!</p>
+
+			</div>
 
   		</div>
 
