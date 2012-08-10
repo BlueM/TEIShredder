@@ -135,6 +135,15 @@ class DocumentInfoTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
+	 * @expectedException InvalidArgumentException
+	 * @expectedExceptionMessage Invalid section ID
+	 */
+	function tryingTofetchTheStructureDataForAnInvalidSectionThrowsAnException() {
+ 		DocumentInfo::fetchStructureDataForSection($this->setup, 9999);
+	}
+
+	/**
+	 * @test
 	 */
 	function fetchTheStructureDataForASection() {
  		$n = DocumentInfo::fetchStructureDataForSection($this->setup, 5);
