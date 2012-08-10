@@ -52,8 +52,9 @@ class Setup {
 	 * Constructor.
 	 * @param PDO $db
 	 * @param string $prefix
-	 * @param string|array|Closure $ptcallb [optional] Callback for converting
-	 *                             to plaintext. If none given, default: 'strip_tags'
+	 * @param string|array|Closure $ptcallb [optional] Callback for converting to
+	 *                             plaintext. If none given, defaults to strip_tags() plus
+	 *                             converting &gt; and &lt; and &amp; to < and > and &
 	 * @param string|array|Closure $ttlcallb [optional] Callback for extracting the title
 	 *                             from part of a TEI document. If none given, defaults
 	 *                             to extracting the first <head> child of the section and
@@ -71,7 +72,9 @@ class Setup {
 			}
 			$this->plaintextCallback = $ptcallb;
 		} else {
-			$this->plaintextCallback = 'strip_tags';
+			$this->plaintextCallback = function($str) {
+				return str_replace(array('&lt;', '&gt;', '&amp;'), array('<', '>', '&'), strip_tags($str));
+			};
 		}
 
 		if ($ttlcallb) {
