@@ -180,7 +180,6 @@ class Indexer_Extractor extends Indexer {
 			return;
 		}
 
-			$this->insideFigure ++;
 		if (in_array($this->r->localName, $this->containertags)) {
 			$index ++;
 			$this->containerStack[] = $index;
