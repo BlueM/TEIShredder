@@ -31,12 +31,6 @@ class Indexer_Extractor extends Indexer {
 	public $omissionStr = "\342\200\246";
 
 	/**
-	 * Callbacks (function, method or closure) for elements.
-	 * @var array Associative array containing element name=>callback pairs
-	 */
-	public $elementCallbacks = array();
-
-	/**
 	 * Array of elements that are regarded as distinct text containers
 	 * @var string[] Indexed array of element names
 	 * @todo Move to setup class?
