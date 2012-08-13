@@ -1,95 +1,126 @@
 <TEI xmlns="http://www.tei-c.org/ns/1.0">
-  <teiHeader>
-    <fileDesc>
-      <titleStmt>
-        <title>TEIShredder Example document</title>
-      </titleStmt>
-      <publicationStmt>
-        <p>Just for testing purposes</p>
-      </publicationStmt>
-      <sourceDesc>
-        <p>No source.</p>
-      </sourceDesc>
-    </fileDesc>
-  </teiHeader>
-  <text>
-  	<front>
-  		<titlePage>
-  			<docTitle>
-  				<titlePart>TEIShredder Example document</titlePart>
-  			</docTitle>
-  		</titlePage>
-  	</front>
+<teiHeader>
+	<fileDesc>
+		<titleStmt>
+			<title>TEIShredder Example document</title>
+		</titleStmt>
+		<publicationStmt>
+			<p>Just for testing purposes</p>
+		</publicationStmt>
+		<sourceDesc>
+			<p>No source.</p>
+		</sourceDesc>
+	</fileDesc>
+</teiHeader>
 
-  	<body>
+<text>
+<group>
 
-  		<pb xml:id="page-01" n="I" />
-  		<div>
-  			<head>Foreword</head>
-  			<p>The pages in this foreword have Roman page numbers, just to demonstrate the @n attribute is independent from the page numbering.</p>
+	<text>
 
- 	 		<pb xml:id="page-02" n="II" />
-			<p>For demonstration purposes, we include these few lines of verse from the beginning of “Macbeth”, written by <rs type="person" key="http://d-nb.info/gnd/118613723" xml:id="rs01">William Shakespeare</rs>:</p>
-			<lg>
-			<l>When shall we three meet again?</l>
-			<l>In thunder, lightning, or in rain?</l>
-			<l>When the hurlyburly’s done,</l>
-			<l>When the battle's lost and won.</l>
-			<l>That will be ere the set of sun.</l>
-			</lg>
-		</div>
+		<front>
+			<titlePage>
+				<docTitle>
+					<titlePart>TEIShredder Example document</titlePart>
+				</docTitle>
+			</titlePage>
+		</front>
 
-  		<pb xml:id="page-03" n="1" />
-  		<div>
-  			<head>Chapter 1</head>
-      		<p>Some text here.</p>
-      		<figure><graphic url="http://www.tei-c.org/logos/TEI-glow.png"/></figure>
-  		</div>
+		<body>
 
-  		<pb xml:id="page-04" n="2"/>
-  		<div>
-  			<head>Chapter 2</head>
-  			<p>More text.</p>
-  			<p>And a second paragraph. The text of this second paragraph is so long, …
-
-  			<pb xml:id="page-05" n="3"/>
-  			… that it continues on the next page</p>
-
-  			<pb xml:id="page-06" n="4"/>
+			<pb xml:id="page-vol1-01" n="I" />
 			<div>
-				<head>Chapter 2, subsection 1</head>
-  				<p>Finally, chapter 2 ends on page 4!</p>
+				<head>Foreword</head>
+				<p>The pages in this foreword have Roman page numbers, just to demonstrate the @n attribute is independent from the page numbering.</p>
+
+				<pb xml:id="page-vol1-02" n="II" />
+				<p>For demonstration purposes, we include these few lines of verse from the beginning of “Macbeth”, written by <rs type="person" key="http://d-nb.info/gnd/118613723" xml:id="rs01">William Shakespeare</rs>:</p>
+				<lg>
+				<l>When shall we three meet again?</l>
+				<l>In thunder, lightning, or in rain?</l>
+				<l>When the hurlyburly’s done,</l>
+				<l>When the battle's lost and won.</l>
+				<l>That will be ere the set of sun.</l>
+				</lg>
+			</div>
+
+			<pb xml:id="page-vol1-03" n="1" />
+			<div>
+				<head>Chapter 1</head>
+				<p>Some text here.</p>
+				<figure>
+					<graphic url="http://www.tei-c.org/logos/TEI-glow.png"/>
+					<p>This text is contained in a figure and mentions <rs type="person" key="http://d-nb.info/gnd/118582143" xml:id="rs02">Michelangelo</rs>.</p>
+				</figure>
+			</div>
+
+			<pb xml:id="page-vol1-04" n="2"/>
+			<div>
+				<head>Chapter 2</head>
+				<p>More text.</p>
+				<p>And a second paragraph. The text of this second paragraph is so long, …
+
+				<pb xml:id="page-vol1-05" n="3"/>
+				… that it continues on the next page</p>
+
+				<pb xml:id="page-vol1-06" n="4"/>
+				<div>
+					<head>Chapter 2, subsection 1</head>
+					<p>Finally, chapter 2 ends on page 4!</p>
+
+				</div>
 
 			</div>
 
-  		</div>
+			<div>
+				<head>Named entities</head>
+				<p><rs type="person" key="http://d-nb.info/gnd/118613723" xml:id="rs03">William Shakespeare</rs> was mentioned earlier in this document, but to get a little more content to play with, we add a few more people: <rs type="person" key="http://d-nb.info/gnd/11879440X" xml:id="rs04">John Montagu, the 4th Earl of Sandwich</rs> (and alleged inventor of the Sandwich), <rs type="person" key="http://d-nb.info/gnd/159981727" xml:id="rs05">Tim Berners-Lee</rs> and <rs type="person" key="http://d-nb.info/gnd/118802976" xml:id="rs06">Alan Turing</rs>.</p>
 
-  		<div>
-  			<head>Named entities</head>
-			<p><rs type="person" key="http://d-nb.info/gnd/118613723" xml:id="rs02">William Shakespeare</rs> was mentioned earlier in this document, but to get a little more content to play with, we add a few more people: <rs type="person" key="http://d-nb.info/gnd/11879440X" xml:id="rs03">John Montagu, the 4th Earl of Sandwich</rs> (and alleged inventor of the Sandwich), <rs type="person" key="http://d-nb.info/gnd/159981727" xml:id="rs04">Tim Berners-Lee</rs> and <rs type="person" key="http://d-nb.info/gnd/118802976" xml:id="rs05">Alan Turing</rs>.</p>
+				<pb xml:id="page-vol1-07" n="5"/>
+				<p>And another one.</p>
 
-  			<pb xml:id="page-07" n="5"/>
-			<p>And another one.</p>
+			</div>
 
-		</div>
+			<pb xml:id="page-vol1-08" n="6"/>
 
- 		<pb xml:id="page-08" n="6"/>
+			<div>
+				<head>@index</head>
+				<p>If we want to, we can also index the &lt;index&gt; element. This element can, for instance, be used to define a <index indexName="glossary" xml:id="index01">term</index> for a glossary.</p>
+			</div>
 
-  		<div>
-  			<head>@index</head>
-			<p>If we want to, we can also index the &lt;index&gt; element. This element can, for instance, be used to define a <index indexName="glossary" xml:id="index01">term</index> for a glossary.</p>
+			<pb xml:id="page-vol1-09" n="7"/>
 
-		</div>
+			<div>
+				<head>Handling of &lt;sic&gt;, &lt;del&gt; etc.</head>
+				<p>Certain tags are exluded when extracting parts of the text. For instance, consider the following code:<lb /><rs type="person" key="http://d-nb.info/gnd/118613723" xml:id="rs07"><choice><sic>Shakspear</sic><corr>Shakespeare</corr></choice></rs>. Here, we have an obvious error in the text (marked using &lt;sic&gt;) and its correction. When indexing, TEIShredder will drop the &lt;sic&gt;...&lt;/sic&gt; part of the text. The same is true for elements &lt;del&gt; and &lt;orig&gt;.</p>
+				<p>If you don’t like this behaviour, you can modify the public class member TEIShredder_Indexer_Extractor::$ignorabletags.</p>
 
- 		<pb xml:id="page-09" n="7"/>
+			</div>
 
-  		<div>
-  			<head>Handling of &lt;sic&gt;, &lt;del&gt; etc.</head>
-			<p>Certain tags are exluded when extracting parts of the text. For instance, consider the following code:<lb /><rs type="person" key="http://d-nb.info/gnd/118613723" xml:id="rs06"><choice><sic>Shakspear</sic><corr>Shakespeare</corr></choice></rs>. Here, we have an obvious error in the text (marked using &lt;sic&gt;) and its correction. When indexing, TEIShredder will drop the &lt;sic&gt;...&lt;/sic&gt; part of the text. The same is true for elements &lt;del&gt; and &lt;orig&gt;.</p>
-			<p>If you don’t like this behaviour, you can modify the public class member TEIShredder_Indexer_Extractor::$ignorabletags.</p>
+		</body>
+	  </text>
 
-		</div>
+	<text>
 
-    </body>
-  </text>
+		<front>
+			<titlePage>
+				<docTitle>
+					<titlePart>TEIShredder Example document, volume 2</titlePart>
+				</docTitle>
+			</titlePage>
+		</front>
+
+		<body>
+			<pb xml:id="page-vol2-01" n="1" />
+			<div>
+				<head>Preface to the Reader</head>
+				<p>Due to the overwhelming success of the first volume of this completely useless example document, we decided to publish another volume, which is dedicated to demonstrating indexing several volumes.</p>
+			</div>
+		</body>
+
+	</text>
+
+</group>
+</text>
+
 </TEI>
