@@ -53,7 +53,7 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 	 * @depends getTheChunksForPage2
 	 */
 	function getTheIdForAChunk(XMLChunk $chunk) {
-		$this->assertEquals(7, $chunk->id);
+		$this->assertEquals(9, $chunk->id);
 	}
 
 	/**
@@ -91,7 +91,7 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 	 * @depends getTheChunksForPage2
 	 */
 	function getTheChunksSection(XMLChunk $chunk) {
-		$this->assertEquals(4, $chunk->section);
+		$this->assertEquals(5, $chunk->section);
 	}
 
 	/**
