@@ -38,7 +38,6 @@ class Setup {
 	/**
 	 * Callback function/method/Closure for converting to plaintext
 	 * @var string|array|Closure
-	 * @todo This is only used by the chunker and the extractor. Move out of here.
 	 */
 	protected $plaintextCallback;
 
