@@ -42,7 +42,7 @@ class Indexer_Extractor extends Indexer {
 	 * @todo Move to setup class?
 	 */
 	public $containertags = array('l', 'p', 'head', 'note', 'docImprint',
-	                                     'byLine', 'titlePart', 'byline', 'item');
+	                              'byLine', 'titlePart', 'byline', 'item');
 
 	/**
 	 * Text that's inside these tags will not be included in the
@@ -97,7 +97,8 @@ class Indexer_Extractor extends Indexer {
 	protected $currContainerIndex = null;
 
 	/**
-	 * Indexed array of elements that are currently open
+	 * Indexed array of elements that are currently open. Will contain
+	 * something like array('text', 'body', 'div', 'p')
 	 * @var string
 	 */
 	protected $elementStack = array();
@@ -148,6 +149,7 @@ class Indexer_Extractor extends Indexer {
 	 */
 	protected function nodeOpen() {
 
+		// $index is just a counter (not used outside) for ensuring unique container IDs
 		static $index = 0;
 
 		// Keep track of the chunk number (must match the way the the chunk
