@@ -53,7 +53,7 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 	 * @depends getTheChunksForPage2
 	 */
 	function getTheIdForAChunk(XMLChunk $chunk) {
-		$this->assertSame(7, $chunk->getId());
+		$this->assertEquals(7, $chunk->id);
 	}
 
 	/**
@@ -70,10 +70,10 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 	 * @depends getTheChunksForPage2
 	 */
 	function getTheChunksXml(XMLChunk $chunk) {
-		$xml = $chunk->getXML();
+		$xml = $chunk->xml;
 		$this->assertInternalType('string', $xml);
 		// Make sure the XML is really part of the well-formed XML
-		$this->assertTrue(0 < strpos($chunk->getWellFormedXML(), $chunk->getXML()));
+		$this->assertTrue(false !== strpos($chunk->getWellFormedXML(), $xml));
 	}
 
 	/**
@@ -81,7 +81,7 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 	 * @depends getTheChunksForPage2
 	 */
 	function getTheChunksPlaintext(XMLChunk $chunk) {
-		$text = $chunk->getPlaintext();
+		$text = $chunk->plaintext;
 		$this->assertInternalType('string', $text);
 		$this->assertFalse(strpos($text, '<'));
 	}
@@ -91,8 +91,7 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 	 * @depends getTheChunksForPage2
 	 */
 	function getTheChunksSection(XMLChunk $chunk) {
-		$section = $chunk->getSection();
-		$this->assertSame(4, $section);
+		$this->assertEquals(4, $chunk->section);
 	}
 
 	/**
@@ -100,10 +99,19 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 	 * @depends getTheChunksForPage2
 	 */
 	function getTheChunksColumn(XMLChunk $chunk) {
-		$section = $chunk->getColumn();
+		$section = $chunk->column;
 		$this->assertInternalType('string', $section);
 		$this->assertSame('', $section);
 	}
 
+	/**
+	 * @test
+	 * @depends getTheChunksForPage2
+	 * @expectedException UnexpectedValueException
+	 * @expectedExceptionMessage Unexpected
+	 */
+	function tryingToGetAnInvalidPropertyThrowsAnException(XMLChunk $chunk) {
+		$chunk->inexistent_property;
+	}
 }
 
