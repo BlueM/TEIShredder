@@ -2,3 +2,5 @@
 .idea
 _INTERNAL
 test.sqlite
+
+*.uml
