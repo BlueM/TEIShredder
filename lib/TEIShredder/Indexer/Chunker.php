@@ -303,7 +303,7 @@ class Indexer_Chunker extends Indexer {
 		$prestackstr = join(' ', $this->prestack);
 		$db->exec(
 			'INSERT INTO '.$this->setup->prefix.'xmlchunk'.'
-			 (id, volume, page, section, col, prestack)
+			 (id, volume, page, section, column, prestack)
 			 VALUES ('. $db->quote($this->currentChunk).',
 					 '. $db->quote($this->data['currentVolume']).',
 					 '. $db->quote($this->page).',

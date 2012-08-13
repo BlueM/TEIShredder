@@ -10,6 +10,7 @@ use \PDO;
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
+ * @property string $column
  */
 class XMLChunk {
 
@@ -23,7 +24,7 @@ class XMLChunk {
 	 * Info on column that contains this chunk
 	 * @var string
 	 */
-	protected $col;
+	protected $column;
 
 	/**
 	 * Open XML tags at the point in the source document where this

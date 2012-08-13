@@ -56,7 +56,7 @@ CREATE TABLE "<prefix>xmlchunk" (
 	"id" INTEGER PRIMARY KEY ASC,
 	"volume" INTEGER NOT NULL,
 	"page" INTEGER NOT NULL,
-	"col" TEXT,
+	"column" TEXT,
 	"prestack" TEXT,
 	"xml" TEXT,
 	"poststack" TEXT,
