@@ -159,8 +159,10 @@ class Indexer_Extractor extends Indexer {
 			$this->currentChunk ++;
 		}
 
-		// Update the elements stack
-		$this->elementStack[] = $this->r->localName;
+		// Update the elements stack, unless it's an empty element
+		if (!$this->r->isEmptyElement) {
+			$this->elementStack[] = $this->r->localName;
+		}
 
 		if ('pb' == $this->r->localName) {
 			// Increase the page number
