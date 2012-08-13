@@ -59,13 +59,6 @@ class Indexer_Extractor extends Indexer {
 	public $notationtag = 'rs';
 
 	/**
-	 * Keeps track of whether we are currently inside a <figure> tag or
-	 * not. If it's > 0, we are.
-	 * @var int
-	 */
-	protected $insideFigure = 0;
-
-	/**
 	 * Array that will be filled with data for all the elements found
 	 * @var array Assoc. array of ID=>data pairs
 	 */
@@ -187,10 +180,7 @@ class Indexer_Extractor extends Indexer {
 			return;
 		}
 
-		if ('figure' == $this->r->localName) {
 			$this->insideFigure ++;
-		}
-
 		if (in_array($this->r->localName, $this->containertags)) {
 			$index ++;
 			$this->containerStack[] = $index;
@@ -212,7 +202,7 @@ class Indexer_Extractor extends Indexer {
 					// Note by author: footnote or marginalia text
 					$this->containerTypes[$index] = 'margin_footnote';
 				}
-			} elseif ($this->insideFigure) {
+			} elseif (in_array('figure', $this->elementStack)) {
 				$this->containerTypes[$index] = 'figure';
 			} else {
 				$this->containerTypes[$index] = $this->r->localName;
@@ -297,9 +287,6 @@ class Indexer_Extractor extends Indexer {
 			}
 		}
 
-		if ('figure' == $this->r->localName) {
-			$this->insideFigure --;
-		}
 	}
 
 	/**
