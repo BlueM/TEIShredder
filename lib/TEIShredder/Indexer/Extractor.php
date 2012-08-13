@@ -13,7 +13,7 @@ use \RuntimeException;
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
- * @license http://www.opensource.org/licenses/bsd-license.php  BSD License
+ * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 class Indexer_Extractor extends Indexer {
 
