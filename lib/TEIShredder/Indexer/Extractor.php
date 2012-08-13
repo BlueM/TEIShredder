@@ -185,13 +185,7 @@ class Indexer_Extractor extends Indexer {
 			$this->containerStack[] = $index;
 			$this->currContainerIndex = end($this->containerStack);
 
-			$xmlid = $this->r->getAttribute('xml:id');
-
-			if ($xmlid) {
-				$this->containerids[$this->currContainerIndex] = $xmlid;
-			} else {
-				$this->containerids[$this->currContainerIndex] = '';
-			}
+			$this->containerids[$this->currContainerIndex] = $this->r->getAttribute('xml:id');
 
 			if ('note' == $this->r->localName) {
 				if ($this->r->getAttribute('resp')) {
