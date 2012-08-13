@@ -46,11 +46,10 @@ class Indexer_Extractor extends Indexer {
 	public $ignorabletags = array('sic', 'del', 'orig');
 
 	/**
-	 * The tag that we're interested in; the one whose occurrences and
-	 * attributes should be extracted
-	 * @var string
+	 * Callbacks (function, method or closure) for elements.
+	 * @var array Associative array containing element name=>callback pairs
 	 */
-	public $notationtag = 'rs';
+	protected $elementCallbacks = array();
 
 	/**
 	 * Array that will be filled with data for all the elements found
@@ -196,7 +195,7 @@ class Indexer_Extractor extends Indexer {
 			}
 		}
 
-		if ($this->r->localName != $this->notationtag) {
+		if ($this->r->localName != 'rs') {
 			return;
 		}
 
@@ -263,7 +262,7 @@ class Indexer_Extractor extends Indexer {
 			$this->currContainerIndex = end($this->containerStack);
 		}
 
-		if ($this->r->localName == $this->notationtag) {
+		if ($this->r->localName == 'rs') {
 			// Closing notation tag
 			$this->containers[$this->currContainerIndex] .= '</'.$this->currNotatIndex.'>';
 			array_pop($this->notationStack);
