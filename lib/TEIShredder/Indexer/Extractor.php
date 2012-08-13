@@ -229,7 +229,7 @@ class Indexer_Extractor extends Indexer {
 			'tag'=>$this->r->nodeOpenString(),
 			'page'=>$this->page,
 			'domain'=>$this->r->getAttribute('type'),
-			'object'=>explode(' ', $this->r->getAttribute('key')), // Supports multiple targets
+			'key'=>explode(' ', $this->r->getAttribute('key')), // Supports multiple targets
 			'chunk'=>$this->currentChunk,
 		);
 	}
@@ -290,7 +290,7 @@ class Indexer_Extractor extends Indexer {
 
 		$sth = $this->setup->database->prepare(
 			'INSERT INTO '.$this->setup->prefix.'notation'.
-			' (xmlid, page, chunk, domain, object, notation, context, container,'.
+			' (xmlid, page, chunk, domain, key, notation, context, container,'.
 			' containerid, notationhash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 		);
 
@@ -330,8 +330,8 @@ class Indexer_Extractor extends Indexer {
 			$context = "$before<$>$behind";
 			$context = trim(preg_replace('#\s+#u', ' ', $context));
 
-			for ($i = 0, $ii = count($tag['object']); $i < $ii; $i ++) {
-				// Each entry in array $tag['object'] points to
+			for ($i = 0, $ii = count($tag['key']); $i < $ii; $i ++) {
+				// Each entry in array $tag['key'] points to
 				// a different target. If there are multiple entries,
 				// we have to add multiple records to support links
 				// with multiple targets
@@ -341,7 +341,7 @@ class Indexer_Extractor extends Indexer {
 						$tag['page'],
 						$tag['chunk'],
 						$tag['domain'],
-						(int)$tag['object'][$i],
+						$tag['key'][$i],
 						preg_replace('#\s+#', ' ', $notation),
 						$context,
 						$this->containerTypes[$tag['container']],

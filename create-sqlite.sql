@@ -14,7 +14,7 @@ CREATE TABLE "<prefix>notation" (
 	"xmlid" TEXT,
 	"page" INTEGER NOT NULL,
 	"domain" TEXT NOT NULL,
-	"object" INTEGER,
+	"key" TEXT NOT NULL,
 	"notation" TEXT,
 	"context" TEXT,
 	"container" TEXT,
@@ -23,7 +23,7 @@ CREATE TABLE "<prefix>notation" (
 	"notationhash" TEXT
 );
 
-CREATE INDEX "domain-object" ON "<prefix>notation" ("domain","object");
+CREATE INDEX "domain-key" ON "<prefix>notation" ("domain","key");
 
 CREATE TABLE "<prefix>page" (
 	"page" INTEGER PRIMARY KEY,
