@@ -1,13 +1,7 @@
 #!/usr/bin/php
 <?php
 
-set_include_path(__DIR__.'/TEIShredder');
-
-require_once 'lib/TEIShredder/Setup.php';
-require_once 'lib/TEIShredder/Indexer.php';
-require_once 'lib/TEIShredder/Indexer/Chunker.php';
-require_once 'lib/TEIShredder/Indexer/Extractor.php';
-require_once 'lib/TEIShredder/XMLReader.php';
+require __DIR__.'/autoload.php';
 
 $xml = file_get_contents(__DIR__.'/test/Sample-1.xml');
 
