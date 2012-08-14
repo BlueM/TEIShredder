@@ -4,6 +4,7 @@ namespace TEIShredder;
 
 use \PDO;
 use \UnexpectedValueException;
+use \RuntimeException;
 
 /**
  * Class for retrieving well-formed XML fragments from the source TEI document.
@@ -72,6 +73,53 @@ class XMLChunk {
 	protected $plaintext;
 
 	/**
+	 * Instance of the Setup class. Not settable by __set().
+	 * @var Setup
+	 */
+	protected $_setup;
+
+	/**
+	 * Constructor.
+	 * @param Setup $setup
+	 */
+	function __construct(Setup $setup) {
+		$this->_setup = $setup;
+	}
+
+	/**
+	 * Removes all chunks
+	 */
+	public static function flush(Setup $setup) {
+		$setup->database->exec("DELETE FROM ".$setup->prefix.'xmlchunk');
+	}
+
+	/**
+	 * Adds an XML chunk (not expected to perform updates)
+	 */
+	public function save() {
+		$db = $this->_setup->database;
+
+		$stm = $db->prepare(
+			'INSERT INTO '.$this->_setup->prefix.'xmlchunk '.
+			'(id, page, section, column, prestack, xml, poststack, plaintext) '.
+			'VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+		);
+
+		// Don't check for return value, as it should
+		// throw an exception if it fails.
+		$stm->execute(array(
+			$this->id,
+			$this->page,
+			$this->section,
+			$this->column,
+			$this->prestack,
+			$this->xml,
+			$this->poststack,
+			$this->plaintext,
+		));
+	}
+
+	/**
 	 * Returns all chunks that are on a given page.
 	 * @param Setup $setup
 	 * @param int $page Page number
@@ -79,14 +127,14 @@ class XMLChunk {
 	 */
 	public static function fetchObjectsByPageNumber(Setup $setup, $page) {
 		$stm = $setup->database->prepare(
-			"SELECT ?, eid.id, eid.column, eid.prestack, eid.xml, eid.poststack, eid.section, eid.plaintext
+			"SELECT eid.id, eid.column, eid.prestack, eid.xml, eid.poststack, eid.section, eid.plaintext
 		     FROM ".$setup->prefix."xmlchunk AS eid
-		     WHERE xml != '' AND
-		           eid.page = ?
+		     WHERE xml != '' AND eid.page = ?
 		     ORDER BY eid.id"
 		);
-		$stm->execute(array(__CLASS__, $page));
-		return $stm->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_CLASSTYPE);
+		$stm->execute(array($page));
+		$stm->setFetchMode(PDO::FETCH_CLASS, __CLASS__, array($setup));
+		return $stm->fetchAll();
 	}
 
 	/**
@@ -99,8 +147,26 @@ class XMLChunk {
 		if (in_array($name, array_keys(get_class_vars(__CLASS__)))) {
 			return $this->$name;
 		}
-		throw new UnexpectedValueException("Unexpected member name “".$name."”");
+		throw new UnexpectedValueException("Invalid property name “".$name."”");
 	}
+
+	/**
+	 * Magic method for setting protected object properties from outside.
+	 * @param string $name Property name
+	 * @param mixed $value Value to be assigned
+	 * @throws UnexpectedValueException
+	 */
+	public function __set($name, $value) {
+		$properties = array_keys(get_class_vars(__CLASS__));
+		if (!in_array($name, $properties)) {
+			throw new UnexpectedValueException("Invalid property name “".$name."”.");
+		}
+		if ('_' === substr($name, 0, 1)) {
+			throw new UnexpectedValueException("Property “".$name."” can not be set.");
+		}
+		$this->$name = $value;
+	}
+
 
 	/**
 	 * Returns the chunk's content source as well-formed XML, i.e.: with

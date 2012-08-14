@@ -14,6 +14,9 @@ require_once __DIR__.'/../bootstrap.php';
  */
 class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 
+	/**
+	 * @var Setup
+	 */
 	var $setup;
 
 	/**
@@ -21,12 +24,6 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function setUp() {
 		$this->setup = prepare_default_data();
-		$chunker = new Indexer_Chunker(
-			$this->setup,
-			new XMLReader,
-			file_get_contents(TESTDIR.'/Sample-1.xml')
-		);
-		$chunker->process();
 	}
 
 	/**
@@ -38,9 +35,98 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
+	 */
+	function createANewChunk() {
+		$chunk = new XMLChunk($this->setup);
+		$this->assertInstanceOf('\TEIShredder\XMLChunk', $chunk);
+		return $chunk;
+	}
+
+	/**
+	 * @test
+	 * @depends createANewChunk
+	 * @expectedException UnexpectedValueException
+	 * @expectedExceptionMessage Invalid property
+	 */
+	function tryingToSetAnInvalidPropertyThrowsAnException(XMLChunk $chunk) {
+		$chunk->foo= 'bar';
+	}
+
+	/**
+	 * @test
+	 * @depends createANewChunk
+	 * @expectedException UnexpectedValueException
+	 * @expectedExceptionMessage can not be set
+	 */
+	function tryingToSetAnUnsettablePropertyThrowsAnException(XMLChunk $chunk) {
+		$chunk->_setup = 'something';
+	}
+
+	/**
+	 * @test
+	 * @depends createANewChunk
+	 */
+	function setAChunksId(XMLChunk $chunk) {
+		$chunk->id = 12345;
+		$this->assertEquals(12345, $chunk->id);
+	}
+
+	/**
+	 * @test
+	 * @depends createANewChunk
+	 * @expectedException UnexpectedValueException
+	 * @expectedExceptionMessage Invalid property
+	 */
+	function tryingToGetAnInvalidPropertyThrowsAnException(XMLChunk $chunk) {
+		$chunk->foo;
+	}
+
+	/**
+	 * @test
+	 * @depends createANewChunk
+	 */
+	function getAChunksId(XMLChunk $chunk) {
+		$this->assertEquals(12345, $chunk->id);
+	}
+
+	/**
+	 * @test
+	 * @depends createANewChunk
+	 */
+	function getAChunksWellformedXML(XMLChunk $chunk) {
+		$chunk->prestack = '<text><p>';
+		$chunk->xml = 'Hello world</p>';
+		$chunk->poststack = '</text>';
+		$this->assertEquals($chunk->prestack.$chunk->xml.$chunk->poststack, $chunk->getWellFormedXML());
+	}
+
+	/**
+	 * @test
+	 */
+	function saveANewChunk() {
+		$chunk = new XMLChunk($this->setup);
+		$chunk->id = 123;
+		$chunk->page = 17;
+		$chunk->section = 5;
+		$chunk->prestack = '<p>';
+		$chunk->xml = 'Foo</p>';
+		$chunk->plaintext = 'Foo';
+		$chunk->save();
+	}
+
+		/**
+	 * @test
 	 * @return XMLChunk
 	 */
 	function getTheChunksForPage2() {
+		// Fill database with example data
+		$chunker = new Indexer_Chunker(
+			$this->setup,
+			new XMLReader,
+			file_get_contents(TESTDIR.'/Sample-1.xml')
+		);
+		$chunker->process();
+
 		$chunks = XMLChunk::fetchObjectsByPageNumber($this->setup, 2);
 		$this->assertInternalType('array', $chunks);
 		$this->assertSame(1, count($chunks));
@@ -99,19 +185,11 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 	 * @depends getTheChunksForPage2
 	 */
 	function getTheChunksColumn(XMLChunk $chunk) {
-		$section = $chunk->column;
-		$this->assertInternalType('string', $section);
-		$this->assertSame('', $section);
+		$this->assertEquals('', $chunk->column);
 	}
 
-	/**
-	 * @test
-	 * @depends getTheChunksForPage2
-	 * @expectedException UnexpectedValueException
-	 * @expectedExceptionMessage Unexpected
-	 */
-	function tryingToGetAnInvalidPropertyThrowsAnException(XMLChunk $chunk) {
-		$chunk->inexistent_property;
-	}
+
 }
+
+
 
