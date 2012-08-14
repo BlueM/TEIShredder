@@ -15,12 +15,14 @@ require_once __DIR__.'/../../bootstrap.php';
 class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase {
 
 	var $setup;
+	var $xmlreader;
 
 	/**
 	 * Sets up the fixture
 	 */
 	function setUp() {
 		$this->setup = prepare_default_data();
+		$this->xmlreader = new XMLReader;
 	}
 
 	/**
@@ -37,6 +39,7 @@ class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase {
 
 		$chunker = new Indexer_Chunker(
 			$this->setup,
+			$this->xmlreader,
 			file_get_contents(TESTDIR.'/Sample-1.xml')
 		);
 		$this->assertInstanceOf('\\'.__NAMESPACE__.'\\Indexer_Chunker', $chunker);

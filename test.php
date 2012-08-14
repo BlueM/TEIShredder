@@ -16,11 +16,15 @@ $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $setup = new \TEIShredder\Setup($db);
 
+// Create an \TEIShredder\XMLReader instance to
+// be used by the extractor and the chunker.
+$xmlreader = new \TEIShredder\XMLReader;
+
 // Create chunks and structure
-$chunker = new \TEIShredder\Indexer_Chunker($setup, $xml);
+$chunker = new \TEIShredder\Indexer_Chunker($setup, $xmlreader, $xml);
 $chunker->process();
 
 // Extract more information
-$extractor = new \TEIShredder\Indexer_Extractor($setup, $xml);
+$extractor = new \TEIShredder\Indexer_Extractor($setup, $xmlreader, $xml);
 $extractor->process();
 

@@ -90,16 +90,15 @@ abstract class Indexer {
 	/**
 	 * Constructor
 	 * @param Setup $setup
+	 * @param XMLReader $xmlreader
 	 * @param string $xml Input XML
-	 * @throws InvalidArgumentException
-	 * @throws RuntimeException
+	 * @param XMLReader $xmlreader
 	 */
-	public function __construct(Setup $setup, $xml) {
+	public function __construct(Setup $setup, XMLReader $xmlreader, $xml) {
 
 		$this->setup = $setup;
 
-		// Create the XML reader
-		$this->r = new XMLReader;
+		$this->r = $xmlreader;
 		$this->r->xml($xml);
 	}
 

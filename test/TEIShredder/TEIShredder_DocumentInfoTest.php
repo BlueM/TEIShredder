@@ -22,8 +22,10 @@ class DocumentInfoTest extends \PHPUnit_Framework_TestCase {
 
 		$this->setup = prepare_default_data();
 
+		// Fill the test database
 		$chunker = new Indexer_Chunker(
 			$this->setup,
+			new XMLReader,
 			file_get_contents(TESTDIR.'/Sample-1.xml')
 		);
 		$chunker->process();

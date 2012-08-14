@@ -115,12 +115,13 @@ class Indexer_Extractor extends Indexer {
 	protected $insertstm;
 
 	/**
-	 *
+	 * Constructor
 	 * @param Setup $setup
+	 * @param XMLReader $xmlreader
 	 * @param string $xml
 	 */
-	public function __construct(Setup $setup, $xml) {
-		parent::__construct($setup, $xml);
+	public function __construct(Setup $setup, XMLReader $xmlreader, $xml) {
+		parent::__construct($setup, $xmlreader, $xml);
 		$this->insertstm = $this->setup->database->prepare(
 			'INSERT INTO '.$this->setup->prefix.'element'.
 			' (xmlid, element, page, chunk, attrn, attrtargetend, data)'.
