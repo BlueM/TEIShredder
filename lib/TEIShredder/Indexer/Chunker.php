@@ -92,10 +92,10 @@ class Indexer_Chunker extends Indexer {
 	protected $level = 0;
 
 	/**
-	 * Contains pagenumber=>plaintext pairs
-	 * @var array
+	 * The current Page object
+	 * @var Page
 	 */
-	protected $plaintext = array(0=>'');
+	protected $pageObj;
 
 	/**
 	 * Method that's called when the input stream reaches an opening
@@ -199,22 +199,32 @@ class Indexer_Chunker extends Indexer {
 	 */
 	protected function registerNewPage() {
 
+		if ($this->pageObj) {
+			// Finish previous page
+			$this->pageObj->save();
+		}
+
 		$this->page ++;
-		$this->plaintext[$this->page] = '';
 
-		$db = $this->setup->database;
-		$db->exec(
-			'INSERT INTO '.$this->setup->prefix.'page'.'
-			 (page, xmlid, volume, n, rend, facs)
-			 VALUES('. $db->quote($this->page).',
-			        '. $db->quote($this->r->getAttribute('xml:id')).',
-			        '. $db->quote($this->data['currentVolume']).',
-			        '. $db->quote($this->r->getAttribute('n')).',
-			        '. $db->quote($this->r->getAttribute('rend')).',
-			        '. $db->quote($this->r->getAttribute('facs')).')'
-		);
-
+		$this->pageObj = new Page($this->setup);
+		$this->pageObj->number = $this->page;
+		$this->pageObj->plaintext = '';
+		$this->pageObj->xmlid = $this->r->getAttribute('xml:id');
+		$this->pageObj->volume = $this->data['currentVolume'];
+		$this->pageObj->n = $this->r->getAttribute('n');
+		$this->pageObj->rend = $this->r->getAttribute('rend');
 	}
+
+	/**
+	 * Saves any remaining page data
+	 */
+	protected function save() {
+		if ($this->pageObj) {
+			// Finish previous page
+			$this->pageObj->save();
+		}
+	}
+
 
 	/**
 	 * Method that's called when the input stream reaches a closing tag
@@ -319,8 +329,8 @@ class Indexer_Chunker extends Indexer {
 
 		$plaintext = call_user_func($this->setup->plaintextCallback, $this->xml);
 
-		if ($plaintext) {
-			$this->plaintext[$this->page] .= ' '.trim($plaintext);
+		if ($this->pageObj) {
+			$this->pageObj->plaintext .= ' '.trim($plaintext);
 		}
 
 		if (empty($this->chunks[$this->currentChunk])) {
@@ -340,20 +350,6 @@ class Indexer_Chunker extends Indexer {
 	}
 
 	/**
-	 * Saves accumulated data
-	 */
-	protected function save() {
-		$db = $this->setup->database;
-		$prefix = $this->setup->prefix;
-		$sth = $db->prepare(
-			"UPDATE ".$prefix.'page'." SET plaintext = ? WHERE page = ?"
-		);
-		foreach ($this->plaintext as $page=>$plaintext) {
-			$sth->execute(array($plaintext, trim($page)));
-		}
-	}
-
-	/**
 	 * Will be called right before processing starts. Can be used to
 	 * check certain conditions (should throw an exception if it fails)
 	 * or to perform initialization steps.
@@ -362,10 +358,9 @@ class Indexer_Chunker extends Indexer {
 		// Empty the tables
 		$db = $this->setup->database;
 		$prefix = $this->setup->prefix;
-		$db->exec('DELETE FROM '.$prefix.'page');
 		$db->exec('DELETE FROM '.$prefix.'structure');
 		$db->exec('DELETE FROM '.$prefix.'volume');
-
+		Page::flush($this->setup);
 		XMLChunk::flush($this->setup);
 	}
 

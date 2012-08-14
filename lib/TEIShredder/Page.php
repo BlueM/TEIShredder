@@ -74,6 +74,44 @@ class Page {
 	}
 
 	/**
+	 * Adds an XML chunk (not expected to perform updates)
+	 */
+	public function save() {
+
+		$db = $this->_setup->database;
+
+		$stm = $db->prepare(
+			'INSERT INTO '.$this->_setup->prefix.'page '.
+			'(number, xmlid, volume, plaintext, n, rend) '.
+			'VALUES (?, ?, ?, ?, ?, ?)'
+		);
+
+		// Don't check for return value, as it should
+		// throw an exception if it fails.
+		$stm->execute(array(
+			$this->number,
+			(string)$this->xmlid,
+			$this->volume,
+			$this->plaintext,
+			(string)$this->n,
+			(string)$this->rend,
+		));
+	}
+
+	/**
+	 * Returns one of the class properties' values
+	 * @param $name
+	 * @return mixed
+	 * @throws UnexpectedValueException
+	 */
+	public function __get($name) {
+		if (in_array($name, array_keys(get_class_vars(__CLASS__)))) {
+			return $this->$name;
+		}
+		throw new UnexpectedValueException("Invalid property name “".$name."”");
+	}
+
+	/**
 	 * Magic method for setting protected object properties from outside.
 	 * @param string $name Property name
 	 * @param mixed $value Value to be assigned

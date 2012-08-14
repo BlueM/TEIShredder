@@ -80,6 +80,27 @@ class PageTest extends \PHPUnit_Framework_TestCase {
 		$page->foo;
 	}
 
+	/**
+	 * @test
+	 */
+	function saveANewPage() {
+		$page = new Page($this->setup);
+		$page->number= 15;
+		$page->xmlid = "pb-15";
+		$page->rend = "normal";
+		$page->n = "XV";
+		$page->volume = 2;
+		$page->plaintext = 'Foo';
+		$page->save();
+	}
+
+	/**
+	 * @test
+	 */
+	function flushTheData() {
+		Page::flush($this->setup);
+	}
+
 }
 
 
