@@ -59,6 +59,12 @@ class Indexer_Chunker extends Indexer {
 	protected $currentSection = 0;
 
 	/**
+	 * Contains XMLChunk instances
+	 * @var array Associative array containing id=>XMLChunk instance pairs
+	 */
+	protected $chunks = array();
+
+	/**
 	 * Array of element types / tag names that are regarded as block
 	 * elements, i.e. after which whitespace is inserted
 	 * @var array Indexed array of element names
@@ -80,7 +86,7 @@ class Indexer_Chunker extends Indexer {
 
 	/**
 	 * Text structure level. Only named sections (those with a <head> are
-	 * counted, as those without sometimes are only present to comply with TEI.
+	 * counted, as those without sometimes are only present to comply with TEI. @todo comment?
 	 * @var int
 	 */
 	protected $level = 0;
@@ -296,20 +302,17 @@ class Indexer_Chunker extends Indexer {
 	}
 
 	/**
-	 * Method that's called when a new chunk is encountered
+	 * Method that's called when a new chunk is encountered. Creates a new
+	 * XMLChunk instance and fills it with some data.
 	 */
 	protected function startChunk() {
-		$db = $this->setup->database;
-		$prestackstr = join(' ', $this->prestack);
-		$db->exec(
-			'INSERT INTO '.$this->setup->prefix.'xmlchunk'.'
-			 (id, volume, page, section, column, prestack)
-			 VALUES ('. $db->quote($this->currentChunk).',
-					 '. $db->quote($this->data['currentVolume']).',
-					 '. $db->quote($this->page).',
-					 '. $db->quote($this->currentSection).',
-					 '. $db->quote($this->column).',
-					 '. $db->quote($prestackstr).')');
+		$chunk = new XMLChunk($this->setup);
+		$chunk->id = $this->currentChunk;
+		$chunk->page = $this->page;
+		$chunk->section = $this->currentSection;
+		$chunk->column = $this->column;
+		$chunk->prestack = join(' ', $this->prestack);
+		$this->chunks[$chunk->id] = $chunk;
 	}
 
 	/**
@@ -322,17 +325,24 @@ class Indexer_Chunker extends Indexer {
 
 		$plaintext = call_user_func($this->setup->plaintextCallback, $this->xml);
 
-		$db = $this->setup->database;
-		$db->exec(
-			'UPDATE '.$this->setup->prefix.'xmlchunk'.'
-			 SET xml = '.$db->quote(trim($this->xml)).',
-			     plaintext = '.$db->quote($plaintext).',
-			     poststack = '.$db->quote(join(' ', $this->poststack)).'
-			 WHERE id = '.$db->quote($this->currentChunk));
-
 		if ($plaintext) {
 			$this->plaintext[$this->page] .= ' '.trim($plaintext);
 		}
+
+		if (empty($this->chunks[$this->currentChunk])) {
+			// This method might get called in cases where startChunk()
+			// had not been called when it started.
+			return;
+		}
+
+		$chunk = $this->chunks[$this->currentChunk];
+		$chunk->xml = trim($this->xml);
+		$chunk->plaintext = $plaintext;
+		$chunk->poststack = join(' ', $this->poststack);
+		$chunk->save();
+
+		// Dispose of chunk
+		unset($this->chunks[$this->currentChunk]);
 	}
 
 	/**
@@ -359,9 +369,10 @@ class Indexer_Chunker extends Indexer {
 		$db = $this->setup->database;
 		$prefix = $this->setup->prefix;
 		$db->exec('DELETE FROM '.$prefix.'page');
-		$db->exec("DELETE FROM ".$prefix.'xmlchunk');
 		$db->exec('DELETE FROM '.$prefix.'structure');
 		$db->exec('DELETE FROM '.$prefix.'volume');
+
+		XMLChunk::flush($this->setup);
 	}
 
 	/**
