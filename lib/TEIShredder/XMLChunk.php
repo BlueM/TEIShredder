@@ -73,7 +73,7 @@ class XMLChunk {
 	protected $plaintext;
 
 	/**
-	 * Instance of the Setup class. Not settable by __set().
+	 * Instance of the Setup class.
 	 * @var Setup
 	 */
 	protected $_setup;
@@ -97,6 +97,7 @@ class XMLChunk {
 	 * Adds an XML chunk (not expected to perform updates)
 	 */
 	public function save() {
+
 		$db = $this->_setup->database;
 
 		$stm = $db->prepare(
