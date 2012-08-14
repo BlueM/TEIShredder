@@ -13,6 +13,7 @@ use \UnexpectedValueException;
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  * @property int $id
  * @property string $column
+ * @property string $page
  * @property string $prestack
  * @property string $xml
  * @property string $poststack
@@ -32,6 +33,12 @@ class XMLChunk {
 	 * @var string
 	 */
 	protected $column;
+
+	/**
+	 * Number of the page this chunk is on
+	 * @var int
+	 */
+	protected $page;
 
 	/**
 	 * String of open XML tags at the point in the source document
