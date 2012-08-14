@@ -63,7 +63,6 @@ CREATE TABLE `<prefix>volume` (
 
 CREATE TABLE `<prefix>xmlchunk` (
   `id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Chunk''s primary key',
-  `volume` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Volume number',
   `page` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Number of the page this chunk is on',
   `column` varchar(10) NOT NULL DEFAULT '' COMMENT 'Column information',
   `prestack` text NOT NULL COMMENT 'Tags that are opened before this text chunk',
