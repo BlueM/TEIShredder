@@ -26,7 +26,7 @@ CREATE TABLE "<prefix>notation" (
 CREATE INDEX "domain-key" ON "<prefix>notation" ("domain","key");
 
 CREATE TABLE "<prefix>page" (
-	"page" INTEGER PRIMARY KEY,
+	"number" INTEGER PRIMARY KEY,
 	"xmlid" TEXT UNIQUE,
 	"volume" INTEGER NOT NULL,
 	"plaintext" TEXT,

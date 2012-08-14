@@ -102,7 +102,7 @@ class DocumentInfo {
 	public static function fetchNumberOfPages(Setup $setup, $volume = null) {
 		$db = $setup->database;
 		$prefix = $setup->prefix;
-		$query = 'SELECT MAX(page) FROM '.$prefix.'page';
+		$query = 'SELECT MAX(number) FROM '.$prefix.'page';
 		if (intval($volume)) {
 			$query .= ' WHERE volume = '.intval($volume);
 		}
@@ -123,7 +123,7 @@ class DocumentInfo {
 		$prefix = $setup->prefix;
 		$notations = array();
 		$where = $volume ? 'volume = '.$db->quote($volume) : '1';
-		$res = $db->query("SELECT page, n FROM ".$prefix."page WHERE $where ORDER BY page");
+		$res = $db->query("SELECT number, n FROM ".$prefix."page WHERE $where ORDER BY number");
 		foreach ($res->fetchAll(PDO::FETCH_NUM) as $row) {
 			$notations[$row[0]] = $row[1];
 		}
@@ -141,7 +141,7 @@ class DocumentInfo {
 	public static function fetchPageData(Setup $setup, $pagenum) {
 		$db = $setup->database;
 		$sth = $db->query(
-			'SELECT volume, xmlid, n, rend FROM '.$setup->prefix."page WHERE page = ".$db->quote($pagenum)
+			'SELECT volume, xmlid, n, rend FROM '.$setup->prefix."page WHERE number = ".$db->quote($pagenum)
 		);
 		if (false === $data = $sth->fetch(PDO::FETCH_NUM)) {
 			throw new InvalidArgumentException('Invalid page number');
@@ -178,8 +178,8 @@ class DocumentInfo {
 	 */
 	public static function fetchNAttributesForPageNumbers(Setup $setup, array $nums) {
 		$res = $setup->database->query(
-			"SELECT page, n FROM ".$setup->prefix."page ".
-			"WHERE page IN (".join(', ', array_map('intval', $nums)).") ORDER BY page"
+			"SELECT number, n FROM ".$setup->prefix."page ".
+			"WHERE number IN (".join(', ', array_map('intval', $nums)).") ORDER BY number"
 		);
 		$n = array();
 		foreach ($res->fetchAll(PDO::FETCH_NUM) as $row) {
@@ -215,7 +215,7 @@ class DocumentInfo {
 		foreach ($statements as $type=>$statement) {
 			$sql = "SELECT s.id, s.title, s.volume, s.page, s.xmlid, p.n
                     FROM $structtable AS s, $pagetable AS p
-                    WHERE p.page = s.page AND $statement
+                    WHERE p.number = s.page AND $statement
                     LIMIT 0, 1";
 			$res = $db->query($sql);
 			$row = $res->fetch(PDO::FETCH_ASSOC);

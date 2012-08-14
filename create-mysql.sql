@@ -31,7 +31,7 @@ CREATE TABLE `<prefix>notation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Data on entity occurrences in the text';
 
 CREATE TABLE `<prefix>page` (
-  `page` int(11) NOT NULL DEFAULT '0' COMMENT 'Page number',
+  `number` int(11) NOT NULL DEFAULT '0' COMMENT 'Page number',
   `xmlid` varchar(40) NOT NULL DEFAULT '' COMMENT 'xml:id of <pb/> element',
   `volume` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Volume number',
   `plaintext` text NOT NULL COMMENT 'Chunk contents as plaintext',
