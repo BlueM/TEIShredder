@@ -75,5 +75,42 @@ class SetupTest extends \PHPUnit_Framework_TestCase {
 	function tryingToGetAnInvalidClassMemberThrowsAnException(Setup $setup) {
 		$setup->foobar;
 	}
+
+	/**
+	 * @test
+	 * @depends creatingAnObjectWithDefaultCallbacksWorks
+	 * @expectedException UnexpectedValueException
+	 */
+	function tryingToSetAnInvalidClassMemberThrowsAnException(Setup $setup) {
+		$setup->foo = 'bar';
+	}
+
+	/**
+	 * @test
+	 * @depends creatingAnObjectWithDefaultCallbacksWorks
+	 * @expectedException UnexpectedValueException
+	 */
+	function tryingToSetAnUnsettableClassMemberThrowsAnException(Setup $setup) {
+		$setup->database = 'Bla';
+	}
+
+	/**
+	 * @test
+	 * @depends creatingAnObjectWithDefaultCallbacksWorks
+	 * @expectedException InvalidArgumentException
+	 */
+	function tryingToSetTheChunktagsToANonArrayThrowsAnException(Setup $setup) {
+		$setup->chunktags = 'Not an array';
+	}
+
+	/**
+	 * @test
+	 * @depends creatingAnObjectWithDefaultCallbacksWorks
+	 */
+	function tryingToSetTheChunktagsToAnArrayWorks(Setup $setup) {
+		$array = array('text', 'pb');
+		$setup->chunktags = $array;
+		$this->assertSame($array, $setup->chunktags);
+	}
 }
 

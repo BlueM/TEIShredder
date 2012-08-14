@@ -167,7 +167,6 @@ class XMLChunk {
 		$this->$name = $value;
 	}
 
-
 	/**
 	 * Returns the chunk's content source as well-formed XML, i.e.: with
 	 * pre-stack and post-stack tags added, with Unix-style line endings.

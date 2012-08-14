@@ -39,13 +39,6 @@ class Indexer_Extractor extends Indexer {
 	                              'byLine', 'titlePart', 'byline', 'item');
 
 	/**
-	 * Text that's inside these tags will not be included in the
-	 * notations' context strings
-	 * @var string[]
-	 */
-	public $ignorabletags = array('sic', 'del', 'orig');
-
-	/**
 	 * Callbacks (function, method or closure) for elements.
 	 * @var array Associative array containing element name=>callback pairs
 	 */
@@ -139,10 +132,9 @@ class Indexer_Extractor extends Indexer {
 		// $index is just a counter (not used outside) for ensuring unique container IDs
 		static $index = 0;
 
-		// Keep track of the chunk number (must match the way the the chunk
-		// number is determined / incremented in TETool_TEIProcessor_Chunker
-		if (in_array($this->r->localName, self::$chunktags) or
-			in_array($this->r->localName, self::$nostacktags)) {
+		// Keep track of the chunk number
+		if (in_array($this->r->localName, $this->setup->chunktags) or
+			in_array($this->r->localName, $this->setup->nostacktags)) {
 			$this->currentChunk ++;
 		}
 
@@ -239,7 +231,7 @@ class Indexer_Extractor extends Indexer {
 			return;
 		}
 
-		if (in_array(end($this->elementStack), $this->ignorabletags)) {
+		if (in_array(end($this->elementStack), $this->setup->ignorabletags)) {
 			return;
 		}
 

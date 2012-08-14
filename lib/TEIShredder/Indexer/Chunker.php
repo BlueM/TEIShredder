@@ -24,7 +24,7 @@ class Indexer_Chunker extends Indexer {
 
 	/**
 	 * Array of tags that are yet unclosed at the point
-	 * in the text where this chunk starts.
+	 * in the text where this chunk starics.
 	 * @var array Indexed array
 	 */
 	protected $prestack = array();
@@ -103,18 +103,21 @@ class Indexer_Chunker extends Indexer {
 	 */
 	protected function nodeOpen() {
 
-		if (in_array($this->r->localName, self::$chunktags) or
-			in_array($this->r->localName, self::$nostacktags)) {
+		$chunktag   = in_array($this->r->localName, $this->setup->chunktags);
+		$nostacktag = in_array($this->r->localName, $this->setup->nostacktags);
+		$sectiontag = in_array($this->r->localName, $this->setup->sectiontags);
 
-			if (in_array($this->r->localName, self::$chunktags)) {
+		if ($chunktag or
+			$nostacktag) {
+
+			if ($chunktag) {
 				$this->insidetext = true;
 			}
 
 			if ($this->currentChunk) {
-				// Finish data for previous chunk of XML
-				// We can't simply do that when the tag ends,
-				// because we need to separately save the
-				// "A" in something like "<div>A<p>B</p>C</div>"
+				// Finish data for previous chunk of XML. We can't simply do that when
+				// the tag ends, because we need to separately save the "A" in
+				// something like "<div>A<p>B</p>C</div>"
 				$this->finishChunk();
 
 				// Empty the XML variable
@@ -127,10 +130,7 @@ class Indexer_Chunker extends Indexer {
 				$this->registerNewPage();
 			} elseif ('milestone' == $this->r->localName) {
 				$this->column = $this->r->getAttribute('unit');
-			} elseif ('div' == $this->r->localName or
-					  'text' == $this->r->localName or
-					  'titlePage' == $this->r->localName or
-					  'front' == $this->r->localName) {
+			} elseif ($sectiontag) {
 				$this->currentSection ++;
 
 				if ('text' == $this->r->localName) {
@@ -151,15 +151,15 @@ class Indexer_Chunker extends Indexer {
 				$this->startSection();
 
 			} elseif ('group' == $this->r->localName) {
-				// A group of <text>s, i.e. forget the <text> we saw previously,
-				// as it was just the enclosure of some inner <text> inside the
-				// <group>.
+				// A group of <text>s, i.e. drop the <text> we saw previously, as it
+				// was just the enclosure of some inner <text> inside the <group>.
 				$this->data['currentVolume'] = 0;
 			}
 
-			if (in_array($this->r->localName, self::$chunktags)) {
+			if ($chunktag) {
 				$this->startChunk();
 			}
+
 		} elseif ('titlePart' == $this->r->localName) {
 			$this->processTitlePart();
 		}
@@ -169,20 +169,14 @@ class Indexer_Chunker extends Indexer {
 			return;
 		}
 
-		$string = $this->r->nodeOpenString();
+		$this->xml .= $this->r->nodeOpenString();
 
-		$this->xml .= $string;
 		if (in_array($this->r->localName, $this->blocktags)) {
 			$this->xml .= "\n";
 		}
 
 		if (!$this->r->isEmptyElement and
-			!in_array($this->r->localName, self::$nostacktags)) {
-			// Note: in the next line, we record the opening element without
-			// @xml:id attribute, as when outputting several chunks of XML on
-			// one HTML page, there could be easily be a conflict due to
-			// non-unique @id attributes. And we dont't need it anyway, as
-			// the pre-stack is only for wellformedness.
+			!$nostacktag) {
 			array_push($this->prestack, $this->r->nodeOpenString(true));
 			array_unshift($this->poststack, '</'.$this->r->localName.'>');
 		}
@@ -227,8 +221,10 @@ class Indexer_Chunker extends Indexer {
 	 */
 	protected function nodeClose() {
 
+		$nostacktag = in_array($this->r->localName, $this->setup->nostacktags);
+
 		if ($this->insidetext and
-			in_array($this->r->localName, self::$nostacktags)) {
+			$nostacktag) {
 			// Finish data for previous chunk
 			$this->finishChunk();
 
@@ -237,11 +233,9 @@ class Indexer_Chunker extends Indexer {
 			$this->column = null;
 			$this->xml = '';
 
-			if ($this->currentChunk) {
-				// Increment the chunk ID to make sure no content is overwritten
-				// (this could happen, for instance, at the end of chapters)
-				$this->currentChunk ++;
-			}
+			// Increment the chunk ID to make sure no content is overwritten
+			// (this could happen, for instance, at the end of chapters)
+			$this->currentChunk ++;
 		}
 
 		if ('div' == $this->r->localName or
@@ -250,14 +244,14 @@ class Indexer_Chunker extends Indexer {
 		}
 
 		if ($this->currentChunk and
-			!in_array($this->r->localName, self::$nostacktags)) {
+			!$nostacktag) {
 			$this->xml .= '</'.$this->r->localName.'>';
 			if (in_array($this->r->localName, $this->blocktags)) {
 				$this->xml .= "\n";
 			}
 		}
 
-		if (!in_array($this->r->localName, self::$nostacktags)) {
+		if (!$nostacktag) {
 			array_pop($this->prestack);
 			array_shift($this->poststack);
 		}

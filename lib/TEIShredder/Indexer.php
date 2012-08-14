@@ -6,7 +6,7 @@ use \InvalidArgumentException;
 use \RuntimeException;
 
 /**
- * Base class for processing a TEI document by stream-reading it
+ * Abstract base class for processing a TEI document by stream-reading it
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
@@ -29,21 +29,6 @@ abstract class Indexer {
 		                      // <pb /> element? Set to false, if the order is
 		                      // <pb /> ... <text>
 	);
-
-	/**
-	 * Array of element types / tag names that mark the beginning of
-	 * a new chunk of text (can be either empty or non-empty elements).
-	 * @var array Indexed array of element names
-	 */
-	static $chunktags = array('pb', 'milestone', 'div', 'front', 'body', 'titlePage');
-
-	/**
-	 * Array of element types / tag names that mark the beginning of
-	 * a new chunk of text, but which should not be indexed separately.
-	 * (Basically, these are more important for detecting text chunks'
-	 * ends than their beginning.)
-	 */
-	static $nostacktags = array('text', 'group');
 
 	/**
 	 * Current page number
@@ -88,7 +73,7 @@ abstract class Indexer {
 	abstract protected function nodeClose();
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param Setup $setup
 	 * @param XMLReader $xmlreader
 	 * @param string $xml Input XML
@@ -143,9 +128,7 @@ abstract class Indexer {
 	/**
 	 * Will be called right before processing starts.
 	 *
-	 * Can be used to check certain conditions (should throw an exception
-	 * if it fails) or to perform initialization steps. May not be needed by
-	 * subclasses. This default implementation is empty.
+	 * May not be needed by subclasses. Empty default implementation.
 	 */
 	protected function preProcessAction() {
 

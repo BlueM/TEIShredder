@@ -14,9 +14,13 @@ use \UnexpectedValueException;
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
- * @property $prefix
- * @property $titleCallback
- * @property $plaintextCallback
+ * @property string $prefix
+ * @property string|array|Closure $titleCallback
+ * @property string|array|Closure $plaintextCallback
+ * @property array $chunktags
+ * @property array $nostacktags
+ * @property array $sectiontags
+ * @property array $ignorabletags
  * @property PDO $database
  */
 class Setup {
@@ -40,6 +44,36 @@ class Setup {
 	 * @var string|array|Closure
 	 */
 	protected $plaintextCallback;
+
+	/**
+	 * Array of element types / tag names that mark the beginning of
+	 * a new chunk of text (can be either empty or non-empty elements).
+	 * @var array Indexed array of element names
+	 */
+	protected $chunktags = array('pb', 'milestone', 'div', 'front', 'body', 'titlePage');
+
+	/**
+	 * Array of element types / tag names that mark the beginning of
+	 * a new chunk of text, but which should not be indexed separately.
+	 * (Basically, these are more important for detecting text chunks'
+	 * ends than their beginning.)
+	 */
+	protected $nostacktags = array('text', 'group');
+
+	/**
+	 * Array of element types / tag names that mark the beginning of
+	 * a new chunk of text, but which should not be indexed separately.
+	 * (Basically, these are more important for detecting text chunks'
+	 * ends than their beginning.)
+	 */
+	protected $sectiontags = array('text', 'div', 'titlePage', 'front');
+
+	/**
+	 * Text that is inside these tags will skipped when extracting
+	 * plaintext fragments of the text.
+	 * @var string[]
+	 */
+	protected $ignorabletags = array('sic', 'del', 'orig');
 
 	/**
 	 * Database table prefix.
@@ -90,6 +124,30 @@ class Setup {
 				$head = isset($sx->head[0]) ? $sx->head[0]->asXml() : '';
 				return call_user_func($ptcallb, $head);
 			};
+		}
+	}
+
+	/**
+	 * Magic method for setting protected object properties.
+	 * @param string $name Property name
+	 * @param mixed $value Value to be assigned
+	 * @throws \UnexpectedValueException
+	 * @throws \InvalidArgumentException
+	 */
+	public function __set($name, $value) {
+
+		switch ($name) {
+			case 'chunktags':
+			case 'nostacktags':
+			case 'sectiontags':
+			case 'ignorabletags':
+				if (!is_array($value)) {
+					throw new InvalidArgumentException("$name must be an array");
+				}
+				$this->$name = $value;
+				break;
+			default:
+				throw new UnexpectedValueException("Invalid property name “".$name."”.");
 		}
 	}
 
