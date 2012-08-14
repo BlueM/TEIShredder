@@ -18,7 +18,6 @@ CREATE TABLE "<prefix>notation" (
 	"notation" TEXT,
 	"context" TEXT,
 	"container" TEXT,
-	"containerid" TEXT,
 	"chunk" INTEGER,
 	"notationhash" TEXT
 );

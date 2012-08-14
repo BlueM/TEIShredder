@@ -22,7 +22,6 @@ CREATE TABLE `<prefix>notation` (
   `notation` text NOT NULL COMMENT 'The exact string used in the text',
   `context` text COMMENT 'Text context; notation position is marked by <$>',
   `container` varchar(16) DEFAULT NULL COMMENT 'Type (tag) of container',
-  `containerid` varchar(20) DEFAULT NULL COMMENT 'Container element xml:id (may be empty)',
   `chunk` int(11) unsigned DEFAULT NULL COMMENT 'ID of the chunk in the chunk table',
   `notationhash` varchar(16) NOT NULL DEFAULT '' COMMENT 'Truncated MD5 hash of the notation',
   KEY `page` (`page`),

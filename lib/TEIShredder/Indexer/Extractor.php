@@ -89,12 +89,6 @@ class Indexer_Extractor extends Indexer {
 	protected $containers = array();
 
 	/**
-	 * Array that contains the containers' xml:id attribute values
-	 * @var array Indexed array
-	 */
-	protected $containerids = array();
-
-	/**
 	 * Indexed array that contains the container name/description,
 	 * such as the tag name or another arbitrary name.
 	 * @var array
@@ -170,8 +164,6 @@ class Indexer_Extractor extends Indexer {
 			$index ++;
 			$this->containerStack[] = $index;
 			$this->currContainerIndex = end($this->containerStack);
-
-			$this->containerids[$this->currContainerIndex] = $this->r->getAttribute('xml:id');
 
 			if ('note' == $this->r->localName) {
 				if ($this->r->getAttribute('resp')) {
@@ -277,7 +269,7 @@ class Indexer_Extractor extends Indexer {
 		$sth = $this->setup->database->prepare(
 			'INSERT INTO '.$this->setup->prefix.'notation'.
 			' (xmlid, page, chunk, domain, key, notation, context, container,'.
-			' containerid, notationhash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+			' notationhash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
 		);
 
 		foreach (array_values($this->tags) as $tag) {
@@ -331,7 +323,6 @@ class Indexer_Extractor extends Indexer {
 						preg_replace('#\s+#', ' ', $notation),
 						$context,
 						$this->containerTypes[$tag['container']],
-						$this->containerids[$tag['container']],
 						// For finding specific notations, we save a hash of the
 						// lowercased notation. For our purposes, just using the
 						// first 8 chars should be OK, as there is very little
