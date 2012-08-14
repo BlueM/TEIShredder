@@ -28,7 +28,7 @@
 
 		<body>
 
-			<pb xml:id="page-vol1-01" n="I" />
+			<pb xml:id="page-vol1-01" n="I" rend="rotated" />
 			<div>
 				<head>Foreword</head>
 				<p>The pages in this foreword have Roman page numbers, just to demonstrate the @n attribute is independent from the page numbering.</p>
