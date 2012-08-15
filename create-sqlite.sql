@@ -10,7 +10,7 @@ CREATE TABLE "<prefix>element" (
 	"data" TEXT
 );
 
-CREATE TABLE "<prefix>notation" (
+CREATE TABLE "<prefix>entity" (
 	"xmlid" TEXT,
 	"page" INTEGER NOT NULL,
 	"domain" TEXT NOT NULL,

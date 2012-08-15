@@ -14,7 +14,7 @@ CREATE TABLE `<prefix>element` (
   KEY `attrtargetend` (`attrtargetend`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Tracks elements with xml:id attributes and related data';
 
-CREATE TABLE `<prefix>notation` (
+CREATE TABLE `<prefix>entity` (
   `xmlid` varchar(20) DEFAULT '' COMMENT 'xml:id attr. of elemnt containing the object occurrence',
   `page` int(11) unsigned NOT NULL COMMENT 'Page number, 1-based',
   `domain` varchar(20) NOT NULL DEFAULT '' COMMENT 'Object domain',

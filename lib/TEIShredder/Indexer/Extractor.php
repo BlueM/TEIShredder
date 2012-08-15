@@ -267,7 +267,7 @@ class Indexer_Extractor extends Indexer {
 	protected function save() {
 
 		$sth = $this->setup->database->prepare(
-			'INSERT INTO '.$this->setup->prefix.'notation'.
+			'INSERT INTO '.$this->setup->prefix.'entity'.
 			' (xmlid, page, chunk, domain, key, notation, context, container,'.
 			' notationhash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
 		);
@@ -391,7 +391,7 @@ class Indexer_Extractor extends Indexer {
 		$db = $this->setup->database;
 		$prefix = $this->setup->prefix;
 		$db->exec("DELETE FROM ".$prefix.'element');
-		$db->exec('DELETE FROM '.$prefix.'notation');
+		$db->exec('DELETE FROM '.$prefix.'entity');
 	}
 
 }
