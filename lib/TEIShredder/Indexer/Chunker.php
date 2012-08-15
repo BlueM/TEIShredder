@@ -112,7 +112,7 @@ class Indexer_Chunker extends Indexer {
 			$this->currentChunk ++;
 
 			if ('pb' == $this->r->localName) {
-				$this->registerNewPage();
+				$this->newPage();
 			} elseif ('milestone' == $this->r->localName) {
 				$this->column = $this->r->getAttribute('unit');
 			} elseif ('group' == $this->r->localName) {
@@ -139,7 +139,7 @@ class Indexer_Chunker extends Indexer {
 					$this->level ++;
 				}
 
-				$this->startSection();
+				$this->newSection();
 			}
 
 			if ($chunktag) {
@@ -176,9 +176,9 @@ class Indexer_Chunker extends Indexer {
 	}
 
 	/**
-	 * Called when a new page (<pb/> tag) is encountered.
+	 * Called when a new page is encountered.
 	 */
-	protected function registerNewPage() {
+	protected function newPage() {
 
 		if ($this->pageObj) {
 			// Finish previous page
@@ -246,7 +246,7 @@ class Indexer_Chunker extends Indexer {
 	/**
 	 * Method which will called when a new section is encountered.
 	 */
-	protected function startSection() {
+	protected function newSection() {
 
 		if ($this->r->getAttribute('noindex')) {
 			// Should not be indexed
