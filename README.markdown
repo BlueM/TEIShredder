@@ -5,7 +5,7 @@ What is it?
 --------------
 TEIShredder is a set of PHP classes for indexing TEI XML documents and retrieving specific information later. The information extracted from the source document is saved in a relational database, i.e. it is a form of XML shredding – hence the name.
 
-TEIShredder is based on code that was written for a scholarly project called “Sandrart.net” ([www.sandrart.net](http://www.sandrart.net), cooperation project between Goethe-Universität Frankfurt am Main, Germany, and the Kunsthistorisches Institut, Florence, Italy, funded by the Deutsche Forschungsgemeinschaft [DFG]), but was heavily refactored to make it a stand-alone project/library
+TEIShredder is based on code that was written for a scholarly project called “Sandrart.net” ([www.sandrart.net](http://www.sandrart.net), cooperation project between Goethe-Universität Frankfurt am Main, Germany, and the Kunsthistorisches Institut, Florence, Italy, funded by the Deutsche Forschungsgemeinschaft [DFG]), but was modified to make it a stand-alone project/library.
 
 System requirements
 -----------------
@@ -19,7 +19,7 @@ There is no end-user documentation yet, but the code is fully documented with PH
 
 State of the project
 ---------------------
-Part of TEIShredder (primarily the indexing) is production-ready, but other parts are fragmentary, missing or inflexible. Personally, I’d suggest waiting some more time before considering to use it, as the API is not yet stable and the expectations regarding the input TEI (see below) will change.
+TEIShredder can be already useful, but as it is currently undergoing huge changes (including API and database schema), it is not yet recommended using it for other purposes than just testing.
 
 Using it
 ===========
