@@ -67,7 +67,7 @@ class XMLChunk {
 	protected $section;
 
 	/**
-	 * ID of the chunk's section in the text structure
+	 * Chunk's plaintext representation
 	 * @var string
 	 */
 	protected $plaintext;
