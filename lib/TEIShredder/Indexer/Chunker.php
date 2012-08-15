@@ -266,7 +266,7 @@ class Indexer_Chunker extends Indexer {
 		$db = $this->setup->database;
 
 		$db->exec(sprintf(
-			'INSERT INTO %sstructure (id, volume, title, page, level, element, xmlid) '.
+			'INSERT INTO %ssection (id, volume, title, page, level, element, xmlid) '.
 		    'VALUES (%d, %d, %s, %d, %d, %s, %s)',
 			$this->setup->prefix,
 			$this->currentSection,
@@ -331,7 +331,7 @@ class Indexer_Chunker extends Indexer {
 	protected function preProcessAction() {
 		$db = $this->setup->database;
 		$prefix = $this->setup->prefix;
-		$db->exec('DELETE FROM '.$prefix.'structure');
+		$db->exec('DELETE FROM '.$prefix.'section');
 		Page::flush($this->setup);
 		Volume::flush($this->setup);
 		XMLChunk::flush($this->setup);

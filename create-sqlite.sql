@@ -34,7 +34,7 @@ CREATE TABLE "<prefix>page" (
 	"facs" TEXT
 );
 
-CREATE TABLE "<prefix>structure" (
+CREATE TABLE "<prefix>section" (
 	"id" INTEGER PRIMARY KEY,
 	"volume" INTEGER,
 	"title" TEXT,
