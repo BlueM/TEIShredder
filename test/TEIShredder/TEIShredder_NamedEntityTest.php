@@ -87,8 +87,9 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 		$element->page = 123;
 		$element->domain = 'person';
 		$element->key = 'http://d-nb.info/gnd/118582143';
+		$element->contextstart = 'Painter ';
 		$element->notation = 'Michelangelo';
-		$element->context = 'Der Maler <$>.';
+		$element->contextend = ' lived in the renaissance';
 		$element->container = 'p';
 		$element->chunk = 456;
 		$element->notationhash = 'd1f9cc6d';
@@ -112,7 +113,6 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 		$element->domain = 'person';
 		$element->key = 'http://d-nb.info/gnd/118582143';
 		$element->notation = 'Michelangelo';
-		$element->context = 'Der Maler <$>.';
 		$element->save();
 	}
 
@@ -126,7 +126,6 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 		// $element->domain = 'person';
 		$element->key = 'http://d-nb.info/gnd/118582143';
 		$element->notation = 'Michelangelo';
-		$element->context = 'Der Maler <$>.';
 		$element->save();
 	}
 
@@ -140,7 +139,6 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 		$element->domain = 'person';
 		// $element->key = 'http://d-nb.info/gnd/118582143';
 		$element->notation = 'Michelangelo';
-		$element->context = 'Der Maler <$>.';
 		$element->save();
 	}
 
@@ -154,21 +152,6 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 		$element->domain = 'person';
 		$element->key = 'http://d-nb.info/gnd/118582143';
 		// $element->notation = 'Michelangelo';
-		$element->context = 'Der Maler <$>.';
-		$element->save();
-	}
-
-	/**
-	 * @test
-	 * @expectedException LogicException
-	 */
-	function makeSureANamedEntityRequiresAContext() {
-		$element = new NamedEntity($this->setup);
-		$element->page = 123;
-		$element->domain = 'person';
-		$element->key = 'http://d-nb.info/gnd/118582143';
-		$element->notation = 'Michelangelo';
-		// $element->context = 'Der Maler <$>.';
 		$element->save();
 	}
 

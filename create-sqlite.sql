@@ -15,8 +15,9 @@ CREATE TABLE "<prefix>entity" (
 	"page" INTEGER NOT NULL,
 	"domain" TEXT NOT NULL,
 	"key" TEXT NOT NULL,
+	"contextstart" TEXT,
 	"notation" TEXT,
-	"context" TEXT,
+	"contextend" TEXT,
 	"container" TEXT,
 	"chunk" INTEGER,
 	"notationhash" TEXT
