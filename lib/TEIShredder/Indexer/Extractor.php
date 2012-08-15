@@ -241,12 +241,6 @@ class Indexer_Extractor extends Indexer {
 	 */
 	protected function save() {
 
-		$sth = $this->setup->database->prepare(
-			'INSERT INTO '.$this->setup->prefix.'entity'.
-			' (xmlid, page, chunk, domain, key, notation, context, container,'.
-			' notationhash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-		);
-
 		foreach (array_values($this->tags) as $tag) {
 
 			if ('annotation' == $this->containerTypes[$tag['container']]) {
@@ -292,23 +286,20 @@ class Indexer_Extractor extends Indexer {
 				// a different target. If there are multiple entries,
 				// we have to add multiple records to support links
 				// with multiple targets
-				$sth->execute(
-					array(
-						$tag['xmlid'],
-						$tag['page'],
-						$tag['chunk'],
-						$tag['domain'],
-						$tag['key'][$i],
-						$notation,
-						$context,
-						$this->containerTypes[$tag['container']],
-						// For finding specific notations, we save a hash of the
-						// lowercased notation. For our purposes, just using the
-						// first 8 chars should be OK, as there is very little
-						// danger that collisions occur.
-						substr(md5(mb_convert_case(trim($notation), MB_CASE_LOWER)), 0, 8),
-					)
-				);
+				$entity = new NamedEntity($this->setup);
+				$entity->xmlid = $tag['xmlid'];
+				$entity->page = $tag['page'];
+				$entity->domain = $tag['domain'];
+				$entity->key = $tag['key'][$i];
+				$entity->notation = $notation;
+				$entity->context = $context;
+				$entity->container = $this->containerTypes[$tag['container']];
+				$entity->chunk = $tag['chunk'];
+				// For finding specific notations, we save a hash of the
+				// lowercased notation. For our purposes, just using the
+				// first 8 chars should be OK, as there is very little
+				// danger that collisions occur.
+				$entity->save();
 			}
 		}
 	}
