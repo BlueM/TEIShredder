@@ -65,7 +65,7 @@ class Indexer_Chunker extends Indexer {
 	protected $chunks = array();
 
 	/**
-	 * Variable used to collect current chunk's contents
+	 * Variable used to collect the current chunk's contents
 	 * @var string
 	 */
 	protected $xml = null;
@@ -126,6 +126,7 @@ class Indexer_Chunker extends Indexer {
 				$this->currentSection ++;
 
 				if ('text' == $this->r->localName) {
+
 					$this->data['currentVolume'] ++;
 
 					if ($this->settings['textbeforepb']) {
@@ -347,8 +348,8 @@ class Indexer_Chunker extends Indexer {
 		$db = $this->setup->database;
 		$prefix = $this->setup->prefix;
 		$db->exec('DELETE FROM '.$prefix.'structure');
-		$db->exec('DELETE FROM '.$prefix.'volume');
 		Page::flush($this->setup);
+		Volume::flush($this->setup);
 		XMLChunk::flush($this->setup);
 	}
 
@@ -381,12 +382,11 @@ class Indexer_Chunker extends Indexer {
 
 		$this->data['volTitles'][$this->data['currentVolume']] = true;
 
-		$db = $this->setup->database;
-		$db->exec(
-			'INSERT INTO '.$this->setup->prefix.'volume'.' (number, title, pagenumber)
-			 VALUES('.$db->quote($this->data['currentVolume']).',
-			 '.$db->quote($title).', '.$this->data['currTextStart'].')'
-		);
+		$volume = new Volume($this->setup);
+		$volume->number = $this->data['currentVolume'];
+		$volume->title = $title;
+		$volume->pagenumber = $this->data['currTextStart'];
+		$volume->save();
 
 	}
 }
