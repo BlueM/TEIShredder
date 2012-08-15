@@ -37,7 +37,7 @@ class Indexer_Chunker extends Indexer {
 	protected $poststack = array();
 
 	/**
-	 * Flag: are we inside of a chunk tag?
+	 * Flag: are we somewhere inside of a <text>?
 	 * @var bool
 	 */
 	protected $insidetext = false;
@@ -263,20 +263,15 @@ class Indexer_Chunker extends Indexer {
 			$title = call_user_func($this->setup->titleCallback, $this->r->readOuterXML());
 		}
 
-		$db = $this->setup->database;
-
-		$db->exec(sprintf(
-			'INSERT INTO %ssection (id, volume, title, page, level, element, xmlid) '.
-		    'VALUES (%d, %d, %s, %d, %d, %s, %s)',
-			$this->setup->prefix,
-			$this->currentSection,
-			$this->data['currentVolume'],
-			$db->quote($title),
-			$this->page ? $this->page : 1,
-			$this->level,
-			$db->quote($this->r->localName),
-			$db->quote($this->r->getAttribute('xml:id'))
-		));
+		$section = new Section($this->setup);
+		$section->id = $this->currentSection;
+		$section->volume = $this->data['currentVolume'];
+		$section->title = $title;
+		$section->page = $this->page ? $this->page : 1;
+		$section->level = $this->level;
+		$section->element = $this->r->localName;
+		$section->xmlid = $this->r->getAttribute('xml:id');
+		$section->save();
 	}
 
 	/**
@@ -290,6 +285,7 @@ class Indexer_Chunker extends Indexer {
 		$chunk->section = $this->currentSection;
 		$chunk->column = $this->column;
 		$chunk->prestack = join(' ', $this->prestack);
+		$chunk->xml = '';
 		$this->chunks[$chunk->id] = $chunk;
 	}
 
@@ -329,9 +325,7 @@ class Indexer_Chunker extends Indexer {
 	 * or to perform initialization steps.
 	 */
 	protected function preProcessAction() {
-		$db = $this->setup->database;
-		$prefix = $this->setup->prefix;
-		$db->exec('DELETE FROM '.$prefix.'section');
+		Section::flush($this->setup);
 		Page::flush($this->setup);
 		Volume::flush($this->setup);
 		XMLChunk::flush($this->setup);

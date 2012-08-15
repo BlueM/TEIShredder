@@ -85,8 +85,8 @@ class VolumeTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function saveANewVolume() {
 		$volume = new Volume($this->setup);
+		$volume->number = 6;
 		$volume->title = 'My book, volume VI';
-		$volume->number= 6;
 		$volume->pagenumber = 1234;
 		$volume->save();
 	}
