@@ -257,11 +257,16 @@ class Indexer_Extractor extends Indexer {
 			$context = $this->containers[$tag['container']];
 
 			// Insert marker for "own" notation, then remove other notations
-			$context = str_replace(array('<'.$tag['id'].'>', '</'.$tag['id'].'>'), '###', $context);
-			$context = preg_replace('#</?\d+>#', '', $context);
+			$context = preg_replace(
+				'#</?\d+>#',
+				'',
+				str_replace(array('<'.$tag['id'].'>', '</'.$tag['id'].'>'), '###', $context)
+			);
 
 			// Convert the context to plaintext
 			$context = call_user_func($this->setup->plaintextCallback, $context);
+
+			$context = trim(preg_replace('#\s+#u', ' ', $context));
 
 			// Limit the amount of context
 			@list($before, $notation, $after) = explode('###', $context);
@@ -281,7 +286,6 @@ class Indexer_Extractor extends Indexer {
 			}
 
 			$context = "$before<$>$after";
-			$context = trim(preg_replace('#\s+#u', ' ', $context));
 
 			for ($i = 0, $ii = count($tag['key']); $i < $ii; $i ++) {
 				// Each entry in array $tag['key'] points to
@@ -295,7 +299,7 @@ class Indexer_Extractor extends Indexer {
 						$tag['chunk'],
 						$tag['domain'],
 						$tag['key'][$i],
-						preg_replace('#\s+#', ' ', $notation),
+						$notation,
 						$context,
 						$this->containerTypes[$tag['container']],
 						// For finding specific notations, we save a hash of the
