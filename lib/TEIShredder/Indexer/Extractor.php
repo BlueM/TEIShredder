@@ -236,8 +236,8 @@ class Indexer_Extractor extends Indexer {
 	}
 
 	/**
-	 * Saves all the tags' data accumulated before (plus some additional
-	 * data, such as some context string) to the database.
+	 * Saves all the named entities' data accumulated before (plus some
+	 * additional data, such as some context string) to the database.
 	 */
 	protected function save() {
 
@@ -264,7 +264,7 @@ class Indexer_Extractor extends Indexer {
 			$context = call_user_func($this->setup->plaintextCallback, $context);
 
 			// Limit the amount of context
-			@list($before, $notation, $behind) = explode('###', $context);
+			@list($before, $notation, $after) = explode('###', $context);
 
 			if (mb_strlen($before) >= $this->contextlen) {
 				if (false !== $pos = strrpos($before, ' ', -$this->contextlen)) {
@@ -273,14 +273,14 @@ class Indexer_Extractor extends Indexer {
 				}
 			}
 
-			if (mb_strlen($behind) >= $this->contextlen) {
-				if (false !== $pos = strpos($behind, ' ', $this->contextlen)) {
+			if (mb_strlen($after) >= $this->contextlen) {
+				if (false !== $pos = strpos($after, ' ', $this->contextlen)) {
 					// Shorten "behind" text
-					$behind = substr($behind, 0, $pos).$this->omissionStr;
+					$after = substr($after, 0, $pos).$this->omissionStr;
 				}
 			}
 
-			$context = "$before<$>$behind";
+			$context = "$before<$>$after";
 			$context = trim(preg_replace('#\s+#u', ' ', $context));
 
 			for ($i = 0, $ii = count($tag['key']); $i < $ii; $i ++) {
@@ -323,7 +323,7 @@ class Indexer_Extractor extends Indexer {
 		if (isset($this->elementCallbacks[$this->r->localName])) {
 			$attrs = call_user_func($this->elementCallbacks[$this->r->localName], $this->r);
 		} else {
-			$attrs = array('n'=>'', 'targetend'=>'', 'data'=>'');
+			$attrs = array('attrn'=>'', 'attrtargetend'=>'', 'data'=>'');
 		}
 
 		$e = new Element($this->setup);
@@ -331,8 +331,8 @@ class Indexer_Extractor extends Indexer {
 		$e->element = $this->r->localName;
 		$e->page = $this->page;
 		$e->chunk = $this->currentChunk;
-		$e->attrn = $attrs['n'];
-		$e->attrtargetend = $attrs['targetend'];
+		$e->attrn = $attrs['attrn'];
+		$e->attrtargetend = $attrs['attrtargetend'];
 		$e->data = $attrs['data'];
 		$e->save();
 	}

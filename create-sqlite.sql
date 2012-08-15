@@ -22,7 +22,7 @@ CREATE TABLE "<prefix>entity" (
 	"notationhash" TEXT
 );
 
-CREATE INDEX "domain-key" ON "<prefix>notation" ("domain","key");
+CREATE INDEX "domain-key" ON "<prefix>entity" ("domain","key");
 
 CREATE TABLE "<prefix>page" (
 	"number" INTEGER PRIMARY KEY,
