@@ -18,19 +18,6 @@ use \RuntimeException;
 class Indexer_Extractor extends Indexer {
 
 	/**
-	 * Maximum number of characters to use for the context before a match and
-	 * the context behind a match.
-	 * @var int
-	 */
-	public $contextlen = 100;
-
-	/**
-	 * String to use for marking omissions in a notation's context
-	 * @var string
-	 */
-	public $omissionStr = "\342\200\246";
-
-	/**
 	 * Array of elements that are regarded as distinct text containers
 	 * @var string[] Indexed array of element names
 	 * @todo Move to setup class?
@@ -265,22 +252,6 @@ class Indexer_Extractor extends Indexer {
 			// Limit the amount of context
 			@list($before, $notation, $after) = explode('###', $context);
 
-			if (mb_strlen($before) >= $this->contextlen) {
-				if (false !== $pos = strrpos($before, ' ', -$this->contextlen)) {
-					// Shorten "before" text
-					$before = $this->omissionStr.substr($before, $pos);
-				}
-			}
-
-			if (mb_strlen($after) >= $this->contextlen) {
-				if (false !== $pos = strpos($after, ' ', $this->contextlen)) {
-					// Shorten "behind" text
-					$after = substr($after, 0, $pos).$this->omissionStr;
-				}
-			}
-
-			$context = "$before<$>$after";
-
 			for ($i = 0, $ii = count($tag['key']); $i < $ii; $i ++) {
 				// Each entry in array $tag['key'] points to
 				// a different target. If there are multiple entries,
@@ -291,8 +262,9 @@ class Indexer_Extractor extends Indexer {
 				$entity->page = $tag['page'];
 				$entity->domain = $tag['domain'];
 				$entity->key = $tag['key'][$i];
+				$entity->contextstart = $before;
 				$entity->notation = $notation;
-				$entity->context = $context;
+				$entity->contextend = $after;
 				$entity->container = $this->containerTypes[$tag['container']];
 				$entity->chunk = $tag['chunk'];
 				// For finding specific notations, we save a hash of the

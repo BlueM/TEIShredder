@@ -14,8 +14,9 @@ use \LogicException;
  * @property int $page
  * @property string $domain
  * @property string $key
+ * @property string $contextstart
  * @property string $notation
- * @property string $context
+ * @property string $contextend
  * @property string $container
  * @property int $chunk
  * @property string $notationhash
@@ -49,17 +50,22 @@ class NamedEntity extends Model {
 	protected $key;
 
 	/**
+	 * Context after the notation.
+	 * @var int
+	 */
+	protected $contextend;
+
+	/**
 	 * The exact string used in the text to refer to the entity
 	 * @var string
 	 */
 	protected $notation;
 
 	/**
-	 * Surrounding plaintext context. In this context, the notation
-	 * is replaced by “<$>”
+	 * Context before the notation.
 	 * @var int
 	 */
-	protected $context;
+	protected $contextstart;
 
 	/**
 	 * Type of containing element.
@@ -88,7 +94,7 @@ class NamedEntity extends Model {
 	public function save() {
 
 		// Basic integrity check
-		foreach (array('page', 'domain', 'key', 'notation', 'context') as $property) {
+		foreach (array('page', 'domain', 'key', 'notation') as $property) {
 			if (is_null($this->$property) or
 			    '' === $this->$property) {
 				throw new LogicException("Integrity check failed: $property cannot be empty.");
@@ -97,8 +103,8 @@ class NamedEntity extends Model {
 
 		$stm = $this->_setup->database->prepare(
 			'INSERT INTO '.$this->_setup->prefix.'entity '.
-			'(xmlid, page, domain, key, notation, context, container, chunk, notationhash) '.
-			'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+			'(xmlid, page, domain, key, contextstart, notation, contextend, container, chunk, notationhash) '.
+			'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 		);
 
 		$stm->execute(array(
@@ -106,8 +112,9 @@ class NamedEntity extends Model {
 			$this->page,
 			$this->domain,
 			$this->key,
+			$this->contextstart,
 			$this->notation,
-			$this->context,
+			$this->contextend,
 			$this->container,
 			$this->chunk,
 			substr(md5(mb_convert_case(trim($this->notation), MB_CASE_LOWER)), 0, 10),
@@ -126,8 +133,28 @@ class NamedEntity extends Model {
 	 * @param string $name Property name
 	 * @param mixed $value Value to be assigned
 	 */
-//	public function __set($name, $value) {
-//		parent::__set($name, $value);
-//	}
+	public function __set($name, $value) {
+		parent::__set($name, $value);
+
+		$length = 100;
+		$omission = '…';
+
+		if ('contextstart' == $name) {
+		    if (mb_strlen($this->contextstart) >= $length and
+			    false !== $pos = strrpos($this->contextstart, ' ', -$length)) {
+				// Limit length of the context start
+				$this->contextstart = $omission.substr($this->contextstart, $pos);
+			}
+			return;
+		}
+
+		if ('contextstart' == $name) {
+			if (mb_strlen($this->contextend) >= $length and
+			    false !== $pos = strpos($this->contextend, ' ', $length)) {
+				// Limit length of the context end
+				$this->contextend = substr($this->contextend, 0, $pos).$omission;
+			}
+		}
+	}
 
 }
