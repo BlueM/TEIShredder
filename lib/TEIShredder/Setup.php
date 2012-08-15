@@ -64,11 +64,9 @@ class Setup {
 
 	/**
 	 * Array of element types / tag names that mark the beginning of
-	 * a new chunk of text, but which should not be indexed separately.
-	 * (Basically, these are more important for detecting text chunks'
-	 * ends than their beginning.)
+	 * a new text section.
 	 */
-	protected $sectiontags = array('text', 'div', 'titlePage', 'front');
+	#protected $sectiontags = array('text', 'div', 'titlePage', 'front');
 
 	/**
 	 * Text that is inside these tags will skipped when extracting

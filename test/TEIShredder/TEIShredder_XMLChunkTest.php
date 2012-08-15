@@ -177,7 +177,7 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 	 * @depends getTheChunksForPage2
 	 */
 	function getTheChunksSection(XMLChunk $chunk) {
-		$this->assertEquals(5, $chunk->section);
+		$this->assertEquals(6, $chunk->section);
 	}
 
 	/**

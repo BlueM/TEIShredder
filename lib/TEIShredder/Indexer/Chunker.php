@@ -97,22 +97,15 @@ class Indexer_Chunker extends Indexer {
 
 		$chunktag   = in_array($this->r->localName, $this->setup->chunktags);
 		$nostacktag = in_array($this->r->localName, $this->setup->nostacktags);
-		$sectiontag = in_array($this->r->localName, $this->setup->sectiontags);
 
 		if ($chunktag or
 			$nostacktag) {
-
-			if ($chunktag) {
-				$this->insidetext = true;
-			}
 
 			if ($this->currentChunk) {
 				// Finish data for previous chunk of XML. We can't simply do that when
 				// the tag ends, because we need to separately save the "A" in
 				// something like "<div>A<p>B</p>C</div>"
 				$this->finishChunk();
-
-				// Empty the XML variable
 				$this->xml = '';
 			}
 
@@ -122,11 +115,17 @@ class Indexer_Chunker extends Indexer {
 				$this->registerNewPage();
 			} elseif ('milestone' == $this->r->localName) {
 				$this->column = $this->r->getAttribute('unit');
-			} elseif ($sectiontag) {
+			} elseif ('group' == $this->r->localName) {
+				// A group of <text>s, i.e. drop the <text> we saw previously, as it
+				// was just the enclosure of some inner <text> inside the <group>.
+				$this->data['currentVolume'] = 0;
+				$this->insidetext = false;
+			} else {
 				$this->currentSection ++;
 
 				if ('text' == $this->r->localName) {
 
+					$this->insidetext = true;
 					$this->data['currentVolume'] ++;
 
 					if ($this->settings['textbeforepb']) {
@@ -141,11 +140,6 @@ class Indexer_Chunker extends Indexer {
 				}
 
 				$this->startSection();
-
-			} elseif ('group' == $this->r->localName) {
-				// A group of <text>s, i.e. drop the <text> we saw previously, as it
-				// was just the enclosure of some inner <text> inside the <group>.
-				$this->data['currentVolume'] = 0;
 			}
 
 			if ($chunktag) {
@@ -156,22 +150,17 @@ class Indexer_Chunker extends Indexer {
 			$this->processTitlePart();
 		}
 
-		if (!$this->insidetext) {
-			// Not in the main text -- ignore
+		if ($this->r->isEmptyElement) {
 			return;
 		}
 
 		$this->xml .= $this->r->nodeOpenString();
-
 		if (in_array($this->r->localName, $this->setup->blocktags)) {
 			$this->xml .= "\n";
 		}
 
-		if (!$this->r->isEmptyElement and
-			!$nostacktag) {
-			array_push($this->prestack, $this->r->nodeOpenString(true));
-			array_unshift($this->poststack, '</'.$this->r->localName.'>');
-		}
+		array_push($this->prestack, $this->r->nodeOpenString(true));
+		array_unshift($this->poststack, '</'.$this->r->localName.'>');
 	}
 
 	/**
@@ -217,16 +206,14 @@ class Indexer_Chunker extends Indexer {
 		}
 	}
 
-
 	/**
 	 * Method that's called when the input stream reaches a closing tag
 	 */
 	protected function nodeClose() {
 
-		$nostacktag = in_array($this->r->localName, $this->setup->nostacktags);
+		$textorgroup = in_array($this->r->localName, $this->setup->nostacktags);
 
-		if ($this->insidetext and
-			$nostacktag) {
+		if ($textorgroup) {
 			// Finish data for previous chunk
 			$this->finishChunk();
 
@@ -245,17 +232,15 @@ class Indexer_Chunker extends Indexer {
 		}
 
 		if ($this->currentChunk and
-			!$nostacktag) {
+			!$textorgroup) {
 			$this->xml .= '</'.$this->r->localName.'>';
 			if (in_array($this->r->localName, $this->setup->blocktags)) {
 				$this->xml .= "\n";
 			}
 		}
 
-		if (!$nostacktag) {
-			array_pop($this->prestack);
-			array_shift($this->poststack);
-		}
+		array_pop($this->prestack);
+		array_shift($this->poststack);
 	}
 
 	/**
@@ -334,7 +319,7 @@ class Indexer_Chunker extends Indexer {
 		$chunk->poststack = join(' ', $this->poststack);
 		$chunk->save();
 
-		// Dispose of chunk
+		// Dispose of the chunk
 		unset($this->chunks[$this->currentChunk]);
 	}
 
@@ -344,7 +329,6 @@ class Indexer_Chunker extends Indexer {
 	 * or to perform initialization steps.
 	 */
 	protected function preProcessAction() {
-		// Empty the tables
 		$db = $this->setup->database;
 		$prefix = $this->setup->prefix;
 		$db->exec('DELETE FROM '.$prefix.'structure');
