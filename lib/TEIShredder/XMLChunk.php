@@ -3,8 +3,6 @@
 namespace TEIShredder;
 
 use \PDO;
-use \UnexpectedValueException;
-use \RuntimeException;
 
 /**
  * Class for retrieving well-formed XML fragments from the source TEI document.
@@ -21,13 +19,13 @@ use \RuntimeException;
  * @property int $section
  * @property string $plaintext
  */
-class XMLChunk {
+class XMLChunk extends Model {
 
 	/**
 	 * Chunk ID
 	 * @var int
 	 */
-	protected $id = 0;
+	protected $id;
 
 	/**
 	 * Info on column that contains this chunk
@@ -71,20 +69,6 @@ class XMLChunk {
 	 * @var string
 	 */
 	protected $plaintext;
-
-	/**
-	 * Instance of the Setup class.
-	 * @var Setup
-	 */
-	protected $_setup;
-
-	/**
-	 * Constructor.
-	 * @param Setup $setup
-	 */
-	function __construct(Setup $setup) {
-		$this->_setup = $setup;
-	}
 
 	/**
 	 * Removes all chunks
@@ -136,36 +120,6 @@ class XMLChunk {
 		$stm->execute(array($page));
 		$stm->setFetchMode(PDO::FETCH_CLASS, __CLASS__, array($setup));
 		return $stm->fetchAll();
-	}
-
-	/**
-	 * Returns one of the class properties' values
-	 * @param $name
-	 * @return mixed
-	 * @throws UnexpectedValueException
-	 */
-	public function __get($name) {
-		if (in_array($name, array_keys(get_class_vars(__CLASS__)))) {
-			return $this->$name;
-		}
-		throw new UnexpectedValueException("Invalid property name “".$name."”");
-	}
-
-	/**
-	 * Magic method for setting protected object properties from outside.
-	 * @param string $name Property name
-	 * @param mixed $value Value to be assigned
-	 * @throws UnexpectedValueException
-	 */
-	public function __set($name, $value) {
-		$properties = array_keys(get_class_vars(__CLASS__));
-		if (!in_array($name, $properties)) {
-			throw new UnexpectedValueException("Invalid property name “".$name."”.");
-		}
-		if ('_' === substr($name, 0, 1)) {
-			throw new UnexpectedValueException("Property “".$name."” can not be set.");
-		}
-		$this->$name = $value;
 	}
 
 	/**

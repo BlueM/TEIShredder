@@ -2,9 +2,6 @@
 
 namespace TEIShredder;
 
-use \PDO;
-use \UnexpectedValueException;
-use \RuntimeException;
 use \LogicException;
 
 /**
@@ -21,7 +18,7 @@ use \LogicException;
  * @property string $element
  * @property string $xmlid
  */
-class Section {
+class Section extends Model {
 
 	/**
 	 * Section ID
@@ -67,20 +64,6 @@ class Section {
 	protected $xmlid;
 
 	/**
-	 * Instance of the Setup class.
-	 * @var Setup
-	 */
-	protected $_setup;
-
-	/**
-	 * Constructor.
-	 * @param Setup $setup
-	 */
-	function __construct(Setup $setup) {
-		$this->_setup = $setup;
-	}
-
-	/**
 	 * Adds an XML chunk (not expected to perform updates)
 	 * @throws LogicException
 	 */
@@ -110,36 +93,6 @@ class Section {
 			$this->element,
 			(string)$this->xmlid,
 		));
-	}
-
-	/**
-	 * Returns one of the class properties' values
-	 * @param $name
-	 * @return mixed
-	 * @throws UnexpectedValueException
-	 */
-	public function __get($name) {
-		if (in_array($name, array_keys(get_class_vars(__CLASS__)))) {
-			return $this->$name;
-		}
-		throw new UnexpectedValueException("Invalid property name “".$name."”");
-	}
-
-	/**
-	 * Magic method for setting protected object properties from outside.
-	 * @param string $name Property name
-	 * @param mixed $value Value to be assigned
-	 * @throws UnexpectedValueException
-	 */
-	public function __set($name, $value) {
-		$properties = array_keys(get_class_vars(__CLASS__));
-		if (!in_array($name, $properties)) {
-			throw new UnexpectedValueException("Invalid property name “".$name."”.");
-		}
-		if ('_' === substr($name, 0, 1)) {
-			throw new UnexpectedValueException("Property “".$name."” can not be set.");
-		}
-		$this->$name = $value;
 	}
 
 	/**
