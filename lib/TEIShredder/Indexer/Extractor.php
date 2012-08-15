@@ -96,27 +96,6 @@ class Indexer_Extractor extends Indexer {
 	protected $containerTypes = array();
 
 	/**
-	 * Prepared statment to be used by saveId()
-	 * @var PDOStatement
-	 */
-	protected $insertstm;
-
-	/**
-	 * Constructor
-	 * @param Setup $setup
-	 * @param XMLReader $xmlreader
-	 * @param string $xml
-	 */
-	public function __construct(Setup $setup, XMLReader $xmlreader, $xml) {
-		parent::__construct($setup, $xmlreader, $xml);
-		$this->insertstm = $this->setup->database->prepare(
-			'INSERT INTO '.$this->setup->prefix.'element'.
-			' (xmlid, element, page, chunk, attrn, attrtargetend, data)'.
-			' VALUES (?, ?, ?, ?, ?, ?, ?)'
-		);
-	}
-
-	/**
 	 * Method that's called when the stream reaches an opening or empty tag.
 	 * @return mixed
 	 * @throws RuntimeException
@@ -138,18 +117,14 @@ class Indexer_Extractor extends Indexer {
 		}
 
 		if ('pb' == $this->r->localName) {
-			// Increase the page number
+			// New page: increase page number, save element and return
 			$this->page ++;
-		}
-
-		// Save the element's xml:id attribute (if it exists)
-		$this->saveId();
-
-		if ('pb' == $this->r->localName) {
-			// Now that the xml:id attribute was saved, we don't
-			// need any further processing steps for <pb />
+			$this->newElement();
 			return;
 		}
+
+		// Any other case: save element
+		$this->newElement();
 
 		if ('lb' == $this->r->localName or
 		    'milestone' == $this->r->localName) {
@@ -336,33 +311,30 @@ class Indexer_Extractor extends Indexer {
 
 	/**
 	 * Records occurrences of any elements that have an xml:id attribute.
-	 * This method serves different purposes than save() -- it does nothing
-	 * but record which xml:id attribute occurs on which page in which text
-	 * chunk.
 	 */
-	protected function saveId() {
+	protected function newElement() {
 
-		if ('' == $idattr = $this->r->getAttribute('xml:id')) {
+		if ('' == $xmlid = $this->r->getAttribute('xml:id')) {
 			// No xml:id attribute >> nothing to do
 			return;
 		}
 
 		// Add attributes we need for various purposes
-		$n = $targetend = $data = '';
 		if (isset($this->elementCallbacks[$this->r->localName])) {
-			// Set $n, $targetend and $data from a callback return value
-			extract(call_user_func($this->elementCallbacks[$this->r->localName], $this->r));
+			$attrs = call_user_func($this->elementCallbacks[$this->r->localName], $this->r);
+		} else {
+			$attrs = array('n'=>'', 'targetend'=>'', 'data'=>'');
 		}
 
-		$this->insertstm->execute(array(
-			$idattr,
-			$this->r->localName,
-			(int)$this->page,
-			$this->currentChunk,
-			$n,
-			$targetend,
-			$data
-		));
+		$e = new Element($this->setup);
+		$e->xmlid = $xmlid;
+		$e->element = $this->r->localName;
+		$e->page = $this->page;
+		$e->chunk = $this->currentChunk;
+		$e->attrn = $attrs['n'];
+		$e->attrtargetend = $attrs['targetend'];
+		$e->data = $attrs['data'];
+		$e->save();
 	}
 
 	/**
@@ -390,7 +362,7 @@ class Indexer_Extractor extends Indexer {
 	protected function preProcessAction() {
 		$db = $this->setup->database;
 		$prefix = $this->setup->prefix;
-		$db->exec("DELETE FROM ".$prefix.'element');
+		Element::flush($this->setup);
 		$db->exec('DELETE FROM '.$prefix.'entity');
 	}
 
