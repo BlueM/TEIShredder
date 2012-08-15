@@ -29,7 +29,7 @@ class DocumentInfo {
 	}
 
 	/**
-	 * Returns all structure entries/sections as associative array.
+	 * Returns all sections as associative array.
 	 * @param Setup $setup
 	 * @param int $volume Volume number.
 	 * @return array Indexed array of associative arrays with keys "id", "page",
@@ -39,10 +39,9 @@ class DocumentInfo {
 	public static function fetchStructure(Setup $setup, $volume) {
 		$db = $setup->database;
 		$res = $db->query("SELECT id, page, title, level, xmlid ".
-		                  "FROM ".$setup->prefix.'structure '.
+		                  "FROM ".$setup->prefix.'section '.
 		                  "WHERE level > 0 AND volume = ".$db->quote($volume)." ".
 		                  "ORDER BY id");
-
 		$sections = $res->fetchAll(PDO::FETCH_ASSOC);
 		$lastlevel = 0;
 
@@ -200,7 +199,7 @@ class DocumentInfo {
 	 */
 	public static function fetchStructureDataForSection(Setup $setup, $section) {
 		$db = $setup->database;
-		$structtable = $setup->prefix.'structure';
+		$structtable = $setup->prefix.'section';
 		$pagetable = $setup->prefix.'page';
 		$section = $db->quote($section);
 
