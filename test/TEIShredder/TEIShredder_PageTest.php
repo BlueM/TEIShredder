@@ -82,10 +82,29 @@ class PageTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
+	 * @expectedException LogicException
+	 */
+	function makeSureAPageRequiresANumber() {
+		$page = new Page($this->setup);
+		$page->save();
+	}
+
+	/**
+	 * @test
+	 * @expectedException LogicException
+	 */
+	function makeSureAPageRequiresAVolume() {
+		$page = new Page($this->setup);
+		$page->number = 1234;
+		$page->save();
+	}
+
+	/**
+	 * @test
 	 */
 	function saveANewPage() {
 		$page = new Page($this->setup);
-		$page->number= 15;
+		$page->number = 15;
 		$page->xmlid = "pb-15";
 		$page->rend = "normal";
 		$page->n = "XV";
@@ -102,6 +121,4 @@ class PageTest extends \PHPUnit_Framework_TestCase {
 	}
 
 }
-
-
 

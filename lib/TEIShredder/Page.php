@@ -5,9 +5,10 @@ namespace TEIShredder;
 use \PDO;
 use \UnexpectedValueException;
 use \RuntimeException;
+use \LogicException;
 
 /**
- * #todo
+ * Model class for physical pages in the underlying TEI document.
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
@@ -75,12 +76,19 @@ class Page {
 
 	/**
 	 * Saves a page
+	 * @throws LogicException
 	 */
 	public function save() {
 
-		$db = $this->_setup->database;
+		// Primitive integrity check: make sure that properties
+		// that can never be empty are not empty.
+		foreach (array('number', 'volume') as $property) {
+			if (0 >= intval($this->$property)) {
+				throw new LogicException("Integrity check failed: $property cannot be empty.");
+			}
+		}
 
-		$stm = $db->prepare(
+		$stm = $this->_setup->database->prepare(
 			'INSERT INTO '.$this->_setup->prefix.'page '.
 			'(number, xmlid, volume, plaintext, n, rend) '.
 			'VALUES (?, ?, ?, ?, ?, ?)'

@@ -102,5 +102,75 @@ class SectionTest extends \PHPUnit_Framework_TestCase {
 		Section::flush($this->setup);
 	}
 
+	/**
+	 * @test
+	 * @expectedException LogicException
+	 */
+	function makeSureASectionRequiresAnId() {
+		$section = new Section($this->setup);
+		// $section->id = 13;
+		$section->volume = 2;
+		$section->page = 57;
+		$section->level = 2;
+		$section->element = 'div';
+		$section->save();
+	}
+
+	/**
+	 * @test
+	 * @expectedException LogicException
+	 */
+	function makeSureASectionRequiresAVolume() {
+		$section = new Section($this->setup);
+		$section->id = 13;
+		// $section->volume = 2;
+		$section->page = 57;
+		$section->level = 2;
+		$section->element = 'div';
+		$section->save();
+	}
+
+	/**
+	 * @test
+	 * @expectedException LogicException
+	 */
+	function makeSureASectionRequiresAPage() {
+		$section = new Section($this->setup);
+		$section->id = 13;
+		$section->volume = 2;
+		// $section->page = 57;
+		$section->level = 2;
+		$section->element = 'div';
+		$section->save();
+	}
+
+	/**
+	 * @test
+	 * @expectedException LogicException
+	 */
+	function makeSureASectionRequiresAnElement() {
+		$section = new Section($this->setup);
+		$section->id = 13;
+		$section->volume = 2;
+		$section->page = 57;
+		$section->level = 2;
+		// $section->element = 'div';
+		$section->save();
+	}
+
+	/**
+	 * @test
+	 * @expectedException LogicException
+	 */
+	function makeSureASectionRequiresALevel() {
+		$section = new Section($this->setup);
+		$section->id = 13;
+		$section->volume = 2;
+		$section->page = 57;
+		// $section->level = 2;
+		$section->element = 'div';
+		$section->save();
+	}
+
 }
 

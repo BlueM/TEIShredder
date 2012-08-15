@@ -5,9 +5,10 @@ namespace TEIShredder;
 use \PDO;
 use \UnexpectedValueException;
 use \RuntimeException;
+use \LogicException;
 
 /**
- * #todo
+ * Model class for sections in the underlying TEI document.
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
@@ -81,8 +82,18 @@ class Section {
 
 	/**
 	 * Adds an XML chunk (not expected to perform updates)
+	 * @throws LogicException
 	 */
 	public function save() {
+
+		// Basic integrity check: make sure that properties
+		// that can never be empty are not empty.
+		foreach (array('id', 'volume', 'page', 'level', 'element') as $property) {
+			if (is_null($this->$property) or
+			    '' === $this->$property) {
+				throw new LogicException("Integrity check failed: $property cannot be empty.");
+			}
+		}
 
 		$stm = $this->_setup->database->prepare(
 			'INSERT INTO '.$this->_setup->prefix.'section '.

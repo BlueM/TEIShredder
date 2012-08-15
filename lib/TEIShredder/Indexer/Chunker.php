@@ -255,7 +255,7 @@ class Indexer_Chunker extends Indexer {
 
 		if ('text'  == $this->r->localName or
 		    'front' == $this->r->localName) {
-			// <text> must not contain <head> directly
+			// <text> must not contain <head>, hence there is no title
 			$title = '';
 		} elseif ('titlePage' == $this->r->localName) {
 			$title = $this->titlePageLabel;
