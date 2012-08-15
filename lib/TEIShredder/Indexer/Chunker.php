@@ -150,13 +150,13 @@ class Indexer_Chunker extends Indexer {
 			$this->processTitlePart();
 		}
 
-		if ($this->r->isEmptyElement) {
-			return;
-		}
-
 		$this->xml .= $this->r->nodeOpenString();
 		if (in_array($this->r->localName, $this->setup->blocktags)) {
 			$this->xml .= "\n";
+		}
+
+		if ($this->r->isEmptyElement) {
+			return;
 		}
 
 		array_push($this->prestack, $this->r->nodeOpenString(true));
