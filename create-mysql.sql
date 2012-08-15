@@ -56,7 +56,7 @@ CREATE TABLE `<prefix>structure` (
 CREATE TABLE `<prefix>volume` (
   `number` int(11) unsigned NOT NULL COMMENT 'Number of the volume',
   `title` text NOT NULL COMMENT 'Title of the volume',
-  `pagenum` int(11) NOT NULL COMMENT 'Pagenumber the volume starts at',
+  `pagenumber` int(11) NOT NULL COMMENT 'Pagenumber the volume starts at',
   PRIMARY KEY (`number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Volumes and their titles';
 

@@ -47,7 +47,7 @@ CREATE TABLE "<prefix>structure" (
 CREATE TABLE "<prefix>volume" (
 	  "number" INTEGER NOT NULL,
 	  "title" text NOT NULL,
-	  "pagenum" INTEGER NOT NULL,
+	  "pagenumber" INTEGER NOT NULL,
 	  PRIMARY KEY ("number")
 );
 

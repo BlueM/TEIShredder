@@ -383,7 +383,7 @@ class Indexer_Chunker extends Indexer {
 
 		$db = $this->setup->database;
 		$db->exec(
-			'INSERT INTO '.$this->setup->prefix.'volume'.' (number, title, pagenum)
+			'INSERT INTO '.$this->setup->prefix.'volume'.' (number, title, pagenumber)
 			 VALUES('.$db->quote($this->data['currentVolume']).',
 			 '.$db->quote($title).', '.$this->data['currTextStart'].')'
 		);

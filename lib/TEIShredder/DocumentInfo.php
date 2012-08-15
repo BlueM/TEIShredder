@@ -158,12 +158,12 @@ class DocumentInfo {
 	public static function fetchVolumes(Setup $setup) {
 		$volumes = array();
 		$res = $setup->database->query(
-			'SELECT number, title, pagenum FROM '.$setup->prefix.'volume ORDER BY number'
+			'SELECT number, title, pagenumber FROM '.$setup->prefix.'volume ORDER BY number'
 		);
 		foreach ($res->fetchAll(PDO::FETCH_NUM) as $row) {
 			$volumes[$row[0]] = array(
 				'title'=>$row[1],
-				'pagenum'=>$row[2],
+				'pagenumber'=>$row[2],
 			);
 		}
 		return $volumes;

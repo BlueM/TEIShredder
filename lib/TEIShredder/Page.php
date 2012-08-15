@@ -22,8 +22,8 @@ use \RuntimeException;
 class Page {
 
 	/**
-	 * Page number. (Numerical unique number, not the arabic or Roman
-	 * number that might have been encoded into @n.)
+	 * Page number. (Numerical unique number, not the "label"
+	 * that might have been encoded into @n)
 	 * @var int
 	 */
 	protected $number;
@@ -74,7 +74,7 @@ class Page {
 	}
 
 	/**
-	 * Adds an XML chunk (not expected to perform updates)
+	 * Saves a page
 	 */
 	public function save() {
 
