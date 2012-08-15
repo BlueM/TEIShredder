@@ -21,6 +21,8 @@ use \UnexpectedValueException;
  * @property array $nostacktags
  * @property array $sectiontags
  * @property array $ignorabletags
+ * @property array $structureleveltags
+ * @property array $blocktags
  * @property PDO $database
  */
 class Setup {
@@ -74,6 +76,21 @@ class Setup {
 	 * @var string[]
 	 */
 	protected $ignorabletags = array('sic', 'del', 'orig');
+
+	/**
+	 * Text that is inside these tags will skipped when extracting
+	 * plaintext fragments of the text.
+	 * @var string[]
+	 */
+	protected $structureleveltags = array('div', 'titlePage');
+
+	/**
+	 * Array of element types / tag names that are regarded as block
+	 * elements, i.e. after which whitespace is inserted.
+	 * @var array Indexed array of element names
+	 */
+	protected $blocktags = array('p', 'pb', 'div', 'milestone', 'figure',
+	                             'text', 'body', 'argument', 'lb', 'head');
 
 	/**
 	 * Database table prefix.
@@ -141,6 +158,8 @@ class Setup {
 			case 'nostacktags':
 			case 'sectiontags':
 			case 'ignorabletags':
+			case 'structureleveltags':
+			case 'blocktags':
 				if (!is_array($value)) {
 					throw new InvalidArgumentException("$name must be an array");
 				}

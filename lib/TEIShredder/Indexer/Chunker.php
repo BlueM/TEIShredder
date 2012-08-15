@@ -65,14 +65,6 @@ class Indexer_Chunker extends Indexer {
 	protected $chunks = array();
 
 	/**
-	 * Array of element types / tag names that are regarded as block
-	 * elements, i.e. after which whitespace is inserted
-	 * @var array Indexed array of element names
-	 */
-	protected $blocktags = array('p', 'pb', 'div', 'milestone', 'figure',
-	                             'text', 'body', 'argument', 'lb', 'head');
-
-	/**
 	 * Variable used to collect current chunk's contents
 	 * @var string
 	 */
@@ -143,8 +135,7 @@ class Indexer_Chunker extends Indexer {
 					}
 				}
 
-				if ('div' == $this->r->localName or
-				    'titlePage' == $this->r->localName) {
+				if (in_array($this->r->localName, $this->setup->structureleveltags)) {
 					$this->level ++;
 				}
 
@@ -171,7 +162,7 @@ class Indexer_Chunker extends Indexer {
 
 		$this->xml .= $this->r->nodeOpenString();
 
-		if (in_array($this->r->localName, $this->blocktags)) {
+		if (in_array($this->r->localName, $this->setup->blocktags)) {
 			$this->xml .= "\n";
 		}
 
@@ -248,15 +239,14 @@ class Indexer_Chunker extends Indexer {
 			$this->currentChunk ++;
 		}
 
-		if ('div' == $this->r->localName or
-		    'titlePage' == $this->r->localName) {
+		if (in_array($this->r->localName, $this->setup->structureleveltags)) {
 			$this->level --;
 		}
 
 		if ($this->currentChunk and
 			!$nostacktag) {
 			$this->xml .= '</'.$this->r->localName.'>';
-			if (in_array($this->r->localName, $this->blocktags)) {
+			if (in_array($this->r->localName, $this->setup->blocktags)) {
 				$this->xml .= "\n";
 			}
 		}
@@ -287,8 +277,6 @@ class Indexer_Chunker extends Indexer {
 			$title = call_user_func($this->setup->titleCallback, $this->r->readOuterXML());
 		}
 
-		$level = $this->level;
-
 		$db = $this->setup->database;
 
 		$db->exec(sprintf(
@@ -299,7 +287,7 @@ class Indexer_Chunker extends Indexer {
 			$this->data['currentVolume'],
 			$db->quote($title),
 			$this->page ? $this->page : 1,
-			$level,
+			$this->level,
 			$db->quote($this->r->localName),
 			$db->quote($this->r->getAttribute('xml:id'))
 		));
