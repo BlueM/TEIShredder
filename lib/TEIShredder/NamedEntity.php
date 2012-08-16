@@ -148,7 +148,7 @@ class NamedEntity extends Model {
 			return;
 		}
 
-		if ('contextstart' == $name) {
+		if ('contextend' == $name) {
 			if (mb_strlen($this->contextend) >= $length and
 			    false !== $pos = strpos($this->contextend, ' ', $length)) {
 				// Limit length of the context end
