@@ -3,6 +3,8 @@
 namespace TEIShredder;
 
 use \LogicException;
+use \InvalidArgumentException;
+use \PDO;
 
 /**
  * Model class for sections in the underlying TEI document.
@@ -64,13 +66,49 @@ class Section extends Model {
 	protected $xmlid;
 
 	/**
+	 * Returns a sections by its ID
+	 * @param Setup $setup
+	 * @param int $id
+	 * @return Section
+	 * @throws \InvalidArgumentException
+	 */
+	public static function fetchSectionById(Setup $setup, $id) {
+		$sth = $setup->database->prepare(
+			'SELECT id, volume, title, page, level, element, xmlid '.
+			'FROM '.$setup->prefix.'section WHERE id = ?'
+		);
+		$sth->execute(array($id));
+		$sth->setFetchMode(PDO::FETCH_CLASS, __CLASS__, array($setup));
+		if (false === $obj = $sth->fetch()) {
+			throw new InvalidArgumentException('No such element');
+		}
+		return $obj;
+	}
+
+	/**
+	 * Returns all sections of a given volume number
+	 * @param Setup $setup
+	 * @param int $volume Volume number
+	 * @return Section[] Indexed array of instances, ordered by the section ID
+	 * @throws \InvalidArgumentException
+	 */
+	public static function fetchSectionsByVolume(Setup $setup, $volume) {
+		$sth = $setup->database->prepare(
+			'SELECT id, volume, title, page, level, element, xmlid '.
+			'FROM '.$setup->prefix.'section WHERE level > 0 AND volume = ? ORDER BY id'
+		);
+		$sth->execute(array($volume));
+		$sth->setFetchMode(PDO::FETCH_CLASS, __CLASS__, array($setup));
+		return $sth->fetchAll();
+	}
+
+	/**
 	 * Adds an XML chunk (not expected to perform updates)
 	 * @throws LogicException
 	 */
 	public function save() {
 
-		// Basic integrity check: make sure that properties
-		// that can never be empty are not empty.
+		// Basic integrity check
 		foreach (array('id', 'volume', 'page', 'level', 'element') as $property) {
 			if (is_null($this->$property) or
 			    '' === $this->$property) {
