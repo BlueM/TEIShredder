@@ -36,8 +36,7 @@ CREATE TABLE `<prefix>page` (
   `volume` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Volume number',
   `plaintext` text NOT NULL COMMENT 'Chunk contents as plaintext',
   `n` varchar(100) DEFAULT '' COMMENT 'Value of @n attribute',
-  `rend` varchar(100) DEFAULT '' COMMENT 'Value of @rend attribute',
-  `facs` varchar(40) DEFAULT '' COMMENT 'Value of @facs attribute',
+  `rend` varchar(100) DEFAULT '' COMMENT 'Value of @rend attribute'
   PRIMARY KEY (`page`),
   UNIQUE KEY `xmlid` (`xmlid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Contains text on a per-page-basis';

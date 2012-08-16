@@ -31,8 +31,7 @@ CREATE TABLE "<prefix>page" (
 	"volume" INTEGER NOT NULL,
 	"plaintext" TEXT,
 	"n" TEXT,
-	"rend" TEXT,
-	"facs" TEXT
+	"rend" TEXT
 );
 
 CREATE TABLE "<prefix>section" (
