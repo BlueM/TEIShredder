@@ -94,6 +94,26 @@ class VolumeTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
+	function fetchTheVolumes() {
+		$volume = new Volume($this->setup);
+		$volume->number = 1;
+		$volume->title = 'Volume 1';
+		$volume->pagenumber = 1234;
+		$volume->save();
+		$volume = new Volume($this->setup);
+		$volume->number = 2;
+		$volume->title = 'Volume 2';
+		$volume->pagenumber = 5678;
+		$volume->save();
+
+		$volumes = Volume::fetchVolumes($this->setup);
+		$this->assertInternalType('array', $volumes);
+		$this->assertSame(2, count($volumes));
+	}
+
+	/**
+	 * @test
+	 */
 	function flushTheData() {
 		Volume::flush($this->setup);
 	}

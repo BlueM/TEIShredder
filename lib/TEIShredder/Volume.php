@@ -2,8 +2,10 @@
 
 namespace TEIShredder;
 
+use \PDO;
+
 /**
- * #todo
+ * Model class for volumes
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
@@ -32,15 +34,32 @@ class Volume extends Model {
 	 */
 	protected $pagenumber;
 
+
+	/**
+	 * Returns all volumes, ordered by their numbers
+	 * @param Setup $setup
+	 * @return Volume[]
+	 */
+	public static function fetchVolumes(Setup $setup) {
+		$volumes = array();
+		$sth = $setup->database->query(
+			'SELECT number, title, pagenumber FROM '.$setup->prefix.'volume ORDER BY number'
+		);
+		$sth->setFetchMode(PDO::FETCH_CLASS, __CLASS__, array($setup));
+		foreach ($sth->fetchAll() as $volume) {
+			$volumes[] = $volume;
+		}
+		return $volumes;
+	}
+
 	/**
 	 * Adds an XML chunk (not expected to perform updates)
 	 */
 	public function save() {
-
 		$stm = $this->_setup->database->prepare(
-			'INSERT INTO '.$this->_setup->prefix.'volume (number, title, pagenumber) VALUES (?, ?, ?)'
+			'INSERT INTO '.$this->_setup->prefix.'volume '.
+			'(number, title, pagenumber) VALUES (?, ?, ?)'
 		);
-
 		$stm->execute(array(
 			$this->number,
 			$this->title,

@@ -118,26 +118,6 @@ class DocumentInfo {
 	}
 
 	/**
-	 * Returns the volumes' numbers and titles.
-	 * @param Setup $setup
-	 * @return array Associative array containing number=>array() pairs,
-	 *               where the array has keys "title" and "pagenum"
-	 */
-	public static function fetchVolumes(Setup $setup) {
-		$volumes = array();
-		$res = $setup->database->query(
-			'SELECT number, title, pagenumber FROM '.$setup->prefix.'volume ORDER BY number'
-		);
-		foreach ($res->fetchAll(PDO::FETCH_NUM) as $row) {
-			$volumes[$row[0]] = array(
-				'title'=>$row[1],
-				'pagenumber'=>$row[2],
-			);
-		}
-		return $volumes;
-	}
-
-	/**
 	 * Returns several pages' numbers or titles (whatever @n contains)
 	 * @param Setup $setup
 	 * @param array|int $nums Indexed array of page numbers.
