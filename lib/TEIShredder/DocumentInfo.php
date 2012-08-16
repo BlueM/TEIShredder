@@ -118,25 +118,6 @@ class DocumentInfo {
 	}
 
 	/**
-	 * Returns the xml:id value(s) of the <pb /> element, the volume number and
-	 * values of @n and @rend attributes of the page with the given page number.
-	 * @param Setup $setup
-	 * @param int $pagenum Internal page number
-	 * @return array Array with indexes 0 = volume, 1 = xml:id value, 2 = page name.
-	 * @throws InvalidArgumentException
-	 */
-	public static function fetchPageData(Setup $setup, $pagenum) {
-		$db = $setup->database;
-		$sth = $db->query(
-			'SELECT volume, xmlid, n, rend FROM '.$setup->prefix."page WHERE number = ".$db->quote($pagenum)
-		);
-		if (false === $data = $sth->fetch(PDO::FETCH_NUM)) {
-			throw new InvalidArgumentException('Invalid page number');
-		}
-		return $data;
-	}
-
-	/**
 	 * Returns the volumes' numbers and titles.
 	 * @param Setup $setup
 	 * @return array Associative array containing number=>array() pairs,

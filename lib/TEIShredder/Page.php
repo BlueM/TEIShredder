@@ -3,6 +3,8 @@
 namespace TEIShredder;
 
 use \LogicException;
+use \InvalidArgumentException;
+use \PDO;
 
 /**
  * Model class for physical pages in the underlying TEI document.
@@ -53,18 +55,38 @@ class Page extends Model {
 	/**
 	 * Plaintext
 	 * @var int
-	 * @todo Chunks also contain the plaintext. Probably a redundancy.
+	 * @todo Redundancy: Chunks also contain the plaintext.
 	 */
 	protected $plaintext;
 
+
 	/**
-	 * Saves a page
+	 * Returns a page by its unique number
+	 * @param Setup $setup
+	 * @param int $number
+	 * @return Page
+	 * @throws \InvalidArgumentException
+	 */
+	public static function fetchPageByNumber(Setup $setup, $number) {
+		$sth = $setup->database->prepare(
+			'SELECT number, xmlid, volume, plaintext, n, rend '.
+			'FROM '.$setup->prefix.'page WHERE number = ?'
+		);
+		$sth->execute(array($number));
+		$sth->setFetchMode(PDO::FETCH_CLASS, __CLASS__, array($setup));
+		if (false === $obj = $sth->fetch()) {
+			throw new InvalidArgumentException('No such element');
+		}
+		return $obj;
+	}
+
+	/**
+	 * Saves a page.
 	 * @throws LogicException
 	 */
 	public function save() {
 
-		// Primitive integrity check: make sure that properties
-		// that can never be empty are not empty.
+		// Basic integrity check
 		foreach (array('number', 'volume') as $property) {
 			if (0 >= intval($this->$property)) {
 				throw new LogicException("Integrity check failed: $property cannot be empty.");
@@ -77,8 +99,6 @@ class Page extends Model {
 			'VALUES (?, ?, ?, ?, ?, ?)'
 		);
 
-		// Don't check for return value, as it should
-		// throw an exception if it fails.
 		$stm->execute(array(
 			$this->number,
 			(string)$this->xmlid,
@@ -90,7 +110,7 @@ class Page extends Model {
 	}
 
 	/**
-	 * Removes all chunks
+	 * Removes all pages
 	 */
 	public static function flush(Setup $setup) {
 		$setup->database->exec("DELETE FROM ".$setup->prefix.'page');

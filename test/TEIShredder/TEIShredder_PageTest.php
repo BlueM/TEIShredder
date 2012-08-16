@@ -102,6 +102,13 @@ class PageTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
+	function flushTheData() {
+		Page::flush($this->setup);
+	}
+
+	/**
+	 * @test
+	 */
 	function saveANewPage() {
 		$page = new Page($this->setup);
 		$page->number = 15;
@@ -116,8 +123,16 @@ class PageTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	function flushTheData() {
-		Page::flush($this->setup);
+	function fetchAPageByItsNumber() {
+		// First, create object
+		$page = new Page($this->setup);
+		$page->number = 20;
+		$page->volume = 5;
+		$page->save();
+
+		$obj = Page::fetchPageByNumber($this->setup, 20);
+		$this->assertInstanceOf('\TEIShredder\Page', $obj);
+		$this->assertEquals(5, $page->volume);
 	}
 
 }
