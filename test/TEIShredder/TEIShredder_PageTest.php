@@ -122,6 +122,14 @@ class PageTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
+	 * @expectedException InvalidArgumentException
+	 */
+	function tryingToFetchAPageByAnUnknownPagenumberThrowsAnException() {
+		Page::fetchPageByNumber($this->setup, 9999999);
+	}
+
+	/**
+	 * @test
 	 */
 	function fetchAPageByItsNumber() {
 		// First, create object
