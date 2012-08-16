@@ -16,7 +16,6 @@ use \InvalidArgumentException;
 class DocumentInfo {
 
 	/**
-	/**
 	 * Returns all sections as associative array.
 	 * @param Setup $setup
 	 * @param int $volume Volume number.
@@ -77,24 +76,6 @@ class DocumentInfo {
 		}
 
 		return $sections;
-	}
-
-	/**
-	 * Returns the total number of pages in the source text, either for
-	 * all volumes or for a specific volume
-	 * @param Setup $setup
-	 * @param int $volume [optional] Volume number
-	 * @return int Number of pages
-	 */
-	public static function fetchNumberOfPages(Setup $setup, $volume = null) {
-		$db = $setup->database;
-		$prefix = $setup->prefix;
-		$query = 'SELECT MAX(number) FROM '.$prefix.'page';
-		if (intval($volume)) {
-			$query .= ' WHERE volume = '.intval($volume);
-		}
-		$sth = $db->query($query);
-		return (int)$sth->fetchColumn(0);
 	}
 
 	/**
