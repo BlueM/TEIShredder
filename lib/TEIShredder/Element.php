@@ -3,6 +3,8 @@
 namespace TEIShredder;
 
 use \LogicException;
+use \InvalidArgumentException;
+use \PDO;
 
 /**
  * Model class for any XML element in the underlying TEI document that is
@@ -36,7 +38,7 @@ class Element extends Model {
 	/**
 	 * Page number
 	 * @var string
-	 * @todo Redundant: element is assigned to a section, and sections knows their page
+	 * @todo Redundant: element is assigned to a section, and sections know their page
 	 */
 	protected $page;
 
@@ -63,6 +65,26 @@ class Element extends Model {
 	 * @var string
 	 */
 	protected $data;
+
+	/**
+	 * Returns an object by its unique xml:id value
+	 * @param Setup $setup
+	 * @param string $xmlid
+	 * @return Element
+	 * @throws \InvalidArgumentException
+	 */
+	public static function fetchElementById(Setup $setup, $xmlid) {
+		$sth = $setup->database->prepare(
+			'SELECT xmlid, element, page, chunk, attrn, attrtargetend, data '.
+			'FROM '.$setup->prefix.'element WHERE xmlid = ?'
+		);
+		$sth->execute(array($xmlid));
+		$sth->setFetchMode(PDO::FETCH_CLASS, __CLASS__, array($setup));
+		if (false === $obj = $sth->fetch()) {
+			throw new InvalidArgumentException('No such element');
+		}
+		return $obj;
+	}
 
 	/**
 	 * Adds an XML chunk (not expected to perform updates)

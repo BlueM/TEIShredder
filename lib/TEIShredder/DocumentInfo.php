@@ -16,18 +16,6 @@ use \InvalidArgumentException;
 class DocumentInfo {
 
 	/**
-	 * Returns the numerical page number for an xml:id attribute value.
-	 * @param Setup $setup
-	 * @param string $elmntid XML element ID
-	 * @return int|bool Page number or false, if there's no such xml:id.
-	 */
-	public static function fetchPageNumberForElementId(Setup $setup, $elmntid) {
-		$sth = $setup->database->query(
-			'SELECT page FROM '.$setup->prefix.'element WHERE xmlid = '.$setup->database->quote($elmntid)
-		);
-		return $sth->fetchColumn(0);
-	}
-
 	/**
 	 * Returns all sections as associative array.
 	 * @param Setup $setup

@@ -80,30 +80,11 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 */
-	function saveANewElement() {
-		$element = new Element($this->setup);
-		$element->xmlid = 'element-01';
-		$element->element = 'rs';
-		$element->page = 123;
-		$element->chunk = 456;
-		$element->save();
-	}
-
-	/**
-	 * @test
-	 */
-	function flushTheData() {
-		Element::flush($this->setup);
-	}
-
-	/**
-	 * @test
 	 * @expectedException LogicException
 	 */
 	function makeSureAElementRequiresAnId() {
 		$element = new Element($this->setup);
-		// $element->xmlid = 13;
+		// $element->xmlid = 'element-01';
 		$element->element = 'rs';
 		$element->page = 57;
 		$element->chunk = 99;
@@ -116,7 +97,7 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function makeSureAElementRequiresAVolume() {
 		$element = new Element($this->setup);
-		$element->xmlid = 13;
+		$element->xmlid = 'element-01';
 		// $element->element = 'rs';
 		$element->page = 57;
 		$element->chunk = 99;
@@ -129,9 +110,9 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function makeSureAElementRequiresAPage() {
 		$element = new Element($this->setup);
-		$element->xmlid = 13;
+		$element->xmlid = 'element-01';
 		$element->element = 'rs';
-		// $element->page = 57;
+		// $element->element = 57;
 		$element->chunk = 99;
 		$element->save();
 	}
@@ -142,13 +123,58 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function makeSureAElementRequiresAnElement() {
 		$element = new Element($this->setup);
-		$element->xmlid = 13;
+		$element->xmlid = 'element-01';
 		$element->element = 'rs';
 		$element->page = 57;
 		// $element->chunk = 99;
 		$element->save();
 	}
 
+	/**
+	 * @test
+	 */
+	function flushTheData() {
+		Element::flush($this->setup);
+	}
+
+	/**
+	 * @test
+	 */
+	function saveANewElement() {
+		$element = new Element($this->setup);
+		$element->xmlid = 'element-01';
+		$element->element = 'rs';
+		$element->page = 123;
+		$element->chunk = 456;
+		$element->save();
+	}
+
+	/**
+	 * @test
+	 * @expectedException InvalidArgumentException
+	 */
+	function tryingToFetchAnElementByAnUnknownIdThrowsAnException() {
+		Element::fetchElementById($this->setup, 'abcdefg');
+	}
+
+	/**
+	 * @test
+	 */
+	function fetchAnElementByItsXmlId() {
+
+		$xmlid = 'element-01';
+
+		// DB is newly initiaed before each test, therefore insert an object
+		$element = new Element($this->setup);
+		$element->xmlid = $xmlid;
+		$element->element = 'rs';
+		$element->page = 57;
+		$element->chunk = 99;
+		$element->save();
+
+		$obj = Element::fetchElementById($this->setup, $xmlid);
+		$this->assertInstanceOf('\TEIShredder\Element', $obj);
+	}
 
 }
 
