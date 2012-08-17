@@ -143,12 +143,6 @@ class Indexer_Extractor extends Indexer {
 		$this->notationStack[] = $index;
 		$this->currNotatIndex = end($this->notationStack);
 
-		// @codeCoverageIgnoreStart
-		if (!$this->currContainerIndex) {
-			throw new RuntimeException('No current container for “'.$this->r->extractPlaintextContent()."”\n");
-		}
-		// @codeCoverageIgnoreEnd
-
 		if (empty($this->containers[$this->currContainerIndex])) {
 			$this->containers[$this->currContainerIndex] = '';
 		}
