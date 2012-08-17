@@ -248,10 +248,6 @@ class Indexer_Extractor extends Indexer {
 				$entity->contextend = $after;
 				$entity->container = $this->containerTypes[$tag['container']];
 				$entity->chunk = $tag['chunk'];
-				// For finding specific notations, we save a hash of the
-				// lowercased notation. For our purposes, just using the
-				// first 8 chars should be OK, as there is very little
-				// danger that collisions occur.
 				$entity->save();
 			}
 		}
