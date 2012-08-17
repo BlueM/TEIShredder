@@ -127,15 +127,7 @@ class Indexer_Extractor extends Indexer {
 			$this->containerStack[] = $index;
 			$this->currContainerIndex = end($this->containerStack);
 
-			if ('note' == $this->r->localName) {
-				if ($this->r->getAttribute('resp')) {
-					// Scholarly annotation
-					$this->containerTypes[$index] = 'annotation';
-				} else {
-					// Note by author: footnote or marginalia text
-					$this->containerTypes[$index] = 'margin_footnote';
-				}
-			} elseif (in_array('figure', $this->elementStack)) {
+			if (in_array('figure', $this->elementStack)) {
 				$this->containerTypes[$index] = 'figure';
 			} else {
 				$this->containerTypes[$index] = $this->r->localName;
@@ -229,11 +221,6 @@ class Indexer_Extractor extends Indexer {
 	protected function save() {
 
 		foreach (array_values($this->tags) as $tag) {
-
-			if ('annotation' == $this->containerTypes[$tag['container']]) {
-				// Do not include anything inside scholarly annotations.
-				continue;
-			}
 
 			$context = $this->containers[$tag['container']];
 
