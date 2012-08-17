@@ -36,8 +36,8 @@ CREATE TABLE `<prefix>page` (
   `volume` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Volume number',
   `plaintext` text NOT NULL COMMENT 'Chunk contents as plaintext',
   `n` varchar(100) DEFAULT '' COMMENT 'Value of @n attribute',
-  `rend` varchar(100) DEFAULT '' COMMENT 'Value of @rend attribute'
-  PRIMARY KEY (`page`),
+  `rend` varchar(100) DEFAULT '' COMMENT 'Value of @rend attribute',
+  PRIMARY KEY (`number`),
   UNIQUE KEY `xmlid` (`xmlid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Contains text on a per-page-basis';
 
@@ -49,8 +49,7 @@ CREATE TABLE `<prefix>section` (
   `level` int(10) unsigned DEFAULT '0' COMMENT 'Element''s text structure level',
   `element` varchar(20) DEFAULT NULL COMMENT 'Element/tag name',
   `xmlid` varchar(20) DEFAULT NULL COMMENT 'Element''s xml:id attribute value',
-  PRIMARY KEY (`id`),
-  KEY `type` (`type`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Structural text sections';
 
 CREATE TABLE `<prefix>volume` (
