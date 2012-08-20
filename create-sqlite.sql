@@ -54,7 +54,7 @@ CREATE TABLE "<prefix>volume" (
 CREATE TABLE "<prefix>xmlchunk" (
 	"id" INTEGER PRIMARY KEY ASC,
 	"page" INTEGER NOT NULL,
-	"column" TEXT,
+	"milestone" TEXT,
 	"prestack" TEXT,
 	"xml" TEXT,
 	"poststack" TEXT,

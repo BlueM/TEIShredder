@@ -11,7 +11,7 @@ use \PDO;
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  * @property int $id
- * @property string $column
+ * @property string $milestone
  * @property string $page
  * @property string $prestack
  * @property string $xml
@@ -28,10 +28,10 @@ class XMLChunk extends Model {
 	protected $id;
 
 	/**
-	 * Info on column that contains this chunk
+	 * Value of last <milestone/>'s @unit and @n, concatenated
 	 * @var string
 	 */
-	protected $column;
+	protected $milestone;
 
 	/**
 	 * Number of the page this chunk is on
@@ -86,17 +86,15 @@ class XMLChunk extends Model {
 
 		$stm = $db->prepare(
 			'INSERT INTO '.$this->_setup->prefix.'xmlchunk '.
-			'(id, page, section, column, prestack, xml, poststack, plaintext) '.
+			'(id, page, section, milestone, prestack, xml, poststack, plaintext) '.
 			'VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
 		);
 
-		// Don't check for return value, as it should
-		// throw an exception if it fails.
 		$stm->execute(array(
 			$this->id,
 			$this->page,
 			$this->section,
-			$this->column,
+			$this->milestone,
 			$this->prestack,
 			$this->xml,
 			$this->poststack,
@@ -112,7 +110,7 @@ class XMLChunk extends Model {
 	 */
 	public static function fetchObjectsByPageNumber(Setup $setup, $page) {
 		$stm = $setup->database->prepare(
-			"SELECT eid.id, eid.column, eid.prestack, eid.xml, eid.poststack, eid.section, eid.plaintext
+			"SELECT eid.id, eid.milestone, eid.prestack, eid.xml, eid.poststack, eid.section, eid.plaintext
 		     FROM ".$setup->prefix."xmlchunk AS eid
 		     WHERE xml != '' AND eid.page = ?
 		     ORDER BY eid.id"

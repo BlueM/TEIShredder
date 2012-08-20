@@ -71,10 +71,10 @@ class Indexer_Chunker extends Indexer {
 	protected $xml = null;
 
 	/**
-	 * Current column
+	 * Current <milestone /> @unit and @n, concatenated
 	 * @var string
 	 */
-	protected $column = null;
+	protected $milestone = null;
 
 	/**
 	 * Text structure level. Only named sections (those with a <head> are
@@ -114,7 +114,8 @@ class Indexer_Chunker extends Indexer {
 			if ('pb' == $this->r->localName) {
 				$this->newPage();
 			} elseif ('milestone' == $this->r->localName) {
-				$this->column = $this->r->getAttribute('unit');
+				$mlstn = $this->r->getAttribute('unit').'-'.$this->r->getAttribute('n');
+				$this->milestone = trim($mlstn, '-');
 			} elseif ('group' == $this->r->localName) {
 				// A group of <text>s, i.e. drop the <text> we saw previously, as it
 				// was just the enclosure of some inner <text> inside the <group>.
@@ -219,7 +220,7 @@ class Indexer_Chunker extends Indexer {
 
 			// Reset variables
 			$this->insidetext = false;
-			$this->column = null;
+			$this->milestone = null;
 			$this->xml = '';
 
 			// Increment the chunk ID to make sure no content is overwritten
@@ -283,7 +284,7 @@ class Indexer_Chunker extends Indexer {
 		$chunk->id = $this->currentChunk;
 		$chunk->page = $this->page;
 		$chunk->section = $this->currentSection;
-		$chunk->column = $this->column;
+		$chunk->milestone = $this->milestone;
 		$chunk->prestack = join(' ', $this->prestack);
 		$chunk->xml = '';
 		$this->chunks[$chunk->id] = $chunk;
