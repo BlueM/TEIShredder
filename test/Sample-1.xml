@@ -27,14 +27,16 @@
 		</front>
 
 		<body>
-
 			<pb xml:id="page-vol1-01" n="I" rend="rotated" />
+			<milestone unit="column" n="left" />
 			<div>
 				<head>Foreword</head>
 				<p>The pages in this foreword have Roman page numbers, just to demonstrate the @n attribute is independent from the page numbering.</p>
 
 				<pb xml:id="page-vol1-02" n="II" />
 				<p>For demonstration purposes, we include these few lines of verse from the beginning of “Macbeth”, written by <rs type="person" key="http://d-nb.info/gnd/118613723" xml:id="rs01">William Shakespeare</rs>:</p>
+
+				<milestone unit="column" n="right" />
 				<lg>
 				<l>When shall we three meet again?</l>
 				<l>In thunder, lightning, or in rain?</l>
@@ -45,6 +47,8 @@
 			</div>
 
 			<pb xml:id="page-vol1-03" n="1" />
+			<milestone unit="column" n="left" />
+
 			<div>
 				<head>Chapter 1</head>
 				<p>Some text here.</p>
@@ -55,6 +59,7 @@
 			</div>
 
 			<pb xml:id="page-vol1-04" n="2"/>
+
 			<div>
 				<head>Chapter 2</head>
 				<p>More text.</p>
