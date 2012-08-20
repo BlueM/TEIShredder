@@ -129,7 +129,7 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 
 		$chunks = XMLChunk::fetchObjectsByPageNumber($this->setup, 2);
 		$this->assertInternalType('array', $chunks);
-		$this->assertSame(1, count($chunks));
+		$this->assertSame(2, count($chunks));
 		$this->assertInstanceOf('\\'.__NAMESPACE__.'\\XMLChunk', $chunks[0]);
 		return $chunks[0];
 	}
@@ -139,7 +139,7 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 	 * @depends getTheChunksForPage2
 	 */
 	function getTheIdForAChunk(XMLChunk $chunk) {
-		$this->assertEquals(9, $chunk->id);
+		$this->assertEquals(10, $chunk->id);
 	}
 
 	/**
@@ -185,7 +185,7 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase {
 	 * @depends getTheChunksForPage2
 	 */
 	function getTheChunksColumn(XMLChunk $chunk) {
-		$this->assertEquals('', $chunk->column);
+		$this->assertEquals('column-left', $chunk->milestone);
 	}
 
 
