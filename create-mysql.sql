@@ -18,7 +18,7 @@ CREATE TABLE `<prefix>entity` (
   `xmlid` varchar(20) DEFAULT '' COMMENT 'xml:id attr. of elemnt containing the object occurrence',
   `page` int(11) unsigned NOT NULL COMMENT 'Page number, 1-based',
   `domain` varchar(20) NOT NULL DEFAULT '' COMMENT 'Object domain',
-  `key` int(11) unsigned DEFAULT '0' COMMENT 'Object identifier',
+  `identifier` int(11) unsigned DEFAULT '0' COMMENT 'Object identifier',
   `contextstart` text COMMENT 'Context before the notation',
   `notation` text NOT NULL COMMENT 'The exact notation used in the text',
   `contextend` text COMMENT 'Context after the notation',
@@ -27,7 +27,7 @@ CREATE TABLE `<prefix>entity` (
   `notationhash` varchar(16) NOT NULL DEFAULT '' COMMENT 'Truncated MD5 hash of the notation',
   KEY `page` (`page`),
   KEY `container` (`container`),
-  KEY `domain` (`domain`,`key`)
+  KEY `domain_identifier` (`domain`,`identifier`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Data on entity occurrences in the text';
 
 CREATE TABLE `<prefix>page` (

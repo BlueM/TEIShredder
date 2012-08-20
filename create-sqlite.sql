@@ -14,7 +14,7 @@ CREATE TABLE "<prefix>entity" (
 	"xmlid" TEXT,
 	"page" INTEGER NOT NULL,
 	"domain" TEXT NOT NULL,
-	"key" TEXT NOT NULL,
+	"identifier" TEXT NOT NULL,
 	"contextstart" TEXT,
 	"notation" TEXT,
 	"contextend" TEXT,
@@ -23,7 +23,7 @@ CREATE TABLE "<prefix>entity" (
 	"notationhash" TEXT
 );
 
-CREATE INDEX "domain-key" ON "<prefix>entity" ("domain","key");
+CREATE INDEX "domain_identifier" ON "<prefix>entity" ("domain","identifier");
 
 CREATE TABLE "<prefix>page" (
 	"number" INTEGER PRIMARY KEY,

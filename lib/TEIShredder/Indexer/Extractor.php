@@ -242,7 +242,7 @@ class Indexer_Extractor extends Indexer {
 				$entity->xmlid = $tag['xmlid'];
 				$entity->page = $tag['page'];
 				$entity->domain = $tag['domain'];
-				$entity->key = $tag['key'][$i];
+				$entity->identifier = $tag['key'][$i];
 				$entity->contextstart = $before;
 				$entity->notation = $notation;
 				$entity->contextend = $after;

@@ -94,7 +94,7 @@ class XMLChunk extends Model {
 			$this->id,
 			$this->page,
 			$this->section,
-			$this->milestone,
+			(string)$this->milestone,
 			$this->prestack,
 			$this->xml,
 			$this->poststack,

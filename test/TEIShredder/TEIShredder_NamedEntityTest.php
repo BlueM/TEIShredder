@@ -86,7 +86,7 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 		$element->xmlid = 'element-01';
 		$element->page = 123;
 		$element->domain = 'person';
-		$element->key = 'http://d-nb.info/gnd/118582143';
+		$element->identifier = 'http://d-nb.info/gnd/118582143';
 		$element->contextstart = 'Painter ';
 		$element->notation = 'Michelangelo';
 		$element->contextend = ' lived in the renaissance';
@@ -111,7 +111,7 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 		$element = new NamedEntity($this->setup);
 		// $element->page = 123;
 		$element->domain = 'person';
-		$element->key = 'http://d-nb.info/gnd/118582143';
+		$element->identifier = 'http://d-nb.info/gnd/118582143';
 		$element->notation = 'Michelangelo';
 		$element->save();
 	}
@@ -124,7 +124,7 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 		$element = new NamedEntity($this->setup);
 		$element->page = 123;
 		// $element->domain = 'person';
-		$element->key = 'http://d-nb.info/gnd/118582143';
+		$element->identifier = 'http://d-nb.info/gnd/118582143';
 		$element->notation = 'Michelangelo';
 		$element->save();
 	}
@@ -150,7 +150,7 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 		$element = new NamedEntity($this->setup);
 		$element->page = 123;
 		$element->domain = 'person';
-		$element->key = 'http://d-nb.info/gnd/118582143';
+		$element->identifier = 'http://d-nb.info/gnd/118582143';
 		// $element->notation = 'Michelangelo';
 		$element->save();
 	}

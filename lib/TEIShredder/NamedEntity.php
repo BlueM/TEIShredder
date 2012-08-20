@@ -13,7 +13,7 @@ use \LogicException;
  * @property int $xmlid
  * @property int $page
  * @property string $domain
- * @property string $key
+ * @property string $identifier
  * @property string $contextstart
  * @property string $notation
  * @property string $contextend
@@ -47,7 +47,7 @@ class NamedEntity extends Model {
 	 * of identifier (database record) or Semantic Web URI.
 	 * @var string
 	 */
-	protected $key;
+	protected $identifier;
 
 	/**
 	 * Context after the notation.
@@ -94,7 +94,7 @@ class NamedEntity extends Model {
 	public function save() {
 
 		// Basic integrity check
-		foreach (array('page', 'domain', 'key', 'notation') as $property) {
+		foreach (array('page', 'domain', 'identifier', 'notation') as $property) {
 			if (is_null($this->$property) or
 			    '' === $this->$property) {
 				throw new LogicException("Integrity check failed: $property cannot be empty.");
@@ -103,7 +103,7 @@ class NamedEntity extends Model {
 
 		$stm = $this->_setup->database->prepare(
 			'INSERT INTO '.$this->_setup->prefix.'entity '.
-			'(xmlid, page, domain, key, contextstart, notation, contextend, container, chunk, notationhash) '.
+			'(xmlid, page, domain, identifier, contextstart, notation, contextend, container, chunk, notationhash) '.
 			'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 		);
 
@@ -111,7 +111,7 @@ class NamedEntity extends Model {
 			$this->xmlid,
 			$this->page,
 			$this->domain,
-			$this->key,
+			$this->identifier,
 			$this->contextstart,
 			$this->notation,
 			$this->contextend,
