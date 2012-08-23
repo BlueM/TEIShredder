@@ -97,7 +97,14 @@ class NamedEntity extends Model {
 		foreach (array('page', 'domain', 'identifier', 'notation') as $property) {
 			if (is_null($this->$property) or
 			    '' === $this->$property) {
-				throw new LogicException("Integrity check failed: $property cannot be empty.");
+				$msg = sprintf(
+					"Integrity check failed: %s cannot be empty (page %d, context: “%s[…]%s”.",
+					$property,
+					$this->page,
+					$this->contextstart,
+					$this->contextend
+				);
+				throw new LogicException($msg);
 			}
 		}
 
@@ -122,7 +129,8 @@ class NamedEntity extends Model {
 	}
 
 	/**
-	 * Removes all chunks
+	 * Removes all data
+	 * @param Setup $setup
 	 */
 	public static function flush(Setup $setup) {
 		$setup->database->exec("DELETE FROM ".$setup->prefix.'entity');

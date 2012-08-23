@@ -68,7 +68,8 @@ class Volume extends Model {
 	}
 
 	/**
-	 * Removes all chunks
+	 * Removes all data
+	 * @param Setup $setup
 	 */
 	public static function flush(Setup $setup) {
 		$setup->database->exec("DELETE FROM ".$setup->prefix.'volume');

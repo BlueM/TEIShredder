@@ -90,7 +90,7 @@ class Section extends Model {
 	 * @param Setup $setup
 	 * @param int $volume Volume number
 	 * @return Section[] Indexed array of instances, ordered by the section ID
-	 * @throws \InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public static function fetchSectionsByVolume(Setup $setup, $volume) {
 		$sth = $setup->database->prepare(
@@ -134,7 +134,8 @@ class Section extends Model {
 	}
 
 	/**
-	 * Removes all chunks
+	 * Removes all data
+	 * @param Setup $setup
 	 */
 	public static function flush(Setup $setup) {
 		$setup->database->exec("DELETE FROM ".$setup->prefix.'section');

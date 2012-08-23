@@ -71,7 +71,7 @@ class Element extends Model {
 	 * @param Setup $setup
 	 * @param string $xmlid
 	 * @return Element
-	 * @throws \InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public static function fetchElementById(Setup $setup, $xmlid) {
 		$sth = $setup->database->prepare(
@@ -118,7 +118,8 @@ class Element extends Model {
 	}
 
 	/**
-	 * Removes all chunks
+	 * Removes all data
+	 * @param Setup $setup
 	 */
 	public static function flush(Setup $setup) {
 		$setup->database->exec("DELETE FROM ".$setup->prefix.'element');

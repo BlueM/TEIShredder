@@ -5,9 +5,7 @@ namespace TEIShredder;
 use \UnexpectedValueException;
 
 /**
- * Simple base class for TEIShredder model classes that only
- * provides a common constructor as well as magic __get() and
- * __set() methods.
+ * Simple base class for TEIShredder model classes.
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
@@ -25,7 +23,7 @@ class Model {
 	 * Constructor.
 	 * @param Setup $setup
 	 */
-	function __construct(Setup $setup) {
+	public function __construct(Setup $setup) {
 		$this->_setup = $setup;
 	}
 

@@ -65,7 +65,7 @@ class Page extends Model {
 	 * @param Setup $setup
 	 * @param int $number
 	 * @return Page
-	 * @throws \InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public static function fetchPageByNumber(Setup $setup, $number) {
 		$sth = $setup->database->prepare(
@@ -110,7 +110,8 @@ class Page extends Model {
 	}
 
 	/**
-	 * Removes all pages
+	 * Removes all data
+	 * @param Setup $setup
 	 */
 	public static function flush(Setup $setup) {
 		$setup->database->exec("DELETE FROM ".$setup->prefix.'page');
