@@ -233,6 +233,11 @@ class Indexer_Extractor extends Indexer {
 			// Limit the amount of context
 			@list($before, $notation, $after) = explode('###', $context);
 
+			if (!$notation) {
+				// If there's not textual content, provide at least an indicator
+				$notation = '[…]';
+			}
+
 			for ($i = 0, $ii = count($tag['key']); $i < $ii; $i ++) {
 				// Each entry in array $tag['key'] points to
 				// a different target. If there are multiple entries,
