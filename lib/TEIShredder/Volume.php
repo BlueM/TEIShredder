@@ -34,19 +34,18 @@ class Volume extends Model {
 	 */
 	protected $pagenumber;
 
-
 	/**
 	 * Returns all volumes, ordered by their numbers
 	 * @param Setup $setup
 	 * @return Volume[]
 	 */
 	public static function fetchVolumes(Setup $setup) {
-		$volumes = array();
-		$sth = $setup->database->query(
+		$stm = $setup->database->query(
 			'SELECT number, title, pagenumber FROM '.$setup->prefix.'volume ORDER BY number'
 		);
-		$sth->setFetchMode(PDO::FETCH_CLASS, __CLASS__, array($setup));
-		foreach ($sth->fetchAll() as $volume) {
+		$stm->setFetchMode(PDO::FETCH_CLASS, __CLASS__, array($setup));
+		$volumes = array();
+		foreach ($stm->fetchAll() as $volume) {
 			$volumes[] = $volume;
 		}
 		return $volumes;

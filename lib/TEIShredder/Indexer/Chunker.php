@@ -84,7 +84,7 @@ class Indexer_Chunker extends Indexer {
 	protected $level = 0;
 
 	/**
-	 * The current Page object
+	 * The current page object
 	 * @var Page
 	 */
 	protected $pageObj;
@@ -327,7 +327,7 @@ class Indexer_Chunker extends Indexer {
 	 */
 	protected function preProcessAction() {
 		Section::flush($this->setup);
-		Page::flush($this->setup);
+		PageDataMapper::flush($this->setup);
 		Volume::flush($this->setup);
 		XMLChunk::flush($this->setup);
 	}

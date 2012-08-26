@@ -3,7 +3,7 @@
 namespace TEIShredder;
 
 use \TEIShredder;
-use \SimpleXMLElement;
+use \PDO;
 
 require_once __DIR__.'/../bootstrap.php';
 
@@ -23,7 +23,7 @@ class PageTest extends \PHPUnit_Framework_TestCase {
 	 * Sets up the fixture
 	 */
 	function setUp() {
-		$this->setup = prepare_default_data();
+		$this->setup = new Setup(new PDO('sqlite::memory:'));
 	}
 
 	/**
@@ -97,50 +97,6 @@ class PageTest extends \PHPUnit_Framework_TestCase {
 		$page = new Page($this->setup);
 		$page->number = 1234;
 		$page->save();
-	}
-
-	/**
-	 * @test
-	 */
-	function flushTheData() {
-		Page::flush($this->setup);
-	}
-
-	/**
-	 * @test
-	 */
-	function saveANewPage() {
-		$page = new Page($this->setup);
-		$page->number = 15;
-		$page->xmlid = "pb-15";
-		$page->rend = "normal";
-		$page->n = "XV";
-		$page->volume = 2;
-		$page->plaintext = 'Foo';
-		$page->save();
-	}
-
-	/**
-	 * @test
-	 * @expectedException InvalidArgumentException
-	 */
-	function tryingToFetchAPageByAnUnknownPagenumberThrowsAnException() {
-		Page::fetchPageByNumber($this->setup, 9999999);
-	}
-
-	/**
-	 * @test
-	 */
-	function fetchAPageByItsNumber() {
-		// First, create object
-		$page = new Page($this->setup);
-		$page->number = 20;
-		$page->volume = 5;
-		$page->save();
-
-		$obj = Page::fetchPageByNumber($this->setup, 20);
-		$this->assertInstanceOf('\TEIShredder\Page', $obj);
-		$this->assertEquals(5, $page->volume);
 	}
 
 }

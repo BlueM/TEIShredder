@@ -79,7 +79,7 @@ class XMLChunk extends Model {
 	}
 
 	/**
-	 * Adds an XML chunk (not expected to perform updates)
+	 * Adds an XML chunk
 	 */
 	public function save() {
 

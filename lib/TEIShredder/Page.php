@@ -59,27 +59,6 @@ class Page extends Model {
 	 */
 	protected $plaintext;
 
-
-	/**
-	 * Returns a page by its unique number
-	 * @param Setup $setup
-	 * @param int $number
-	 * @return Page
-	 * @throws InvalidArgumentException
-	 */
-	public static function fetchPageByNumber(Setup $setup, $number) {
-		$sth = $setup->database->prepare(
-			'SELECT number, xmlid, volume, plaintext, n, rend '.
-			'FROM '.$setup->prefix.'page WHERE number = ?'
-		);
-		$sth->execute(array($number));
-		$sth->setFetchMode(PDO::FETCH_CLASS, __CLASS__, array($setup));
-		if (false === $obj = $sth->fetch()) {
-			throw new InvalidArgumentException('No such element');
-		}
-		return $obj;
-	}
-
 	/**
 	 * Saves a page.
 	 * @throws LogicException
@@ -93,28 +72,7 @@ class Page extends Model {
 			}
 		}
 
-		$stm = $this->_setup->database->prepare(
-			'INSERT INTO '.$this->_setup->prefix.'page '.
-			'(number, xmlid, volume, plaintext, n, rend) '.
-			'VALUES (?, ?, ?, ?, ?, ?)'
-		);
-
-		$stm->execute(array(
-			$this->number,
-			(string)$this->xmlid,
-			$this->volume,
-			$this->plaintext,
-			(string)$this->n,
-			(string)$this->rend,
-		));
-	}
-
-	/**
-	 * Removes all data
-	 * @param Setup $setup
-	 */
-	public static function flush(Setup $setup) {
-		$setup->database->exec("DELETE FROM ".$setup->prefix.'page');
+		PageDataMapper::save($this->_setup, $this);
 	}
 
 }
