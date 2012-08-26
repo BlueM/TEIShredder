@@ -89,7 +89,7 @@
 			<pb xml:id="page-vol1-08" n="6"/>
 
 			<div>
-				<head>@index</head>
+				<head>Indexing @index</head>
 				<p>If we want to, we can also index the &lt;index&gt; element. This element can, for instance, be used to define a <index indexName="glossary" xml:id="index01">term</index> for a glossary.</p>
 			</div>
 

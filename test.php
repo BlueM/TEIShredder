@@ -7,6 +7,7 @@ use \TEIShredder\Indexer_Chunker;
 use \TEIShredder\Indexer_Extractor;
 use \TEIShredder\PageDataMapper;
 use \TEIShredder\VolumeDataMapper;
+use \TEIShredder\SectionDataMapper;
 
 require __DIR__.'/autoload.php';
 
@@ -33,12 +34,12 @@ $extractor->process();
 
 
 // Show some information we have collected using the code above
-echo "Some information on ".basename($path).":\n";
+echo "\nSome information on ".basename($path).":\n";
 
 // 1) Volumes
 $volumes = VolumeDataMapper::findAll($setup);
 printf(
-	"* Document consists of %d volumes\n",
+	"\n* Document consists of %d volumes\n",
 	count($volumes)
 );
 foreach ($volumes as $volume) {
@@ -53,13 +54,13 @@ foreach ($volumes as $volume) {
 // 2) Pages
 $pages = PageDataMapper::findAll($setup);
 printf(
-	"* Document contains %d pages (i.e.: %d <pb /> elements)\n",
+	"\n* Document contains %d pages (i.e.: %d <pb /> elements)\n",
 	count($pages),
 	count($pages)
 );
 foreach ($pages as $page) {
 	printf(
-		"  * Page %-2d (volume %d): @n = “%s”, @xml:id = “%s”\n",
+		"  * Page % 2d (volume %d): @n = “%s”, @xml:id = “%s”\n",
 		$page->number,
 		$page->volume,
 		$page->n,
@@ -67,3 +68,19 @@ foreach ($pages as $page) {
 	);
 }
 
+// 3) Sections
+$sections = SectionDataMapper::findAll($setup);
+printf(
+	"\n* Document contains %d sections\n",
+	count($sections)
+);
+foreach ($sections as $section) {
+	printf(
+		"  * Section % 2d (starting on page % 2d): “%s”\n",
+		$section->id,
+		$section->page,
+		$section->title
+	);
+}
+
+echo "\n";
