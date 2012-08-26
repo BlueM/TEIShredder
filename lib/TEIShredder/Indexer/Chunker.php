@@ -328,7 +328,7 @@ class Indexer_Chunker extends Indexer {
 	protected function preProcessAction() {
 		Section::flush($this->setup);
 		PageDataMapper::flush($this->setup);
-		Volume::flush($this->setup);
+		VolumeDataMapper::flush($this->setup);
 		XMLChunk::flush($this->setup);
 	}
 

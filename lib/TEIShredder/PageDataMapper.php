@@ -6,7 +6,7 @@ use \InvalidArgumentException;
 use \PDO;
 
 /**
- * Data Mapper
+ * Data Mapper class for page objects
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
@@ -45,20 +45,14 @@ class PageDataMapper implements DataMapperInterface {
 		);
 		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Page', array($setup));
 		return $stm->fetchAll();
-
-//		$pages = array();
-//		foreach ($stm->fetchAll() as $volume) {
-//			$pages[] = $volume;
-//		}
-//		return $pages;
 	}
 
 	/**
 	 * Saves a domain object
 	 * @param Setup $setup
-	 * @param Model $page
+	 * @param Model $obj
 	 */
-	public static function save(Setup $setup, Model $page) {
+	public static function save(Setup $setup, Model $obj) {
 
 		$stm = $setup->database->prepare(
 			'INSERT INTO '.$setup->prefix.'page '.
@@ -67,12 +61,12 @@ class PageDataMapper implements DataMapperInterface {
 		);
 
 		$stm->execute(array(
-			$page->number,
-			(string)$page->xmlid,
-			$page->volume,
-			$page->plaintext,
-			(string)$page->n,
-			(string)$page->rend,
+			$obj->number,
+			(string)$obj->xmlid,
+			$obj->volume,
+			$obj->plaintext,
+			(string)$obj->n,
+			(string)$obj->rend,
 		));
 
 	}

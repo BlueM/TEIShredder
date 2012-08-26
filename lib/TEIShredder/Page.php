@@ -3,8 +3,6 @@
 namespace TEIShredder;
 
 use \LogicException;
-use \InvalidArgumentException;
-use \PDO;
 
 /**
  * Model class for physical pages in the underlying TEI document.

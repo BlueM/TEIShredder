@@ -3,7 +3,7 @@
 namespace TEIShredder;
 
 use \TEIShredder;
-use \PDO;
+use \InvalidArgumentException;
 
 require_once __DIR__.'/../bootstrap.php';
 

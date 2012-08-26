@@ -2,7 +2,7 @@
 
 namespace TEIShredder;
 
-use \PDO;
+use \LogicException;
 
 /**
  * Model class for volumes
@@ -35,43 +35,18 @@ class Volume extends Model {
 	protected $pagenumber;
 
 	/**
-	 * Returns all volumes, ordered by their numbers
-	 * @param Setup $setup
-	 * @return Volume[]
-	 */
-	public static function fetchVolumes(Setup $setup) {
-		$stm = $setup->database->query(
-			'SELECT number, title, pagenumber FROM '.$setup->prefix.'volume ORDER BY number'
-		);
-		$stm->setFetchMode(PDO::FETCH_CLASS, __CLASS__, array($setup));
-		$volumes = array();
-		foreach ($stm->fetchAll() as $volume) {
-			$volumes[] = $volume;
-		}
-		return $volumes;
-	}
-
-	/**
 	 * Adds an XML chunk (not expected to perform updates)
 	 */
 	public function save() {
-		$stm = $this->_setup->database->prepare(
-			'INSERT INTO '.$this->_setup->prefix.'volume '.
-			'(number, title, pagenumber) VALUES (?, ?, ?)'
-		);
-		$stm->execute(array(
-			$this->number,
-			$this->title,
-			$this->pagenumber,
-		));
-	}
 
-	/**
-	 * Removes all data
-	 * @param Setup $setup
-	 */
-	public static function flush(Setup $setup) {
-		$setup->database->exec("DELETE FROM ".$setup->prefix.'volume');
+		// Basic integrity check
+		foreach (array('number', 'pagenumber') as $property) {
+			if (0 >= intval($this->$property)) {
+				throw new LogicException("Integrity check failed: $property cannot be empty.");
+			}
+		}
+
+		VolumeDataMapper::save($this->_setup, $this);
 	}
 
 }
