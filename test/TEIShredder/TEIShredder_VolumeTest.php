@@ -82,6 +82,15 @@ class VolumeTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
+	 * @expectedException LogicException
+	 */
+	function tryingToSaveAVolumeWithIncompleteDataThrowsAnException() {
+		$volume = new Volume($this->setup);
+		$volume->save();
+	}
+
+	/**
+	 * @test
 	 */
 	function saveANewVolume() {
 		$volume = new Volume($this->setup);

@@ -97,13 +97,6 @@ class SectionTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 */
-	function flushTheData() {
-		Section::flush($this->setup);
-	}
-
-	/**
-	 * @test
 	 * @expectedException LogicException
 	 */
 	function makeSureASectionRequiresAnId() {
@@ -170,62 +163,6 @@ class SectionTest extends \PHPUnit_Framework_TestCase {
 		// $section->level = 2;
 		$section->element = 'div';
 		$section->save();
-	}
-
-	/**
-	 * @test
-	 * @expectedException InvalidArgumentException
-	 */
-	function tryingToFetchASectionByAnUnknownIdThrowsAnException() {
-		Section::fetchSectionById($this->setup, 12345);
-	}
-
-	/**
-	 * @test
-	 */
-	function fetchingASectionByTheIdWorks() {
-		$section = new Section($this->setup);
-		$section->id = 13;
-		$section->volume = 2;
-		$section->page = 57;
-		$section->level = 2;
-		$section->element = 'div';
-		$section->save();
-
-		$obj = Section::fetchSectionById($this->setup, 13);
-		$this->assertInstanceOf('\TEIShredder\Section', $obj);
-		$this->assertEquals(13, $obj->id);
-		$this->assertEquals('div', $obj->element);
-	}
-
-	/**
-	 * @test
-	 */
-	function fetchAllSectionsOfAVolume() {
-
-		// Add the sections
-		$s1 = new Section($this->setup);
-		$s1->id = 20;
-		$s1->volume = 2;
-		$s1->page = 100;
-		$s1->level = 1;
-		$s1->element = 'div';
-		$s1->save();
-
-		$s2 = new Section($this->setup);
-		$s2->id = 30;
-		$s2->volume = 2;
-		$s2->page = 200;
-		$s2->level = 1;
-		$s2->element = 'div';
-		$s2->save();
-
-		$sections = Section::fetchSectionsByVolume($this->setup, 2);
-		$this->assertInternalType('array', $sections);
-		$this->assertSame(2, count($sections));
-		$this->assertInstanceOf('\TEIShredder\Section', $sections[0]);
-		$this->assertInstanceOf('\TEIShredder\Section', $sections[1]);
-		$this->assertSame('div', $sections[0]->element);
 	}
 
 }
