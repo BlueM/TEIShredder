@@ -36,7 +36,7 @@ class PageDataMapperTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	function saveANewPageDataMapper() {
+	function saveANewPage() {
 		$page = new Page($this->setup);
 		$page->number = 15;
 		$page->xmlid = "pb-15";
@@ -51,7 +51,7 @@ class PageDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException InvalidArgumentException
 	 */
-	function tryingToFetchAPageDataMapperByAnUnknownPageDataMappernumberThrowsAnException() {
+	function tryingToFetchAPageDataMapperByAnUnknownPagenumberThrowsAnException() {
 		PageDataMapper::find($this->setup, 9999999);
 	}
 
