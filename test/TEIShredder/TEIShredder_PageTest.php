@@ -3,6 +3,8 @@
 namespace TEIShredder;
 
 use \TEIShredder;
+use \UnexpectedValueException;
+use \LogicException;
 use \PDO;
 
 require_once __DIR__.'/../bootstrap.php';
@@ -40,26 +42,6 @@ class PageTest extends \PHPUnit_Framework_TestCase {
 		$page = new Page($this->setup);
 		$this->assertInstanceOf('\TEIShredder\Page', $page);
 		return $page;
-	}
-
-	/**
-	 * @test
-	 * @depends createANewPage
-	 * @expectedException UnexpectedValueException
-	 * @expectedExceptionMessage Invalid property
-	 */
-	function tryingToSetAnInvalidPropertyThrowsAnException(Page $page) {
-		$page->foo= 'bar';
-	}
-
-	/**
-	 * @test
-	 * @depends createANewPage
-	 * @expectedException UnexpectedValueException
-	 * @expectedExceptionMessage can not be set
-	 */
-	function tryingToSetAnUnsettablePropertyThrowsAnException(Page $page) {
-		$page->_setup = 'something';
 	}
 
 	/**
