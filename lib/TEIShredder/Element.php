@@ -67,26 +67,6 @@ class Element extends Model {
 	protected $data;
 
 	/**
-	 * Returns an object by its unique xml:id value
-	 * @param Setup $setup
-	 * @param string $xmlid
-	 * @return Element
-	 * @throws InvalidArgumentException
-	 */
-	public static function fetchElementById(Setup $setup, $xmlid) {
-		$sth = $setup->database->prepare(
-			'SELECT xmlid, element, page, chunk, attrn, attrtargetend, data '.
-			'FROM '.$setup->prefix.'element WHERE xmlid = ?'
-		);
-		$sth->execute(array($xmlid));
-		$sth->setFetchMode(PDO::FETCH_CLASS, __CLASS__, array($setup));
-		if (false === $obj = $sth->fetch()) {
-			throw new InvalidArgumentException('No such element');
-		}
-		return $obj;
-	}
-
-	/**
 	 * Adds an XML chunk (not expected to perform updates)
 	 * @throws LogicException
 	 */
@@ -100,29 +80,7 @@ class Element extends Model {
 			}
 		}
 
-		$stm = $this->_setup->database->prepare(
-			'INSERT INTO '.$this->_setup->prefix.'element '.
-			'(xmlid, element, page, chunk, attrn, attrtargetend, data) '.
-			'VALUES (?, ?, ?, ?, ?, ?, ?)'
-		);
-
-		$stm->execute(array(
-			$this->xmlid,
-			$this->element,
-			$this->page,
-			$this->chunk,
-			$this->attrn,
-			$this->attrtargetend,
-			$this->data,
-		));
-	}
-
-	/**
-	 * Removes all data
-	 * @param Setup $setup
-	 */
-	public static function flush(Setup $setup) {
-		$setup->database->exec("DELETE FROM ".$setup->prefix.'element');
+		ElementDataMapper::save($this->_setup, $this);
 	}
 
 }

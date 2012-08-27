@@ -3,7 +3,9 @@
 namespace TEIShredder;
 
 use \TEIShredder;
-use \SimpleXMLElement;
+use \LogicException;
+use \UnexpectedValueException;
+use \InvalidArgumentException;
 
 require_once __DIR__.'/../bootstrap.php';
 
@@ -132,13 +134,7 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 */
-	function flushTheData() {
-		Element::flush($this->setup);
-	}
-
-	/**
-	 * @test
+	 * @todo Use a mock for the data mapper
 	 */
 	function saveANewElement() {
 		$element = new Element($this->setup);
@@ -147,33 +143,6 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 		$element->page = 123;
 		$element->chunk = 456;
 		$element->save();
-	}
-
-	/**
-	 * @test
-	 * @expectedException InvalidArgumentException
-	 */
-	function tryingToFetchAnElementByAnUnknownIdThrowsAnException() {
-		Element::fetchElementById($this->setup, 'abcdefg');
-	}
-
-	/**
-	 * @test
-	 */
-	function fetchAnElementByItsXmlId() {
-
-		$xmlid = 'element-01';
-
-		// DB is newly initiaed before each test, therefore insert an object
-		$element = new Element($this->setup);
-		$element->xmlid = $xmlid;
-		$element->element = 'rs';
-		$element->page = 57;
-		$element->chunk = 99;
-		$element->save();
-
-		$obj = Element::fetchElementById($this->setup, $xmlid);
-		$this->assertInstanceOf('\TEIShredder\Element', $obj);
 	}
 
 }
