@@ -15,7 +15,7 @@ use \PDO;
 class VolumeDataMapper implements DataMapperInterface {
 
 	/**
-	 * Returns an object by an identifier (which depends on the object domain)
+	 * Returns an object by the volume number
 	 * @param Setup $setup
 	 * @param mixed $identifier Volume number
 	 * @return Volume
