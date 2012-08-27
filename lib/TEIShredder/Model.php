@@ -57,4 +57,19 @@ class Model {
 		$this->$name = $value;
 	}
 
+	/**
+	 * #todo
+	 * @return string
+	 */
+	public function __toString() {
+		$data = array();
+		foreach (array_keys(get_class_vars(get_class($this))) as $property) {
+			if (strncmp('_', $property, 1)) {
+				$data[] = "$property: ".$this->$property;
+			}
+		}
+		$data = join(', ', $data);
+		return get_class($this).($data ? " [$data]" : '');
+	}
+
 }
