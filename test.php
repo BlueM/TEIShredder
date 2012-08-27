@@ -8,6 +8,7 @@ use \TEIShredder\Indexer_Extractor;
 use \TEIShredder\PageDataMapper;
 use \TEIShredder\VolumeDataMapper;
 use \TEIShredder\SectionDataMapper;
+use \TEIShredder\NamedEntityDataMapper;
 
 require __DIR__.'/autoload.php';
 
@@ -80,6 +81,27 @@ foreach ($sections as $section) {
 		$section->id,
 		$section->page,
 		$section->title
+	);
+}
+
+// 4) Named Entities mentioned in the text
+$entities = NamedEntityDataMapper::findAll($setup);
+printf(
+	"\n* Document contains %d occurrences of tagged named entities\n",
+	count($entities)
+);
+foreach ($entities as $entity) {
+	$text = 'Text extract: “'.$entity->contextstart.mb_convert_case($entity->notation, MB_CASE_UPPER).$entity->contextend.'”';
+	$text = str_replace("\n", "\n    ", wordwrap($text, 72));
+	printf(
+		"  * On page %2d, entity of domain “%s” with identifier “%s”\n".
+		"    %s\n".
+		"    Tag’s @xml:id value: “%s”\n",
+		$entity->page,
+		$entity->domain,
+		$entity->identifier,
+		$text,
+		$entity->xmlid
 	);
 }
 
