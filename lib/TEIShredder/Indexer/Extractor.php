@@ -309,10 +309,8 @@ class Indexer_Extractor extends Indexer {
 	 * Setup method that will be called right before processing starts.
 	 */
 	protected function preProcessAction() {
-		$db = $this->setup->database;
-		$prefix = $this->setup->prefix;
 		Element::flush($this->setup);
-		$db->exec('DELETE FROM '.$prefix.'entity');
+		NamedEntityDataMapper::flush($this->setup);
 	}
 
 }

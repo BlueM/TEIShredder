@@ -98,13 +98,6 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 */
-	function flushTheData() {
-		NamedEntity::flush($this->setup);
-	}
-
-	/**
-	 * @test
 	 * @expectedException LogicException
 	 */
 	function makeSureANamedEntityRequiresAPageNumber() {

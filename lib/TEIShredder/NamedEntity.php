@@ -108,32 +108,7 @@ class NamedEntity extends Model {
 			}
 		}
 
-		$stm = $this->_setup->database->prepare(
-			'INSERT INTO '.$this->_setup->prefix.'entity '.
-			'(xmlid, page, domain, identifier, contextstart, notation, contextend, container, chunk, notationhash) '.
-			'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-		);
-
-		$stm->execute(array(
-			$this->xmlid,
-			$this->page,
-			$this->domain,
-			$this->identifier,
-			$this->contextstart,
-			$this->notation,
-			$this->contextend,
-			$this->container,
-			$this->chunk,
-			substr(md5(mb_convert_case(trim($this->notation), MB_CASE_LOWER)), 0, 10),
-		));
-	}
-
-	/**
-	 * Removes all data
-	 * @param Setup $setup
-	 */
-	public static function flush(Setup $setup) {
-		$setup->database->exec("DELETE FROM ".$setup->prefix.'entity');
+		NamedEntityDataMapper::save($this->_setup, $this);
 	}
 
 	/**
@@ -146,6 +121,11 @@ class NamedEntity extends Model {
 
 		$length = 100;
 		$omission = '…';
+
+		if ('notation' == $name) {
+			$this->notationhash = substr(md5(mb_convert_case(trim($this->notation), MB_CASE_LOWER)), 0, 10);
+			return;
+		}
 
 		if ('contextstart' == $name) {
 		    if (mb_strlen($this->contextstart) >= $length and
