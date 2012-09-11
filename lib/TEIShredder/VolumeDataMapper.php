@@ -51,14 +51,14 @@ class VolumeDataMapper implements DataMapperInterface {
 	 * @param Model $obj
 	 */
 	public static function save(Setup $setup, Model $obj) {
+		$data = $obj->persistableData();
+		$columns = join(', ', array_keys($data));
+		$values = array_values($data);
 		$stm = $setup->database->prepare(
-			'INSERT INTO '.$setup->prefix.'volume (number, title, pagenumber) VALUES (?, ?, ?)'
+			'INSERT INTO '.$setup->prefix."volume ($columns) ".
+			'VALUES ('.trim(str_repeat('?, ', count($values)), ', ').')'
 		);
-		$stm->execute(array(
-			$obj->number,
-			$obj->title,
-			$obj->pagenumber,
-		));
+		$stm->execute($values);
 	}
 
 	/**
