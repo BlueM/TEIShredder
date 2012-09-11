@@ -54,5 +54,90 @@ class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase {
 		$chunker->process();
 	}
 
+	/**
+	 * @test
+	 * @expectedException RuntimeException
+	 * @expectedExceptionMessage Multiple <titlePart>
+	 */
+	function makeSureAChunkerThrowsAnExceptionIfThereAreSeveralTitlesForAVolume() {
+
+		$xml = <<<_XML_
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>...</title></titleStmt>
+      <publicationStmt><p>...</p></publicationStmt>
+      <sourceDesc><p>...</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <front>
+  		<titlePart>Title 1</titlePart>
+  		<titlePart>Title 2</titlePart>
+  	</front>
+    <body>
+      <p>...</p>
+    </body>
+  </text>
+</TEI>
+_XML_;
+
+		$chunker = new Indexer_Chunker(
+			$this->setup,
+			$this->xmlreader,
+			$xml
+		);
+
+		$chunker->process();
+	}
+
+	/**
+	 * @test
+	 */
+	function runAChunkerWithTextbeforepbSetToOff() {
+
+		$xml = <<<_XML_
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>...</title></titleStmt>
+      <publicationStmt><p>...</p></publicationStmt>
+      <sourceDesc><p>...</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <group>
+
+  <pb n="1" />
+  <text>
+    <titlePart>Vol1</titlePart>
+    <body>
+      <p>...</p>
+    </body>
+  </text>
+
+  <pb n="2" />
+  <text>
+    <titlePart>Vol2</titlePart>
+    <body>
+      <p>...</p>
+    </body>
+  </text>
+  </group>
+</TEI>
+_XML_;
+
+		$chunker = new Indexer_Chunker(
+			$this->setup,
+			$this->xmlreader,
+			$xml
+		);
+		$chunker->textBeforePb = false;
+		$chunker->process();
+
+		$volumes = VolumeGateway::findAll($this->setup);
+
+		$this->assertEquals(1, $volumes[0]->number);
+		$this->assertEquals(2, $volumes[1]->number);
+	}
 }
 
