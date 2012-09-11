@@ -254,7 +254,7 @@ class Indexer_Extractor extends Indexer {
 				$entity->contextend = $after;
 				$entity->container = $this->containerTypes[$tag['container']];
 				$entity->chunk = $tag['chunk'];
-				$entity->save();
+				NamedEntityGateway::save($this->setup, $entity);
 			}
 		}
 	}
@@ -284,7 +284,7 @@ class Indexer_Extractor extends Indexer {
 		$e->attrn = $attrs['attrn'];
 		$e->attrtargetend = $attrs['attrtargetend'];
 		$e->data = $attrs['data'];
-		$e->save();
+		ElementGateway::save($this->setup, $e);
 	}
 
 	/**
