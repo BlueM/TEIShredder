@@ -44,16 +44,12 @@ TEI != TEI
 ----------
 TEI can be used in many different ways. In my eyes, this is one of the very appealing features of TEI, but on the other hand, it makes developing generic tools much harder or impossible. TEIShredder is, to some extent, a generic tool insofar as it just processes TEI – but on the other hand, it has certain expectations of the TEI. Therefore, most likely, TEIShredder will not be able to process your unmodified TEI document, but it will be necessary to pre-process the document (for instance, using XSL-T or [CBXMLTransformer](https://github.com/BlueM/CBXMLTransformer)) to match these expectations.
 
-Exluding sections from being indexed
-------------------------------------
-By default, TEIShredder (this might be subject to change) collects information of a text’s structure based on &lt;div&gt;, &lt;text&gt;, &lt;titlePage&gt; and &lt;front&gt; tags. If you want any of these not included, you can add a @noindex attribute with value of 1. As, of course, @noindex is not a valid TEI attribute, you should transform the source XML document before passing it to TEIShredder, for instance using XSL-T.
-
 Conventions / expectations
 --------------------------
 
 * If there are multiple volumes, each one must be enclosed by a a &lt;text&gt; block inside a &lt;group&gt; element.
-* The main title of a volume is enclosed by a &lt;titlePart&gt; element that has either no @type attribute or the @type attribute’s value is “main”. Additionally, @noindex must not be set to 1.
-* There must not be more than one &lt;titlePart&gt; element in each volume that fulfills to the abovementioned conditions.
+* The main title of a volume is enclosed by a &lt;titlePart&gt; element. It is expected that each volume has a title, i.e. has a &lt;titlePart&gt; element.
+* There must not be more than one &lt;titlePart&gt; element in each volume. If there are two or more, you should pre-process the XML and/or subclass the chunker class to make it ignore the unwanted &lt;titlePart&gt; elements when indexing.
 * Text structure is encoded by nested &lt;div&gt; elements with &lt;head&gt; containing the section title.
 * There is no special handling of columns, but only generic handling of &lt;milestone /&gt; elements. As the TEI Lite documentation suggests, columns should be encoded as &lt;milestone unit="column" [n="..."] /&gt;. Whenever TEIShredder encounters a &lt;milestone /&gt; element (regardless of whether it represents a column or some other change in a reference system), the values of @unit and @n (concatenated by "-", if both are present) will be saved together with the XML segment that follows this element.
 * TEIShredder expects any element that should be indexed to have an @xml:id attribute, which means that elements without one will not be indexed. (Indexing such an element would be useless, as it could not be addressed, anyway.)
