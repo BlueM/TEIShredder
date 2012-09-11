@@ -272,7 +272,7 @@ class Indexer_Chunker extends Indexer {
 		$section->level = $this->level;
 		$section->element = $this->r->localName;
 		$section->xmlid = $this->r->getAttribute('xml:id');
-		$section->save();
+		SectionGateway::save($this->setup, $section);
 	}
 
 	/**
@@ -326,7 +326,7 @@ class Indexer_Chunker extends Indexer {
 	 * or to perform initialization steps.
 	 */
 	protected function preProcessAction() {
-		SectionDataMapper::flush($this->setup);
+		SectionGateway::flush($this->setup);
 		PageDataMapper::flush($this->setup);
 		VolumeGateway::flush($this->setup);
 		XMLChunk::flush($this->setup);
