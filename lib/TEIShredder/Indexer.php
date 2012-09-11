@@ -15,22 +15,6 @@ use \RuntimeException;
 abstract class Indexer {
 
 	/**
-	 * Configuration
-	 * @var Setup
-	 */
-	protected $setup;
-
-	/**
-	 * Settings
-	 * @var array
-	 */
-	public $settings = array(
-		'textbeforepb'=>true, // Does a text's <text> element enclose its first
-		                      // <pb /> element? Set to false, if the order is
-		                      // <pb /> ... <text>
-	);
-
-	/**
 	 * Current page number
 	 * @var int
 	 */
@@ -53,6 +37,12 @@ abstract class Indexer {
 	 * @var XMLReader
 	 */
 	protected $r;
+
+	/**
+	 * Configuration
+	 * @var Setup
+	 */
+	protected $setup;
 
 	/**
 	 * Method which will be called when the input stream reaches an opening
