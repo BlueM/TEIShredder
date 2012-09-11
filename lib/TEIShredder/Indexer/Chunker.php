@@ -256,11 +256,6 @@ class Indexer_Chunker extends Indexer {
 	 */
 	protected function newSection() {
 
-		if ($this->r->getAttribute('noindex')) {
-			// Should not be indexed
-			return;
-		}
-
 		if ('text'  == $this->r->localName or
 		    'front' == $this->r->localName) {
 			// <text> must not contain <head>, hence there is no title
@@ -345,17 +340,7 @@ class Indexer_Chunker extends Indexer {
 	 */
 	protected function processTitlePart() {
 
-		if ($this->r->getAttribute('noindex')) {
-			// Should not be indexed
-			return;
-		}
-
-		if ($this->r->getAttribute('type') and
 			'main' != $this->r->getAttribute('type')) {
-			// Not a main title
-			return;
-		}
-
 		$title = call_user_func(
 			$this->setup->plaintextCallback,
 			$this->r->readOuterXML()
