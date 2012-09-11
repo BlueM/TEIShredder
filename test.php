@@ -38,7 +38,7 @@ $extractor->process();
 echo "\nSome information on ".basename($path).":\n";
 
 // 1) Volumes
-$volumes = VolumeDataMapper::findAll($setup);
+$volumes = VolumeGateway::findAll($setup);
 printf(
 	"\n* Document consists of %d volumes\n",
 	count($volumes)
@@ -70,7 +70,7 @@ foreach ($pages as $page) {
 }
 
 // 3) Sections
-$sections = SectionDataMapper::findAll($setup);
+$sections = SectionGateway::findAll($setup);
 printf(
 	"\n* Document contains %d sections\n",
 	count($sections)
