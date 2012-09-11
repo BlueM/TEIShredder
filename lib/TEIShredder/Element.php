@@ -67,11 +67,12 @@ class Element extends Model {
 	protected $data;
 
 	/**
-	 * Adds an XML chunk (not expected to perform updates)
+	 * Returns an associative array of property=>value pairs to be
+	 * processed by a persistence layer.
+	 * @return array
 	 * @throws LogicException
 	 */
-	public function save() {
-
+	public function persistableData() {
 		// Basic integrity check
 		foreach (array('xmlid', 'element', 'page', 'chunk') as $property) {
 			if (is_null($this->$property) or
@@ -79,8 +80,7 @@ class Element extends Model {
 				throw new LogicException("Integrity check failed: $property cannot be empty.");
 			}
 		}
-
-		ElementDataMapper::save($this->_setup, $this);
+		return $this->toArray();
 	}
 
 }

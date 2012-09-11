@@ -86,11 +86,10 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function makeSureAElementRequiresAnId() {
 		$element = new Element($this->setup);
-		// $element->xmlid = 'element-01';
 		$element->element = 'rs';
 		$element->page = 57;
 		$element->chunk = 99;
-		$element->save();
+		$element->persistableData();
 	}
 
 	/**
@@ -100,10 +99,9 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 	function makeSureAElementRequiresAVolume() {
 		$element = new Element($this->setup);
 		$element->xmlid = 'element-01';
-		// $element->element = 'rs';
 		$element->page = 57;
 		$element->chunk = 99;
-		$element->save();
+		$element->persistableData();
 	}
 
 	/**
@@ -114,9 +112,8 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 		$element = new Element($this->setup);
 		$element->xmlid = 'element-01';
 		$element->element = 'rs';
-		// $element->element = 57;
 		$element->chunk = 99;
-		$element->save();
+		$element->persistableData();
 	}
 
 	/**
@@ -128,21 +125,7 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 		$element->xmlid = 'element-01';
 		$element->element = 'rs';
 		$element->page = 57;
-		// $element->chunk = 99;
-		$element->save();
-	}
-
-	/**
-	 * @test
-	 * @todo Use a mock for the data mapper
-	 */
-	function saveANewElement() {
-		$element = new Element($this->setup);
-		$element->xmlid = 'element-01';
-		$element->element = 'rs';
-		$element->page = 123;
-		$element->chunk = 456;
-		$element->save();
+		$element->persistableData();
 	}
 
 }
