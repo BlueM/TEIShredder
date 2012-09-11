@@ -12,7 +12,15 @@ use \PDO;
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class NamedEntityDataMapper implements DataMapperInterface {
+class NamedEntityGateway extends AbstractGateway {
+
+	/**
+	 * Returns the gateway's database table name
+	 * @return string Table name, without the configured prefix
+	 */
+	public static function tableName() {
+		return 'entity';
+	}
 
 	/**
 	 * Returns a named entity by its xml:id attribute value
@@ -23,9 +31,10 @@ class NamedEntityDataMapper implements DataMapperInterface {
 	 * @todo xml:id not suitable (multi-links!)
 	 */
 	public static function find(Setup $setup, $identifier) {
+		$table = $setup->prefix.self::tableName();
 		$stm = $setup->database->prepare(
 			'SELECT xmlid, page, domain, identifier, contextstart, notation, contextend, container, chunk, notationhash '.
-			'FROM '.$setup->prefix.'entity WHERE xmlid = ?'
+			"FROM $table WHERE xmlid = ?"
 		);
 		$stm->execute(array($identifier));
 		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\NamedEntity', array($setup));
@@ -41,48 +50,13 @@ class NamedEntityDataMapper implements DataMapperInterface {
 	 * @return NamedEntity[]
 	 */
 	public static function findAll(Setup $setup) {
+		$table = $setup->prefix.self::tableName();
 		$stm = $setup->database->query(
 			'SELECT xmlid, page, domain, identifier, contextstart, notation, contextend, container, chunk, notationhash '.
-			'FROM '.$setup->prefix.'entity ORDER BY chunk'
+			"FROM $table ORDER BY chunk"
 		);
 		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\NamedEntity', array($setup));
 		return $stm->fetchAll();
-	}
-
-	/**
-	 * Saves a domain object
-	 * @param Setup $setup
-	 * @param Model $obj
-	 */
-	public static function save(Setup $setup, Model $obj) {
-
-		$stm = $setup->database->prepare(
-			'INSERT INTO '.$setup->prefix.'entity '.
-			'(xmlid, page, domain, identifier, contextstart, notation, contextend, container, chunk, notationhash) '.
-			'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-		);
-
-		$stm->execute(array(
-			$obj->xmlid,
-			$obj->page,
-			$obj->domain,
-			$obj->identifier,
-			$obj->contextstart,
-			$obj->notation,
-			$obj->contextend,
-			$obj->container,
-			$obj->chunk,
-			$obj->notationhash,
-		));
-
-	}
-
-	/**
-	 * Removes all data in the domain
-	 * @param Setup $setup
-	 */
-	public static function flush(Setup $setup) {
-		$setup->database->exec("DELETE FROM ".$setup->prefix.'entity');
 	}
 
 }

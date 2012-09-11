@@ -8,7 +8,7 @@ use \TEIShredder\Indexer_Extractor;
 use \TEIShredder\PageGateway;
 use \TEIShredder\VolumeGateway;
 use \TEIShredder\SectionGateway;
-use \TEIShredder\NamedEntityDataMapper;
+use \TEIShredder\NamedEntityGateway;
 
 require __DIR__.'/autoload.php';
 
@@ -85,7 +85,7 @@ foreach ($sections as $section) {
 }
 
 // 4) Named Entities mentioned in the text
-$entities = NamedEntityDataMapper::findAll($setup);
+$entities = NamedEntityGateway::findAll($setup);
 printf(
 	"\n* Document contains %d occurrences of tagged named entities\n",
 	count($entities)

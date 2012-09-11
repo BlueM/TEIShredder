@@ -12,7 +12,7 @@ require_once __DIR__.'/../bootstrap.php';
  * @package TEIShredder
  * @subpackage Tests
  */
-class NamedEntityDataMapperTest extends \PHPUnit_Framework_TestCase {
+class NamedEntityGatewayTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @var Setup
@@ -30,8 +30,8 @@ class NamedEntityDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function flushTheData() {
-		NamedEntityDataMapper::flush($this->setup);
-		$objs = NamedEntityDataMapper::findAll($this->setup);
+		NamedEntityGateway::flush($this->setup);
+		$objs = NamedEntityGateway::findAll($this->setup);
 		$this->assertTrue(0 == count($objs));
 	}
 
@@ -39,7 +39,7 @@ class NamedEntityDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function saveANamedEntity() {
-		NamedEntityDataMapper::flush($this->setup);
+		NamedEntityGateway::flush($this->setup);
 
 		$ent = new NamedEntity($this->setup);
 		$ent->xmlid = 'entity-123';
@@ -48,9 +48,9 @@ class NamedEntityDataMapperTest extends \PHPUnit_Framework_TestCase {
 		$ent->domain = 'demo';
 		$ent->identifier= '4711';
 		$ent->notation = 'Named Entity';
-		$ent->save();
+		NamedEntityGateway::save($this->setup, $ent);
 
-		$obj = NamedEntityDataMapper::find($this->setup, 'entity-123');
+		$obj = NamedEntityGateway::find($this->setup, 'entity-123');
 		$this->assertInstanceOf('\TEIShredder\NamedEntity', $obj);
 	}
 
@@ -59,7 +59,7 @@ class NamedEntityDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function tryingToFetchANamedEntityDataMapperByAnUnknownNamedEntityDataMappernumberThrowsAnException() {
-		NamedEntityDataMapper::find($this->setup, 9999999);
+		NamedEntityGateway::find($this->setup, 9999999);
 	}
 
 	/**
@@ -68,7 +68,7 @@ class NamedEntityDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findANamedEntityByItsXmlId() {
 
-		NamedEntityDataMapper::flush($this->setup);
+		NamedEntityGateway::flush($this->setup);
 
 		$ent = new NamedEntity($this->setup);
 		$ent->xmlid = 'entity-123';
@@ -77,9 +77,9 @@ class NamedEntityDataMapperTest extends \PHPUnit_Framework_TestCase {
 		$ent->domain = 'demo';
 		$ent->identifier= '4711';
 		$ent->notation = 'Named Entity';
-		$ent->save();
+		NamedEntityGateway::save($this->setup, $ent);
 
-		$obj = NamedEntityDataMapper::find($this->setup, 'entity-123');
+		$obj = NamedEntityGateway::find($this->setup, 'entity-123');
 		$this->assertInstanceOf('\TEIShredder\NamedEntity', $obj);
 		$this->assertEquals("Named Entity", $ent->notation);
 	}
@@ -89,7 +89,7 @@ class NamedEntityDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAllNamedEntitys() {
 
-		NamedEntityDataMapper::flush($this->setup);
+		NamedEntityGateway::flush($this->setup);
 
 		$ent = new NamedEntity($this->setup);
 		$ent->xmlid = 'entity-1';
@@ -98,7 +98,7 @@ class NamedEntityDataMapperTest extends \PHPUnit_Framework_TestCase {
 		$ent->domain = 'person';
 		$ent->identifier= 44;
 		$ent->notation = 'Named Entity 1';
-		$ent->save();
+		NamedEntityGateway::save($this->setup, $ent);
 
 		$ent = new NamedEntity($this->setup);
 		$ent->xmlid = 'entity-123';
@@ -107,9 +107,9 @@ class NamedEntityDataMapperTest extends \PHPUnit_Framework_TestCase {
 		$ent->domain = 'person';
 		$ent->identifier= 77;
 		$ent->notation = 'Named Entity 2';
-		$ent->save();
+		NamedEntityGateway::save($this->setup, $ent);
 
-		$objs = NamedEntityDataMapper::findAll($this->setup);
+		$objs = NamedEntityGateway::findAll($this->setup);
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(2 == count($objs));
 		$this->assertInstanceOf('\TEIShredder\NamedEntity', $objs[0]);
