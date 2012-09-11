@@ -7,7 +7,7 @@ use \TEIShredder\Indexer_Chunker;
 use \TEIShredder\Indexer_Extractor;
 use \TEIShredder\PageDataMapper;
 use \TEIShredder\VolumeDataMapper;
-use \TEIShredder\SectionDataMapper;
+use \TEIShredder\SectionGateway;
 use \TEIShredder\NamedEntityDataMapper;
 
 require __DIR__.'/autoload.php';
