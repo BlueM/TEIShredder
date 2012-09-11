@@ -42,19 +42,4 @@ class ElementGateway extends AbstractGateway {
 		return $obj;
 	}
 
-	/**
-	 * Returns all elements, ordered by the chunk ID
-	 * @param Setup $setup
-	 * @return Element[]
-	 */
-	public static function findAll(Setup $setup) {
-		$table = $setup->prefix.self::tableName();
-		$stm = $setup->database->query(
-			'SELECT xmlid, element, page, chunk, attrn, attrtargetend, data '.
-			"FROM $table ORDER BY chunk"
-		);
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Element', array($setup));
-		return $stm->fetchAll();
-	}
-
 }
