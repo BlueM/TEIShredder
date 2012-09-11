@@ -183,7 +183,7 @@ class Indexer_Chunker extends Indexer {
 
 		if ($this->pageObj) {
 			// Finish previous page
-			$this->pageObj->save();
+			PageGateway::save($this->setup, $this->pageObj);
 		}
 
 		$this->page ++;
@@ -203,7 +203,7 @@ class Indexer_Chunker extends Indexer {
 	protected function save() {
 		if ($this->pageObj) {
 			// Finish previous page
-			$this->pageObj->save();
+			PageGateway::save($this->setup, $this->pageObj);
 		}
 	}
 
@@ -327,7 +327,7 @@ class Indexer_Chunker extends Indexer {
 	 */
 	protected function preProcessAction() {
 		SectionGateway::flush($this->setup);
-		PageDataMapper::flush($this->setup);
+		PageGateway::flush($this->setup);
 		VolumeGateway::flush($this->setup);
 		XMLChunk::flush($this->setup);
 	}

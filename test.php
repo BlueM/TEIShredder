@@ -5,7 +5,7 @@ use \TEIShredder\Setup;
 use \TEIShredder\XMLReader;
 use \TEIShredder\Indexer_Chunker;
 use \TEIShredder\Indexer_Extractor;
-use \TEIShredder\PageDataMapper;
+use \TEIShredder\PageGateway;
 use \TEIShredder\VolumeGateway;
 use \TEIShredder\SectionGateway;
 use \TEIShredder\NamedEntityDataMapper;
@@ -53,7 +53,7 @@ foreach ($volumes as $volume) {
 }
 
 // 2) Pages
-$pages = PageDataMapper::findAll($setup);
+$pages = PageGateway::findAll($setup);
 printf(
 	"\n* Document contains %d pages (i.e.: %d <pb /> elements)\n",
 	count($pages),

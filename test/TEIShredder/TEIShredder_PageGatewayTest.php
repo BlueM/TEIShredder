@@ -44,7 +44,7 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase {
 		$page->n = "XV";
 		$page->volume = 2;
 		$page->plaintext = 'Foo';
-		$page->save();
+		PageGateway::save($this->setup, $page);
 	}
 
 	/**
@@ -63,7 +63,7 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase {
 		$page = new Page($this->setup);
 		$page->number = 20;
 		$page->volume = 5;
-		$page->save();
+		PageGateway::save($this->setup, $page);
 
 		$obj = PageGateway::find($this->setup, 20);
 		$this->assertInstanceOf('\TEIShredder\Page', $obj);
@@ -78,7 +78,7 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase {
 		$page = new Page($this->setup);
 		$page->number = 20;
 		$page->volume = 5;
-		$page->save();
+		PageGateway::save($this->setup, $page);
 
 		$objs = PageGateway::findAll($this->setup);
 		$this->assertInternalType('array', $objs);
