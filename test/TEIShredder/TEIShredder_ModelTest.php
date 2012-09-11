@@ -9,19 +9,11 @@ use \PDO;
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Concrete model subclass for testing purposes
+ * Concrete Model class for testing purposes
  */
 class ConcreteModel extends Model {
-	protected $a  = 'A';
-	protected $b  = 'B';
-	protected $_c = 'C';
-
-	/**
-	 * Returns an associative array of property=>value pairs to be
-	 * processed by a persistence layer.	 */
-	public function persistableData() {
-		return $this->toArray();
-	}
+	protected $a = 'A';
+	protected $b = 'B';
 }
 
 /**
@@ -55,8 +47,26 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function createAnObject() {
 		$obj = new ConcreteModel($this->setup);
-		$this->assertInstanceOf('\TEIShredder\ModelSubclassStub', $obj);
+		$this->assertInstanceOf('\TEIShredder\ConcreteModel', $obj);
 		return $obj;
+	}
+
+	/**
+	 * @test
+	 * @depends createAnObject
+	 */
+	function settingASettablePropertyWorks(Model $obj) {
+		$obj->a = 'A value';
+		$this->assertSame('A value', $obj->a);
+	}
+
+	/**
+	 * @test
+	 * @depends createAnObject
+	 * @expectedException UnexpectedValueException
+	 */
+	function tryingToGetAnInvalidPropertyThrowsAnException(Model $obj) {
+		$obj->nonexistent;
 	}
 
 	/**
@@ -80,9 +90,9 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	function testTypeCastingToString() {
+	function gettingThePersistableDataWorks() {
 		$obj = new ConcreteModel($this->setup);
-		$this->assertSame('TEIShredder\ModelSubclassStub [foo: bar]', (string)$obj);
+		$this->assertInternalType('array', $obj->persistableData());
 	}
 
 	/**
@@ -90,7 +100,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function testTypeCastingToString() {
 		$obj = new ConcreteModel($this->setup);
-		$this->assertSame('TEIShredder\ModelSubclassStub [foo: bar]', (string)$obj);
+		$this->assertSame('TEIShredder\ConcreteModel [a: A, b: B]', (string)$obj);
 	}
 
 }
