@@ -12,7 +12,7 @@ require_once __DIR__.'/../bootstrap.php';
  * @package TEIShredder
  * @subpackage Tests
  */
-class VolumeDataMapperTest extends \PHPUnit_Framework_TestCase {
+class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @var Setup
@@ -55,7 +55,7 @@ class VolumeDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException InvalidArgumentException
 	 */
-	function tryingToFetchAVolumeDataMapperByAnUnknownVolumeDataMappernumberThrowsAnException() {
+	function tryingToFindAVolumeByAnUnknownVolumeNumberThrowsAnException() {
 		VolumeGateway::find($this->setup, 9999999);
 	}
 
