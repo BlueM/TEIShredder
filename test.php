@@ -6,7 +6,7 @@ use \TEIShredder\XMLReader;
 use \TEIShredder\Indexer_Chunker;
 use \TEIShredder\Indexer_Extractor;
 use \TEIShredder\PageDataMapper;
-use \TEIShredder\VolumeDataMapper;
+use \TEIShredder\VolumeGateway;
 use \TEIShredder\SectionGateway;
 use \TEIShredder\NamedEntityDataMapper;
 
