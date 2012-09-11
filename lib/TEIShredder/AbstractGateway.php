@@ -23,26 +23,6 @@ interface AbstractGatewayInterface {
 abstract class AbstractGateway implements AbstractGatewayInterface {
 
 	/**
-	 * Returns an object by an identifier (which depends on the object domain)
-	 * @param Setup $setup
-	 * @param mixed $identifier
-	 * @return Model
-	 * @throws InvalidArgumentException
-	 */
-	public static function find(Setup $setup, $identifier) {
-
-	}
-
-	/**
-	 * Returns all objects
-	 * @param Setup $setup
-	 * @return Model[]
-	 */
-	public static function findAll(Setup $setup) {
-
-	}
-
-	/**
 	 * Saves the model
 	 * @param Setup $setup
 	 * @param Model $obj
