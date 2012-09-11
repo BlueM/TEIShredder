@@ -3,6 +3,7 @@
 namespace TEIShredder;
 
 use \UnexpectedValueException;
+use \LogicException;
 
 /**
  * Simple base class for TEIShredder model classes.
@@ -11,7 +12,7 @@ use \UnexpectedValueException;
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class Model {
+abstract class Model {
 
 	/**
 	 * Instance of the Setup class.
@@ -22,6 +23,8 @@ class Model {
 	/**
 	 * Constructor.
 	 * @param Setup $setup
+	 * @todo Do we still need the Setup instance once the persistence is not done
+	 *       by the model classes anymore?
 	 */
 	public function __construct(Setup $setup) {
 		$this->_setup = $setup;
@@ -34,7 +37,7 @@ class Model {
 	 * @throws UnexpectedValueException
 	 */
 	public function __get($name) {
-		if (in_array($name, array_keys(get_class_vars(get_class($this))))) {
+		if (in_array($name, array_keys($this->toArray()))) {
 			return $this->$name;
 		}
 		throw new UnexpectedValueException("Invalid property name “".$name."”");
@@ -47,29 +50,53 @@ class Model {
 	 * @throws UnexpectedValueException
 	 */
 	public function __set($name, $value) {
-		$properties = array_keys(get_class_vars(get_class($this)));
-		if (!in_array($name, $properties)) {
-			throw new UnexpectedValueException("Invalid property name “".$name."”.");
-		}
 		if ('_' === substr($name, 0, 1)) {
 			throw new UnexpectedValueException("Property “".$name."” can not be set.");
+		}
+		if (!in_array($name, array_keys($this->toArray()))) {
+			throw new UnexpectedValueException("Invalid property name “".$name."”.");
 		}
 		$this->$name = $value;
 	}
 
 	/**
-	 * #todo
+	 * Returns a string representation of the object
 	 * @return string
 	 */
 	public function __toString() {
-		$data = array();
-		foreach (array_keys(get_class_vars(get_class($this))) as $property) {
+		$properties = array();
+		foreach ($this->toArray() as $property=>$value) {
+			$properties[] = $property.': '.$value;
+		}
+		$properties = join(', ', $properties);
+		return get_class($this).($properties ? " [$properties]" : '');
+	}
+
+	/**
+	 * Returns data to be passed to a persistence layer.
+	 *
+	 * This default implementation simply returns the visible class properties
+	 * and their values. Concrete subclasses may overwrite this method to alter
+	 * this and/or to check the consistency of the objects state.
+	 * @return array Associative array of property=>value pairs
+	 * @throws LogicException
+	 */
+	public function persistableData() {
+		return $this->toArray();
+	}
+
+	/**
+	 * Returns an array representation of the object.
+	 * @return array
+	 */
+	protected function toArray() {
+		$array = array();
+		foreach ($this as $property=>$value) {
 			if (strncmp('_', $property, 1)) {
-				$data[] = "$property: ".$this->$property;
+				$array[$property] = $value;
 			}
 		}
-		$data = join(', ', $data);
-		return get_class($this).($data ? " [$data]" : '');
+		return $array;
 	}
 
 }
