@@ -45,7 +45,7 @@ class VolumeDataMapperTest extends \PHPUnit_Framework_TestCase {
 		$volume->number = 3;
 		$volume->title = "Hello world";
 		$volume->pagenumber = 123;
-		$volume->save();
+		VolumeDataMapper::save($this->setup, $volume);
 
 		$obj = VolumeDataMapper::find($this->setup, 3);
 		$this->assertInstanceOf('\TEIShredder\Volume', $obj);
@@ -71,7 +71,7 @@ class VolumeDataMapperTest extends \PHPUnit_Framework_TestCase {
 		$volume->number = 17;
 		$volume->title = "Volume 17";
 		$volume->pagenumber = 17;
-		$volume->save();
+		VolumeDataMapper::save($this->setup, $volume);
 
 		$obj = VolumeDataMapper::find($this->setup, 17);
 		$this->assertInstanceOf('\TEIShredder\Volume', $obj);
@@ -89,7 +89,7 @@ class VolumeDataMapperTest extends \PHPUnit_Framework_TestCase {
 		$volume->number = 20;
 		$volume->title = "Volume 20";
 		$volume->pagenumber = 20;
-		$volume->save();
+		VolumeDataMapper::save($this->setup, $volume);
 
 		$objs = VolumeDataMapper::findAll($this->setup);
 		$this->assertInternalType('array', $objs);

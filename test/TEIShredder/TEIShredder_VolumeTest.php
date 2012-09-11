@@ -4,6 +4,7 @@ namespace TEIShredder;
 
 use \TEIShredder;
 use \UnexpectedValueException;
+use \LogicException;
 
 require_once __DIR__.'/../bootstrap.php';
 
@@ -84,21 +85,21 @@ class VolumeTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException LogicException
 	 */
-	function tryingToSaveAVolumeWithIncompleteDataThrowsAnException() {
+	function tryingToGetPersistableDataForAnObjectWithIncompleteDataThrowsAnException() {
 		$volume = new Volume($this->setup);
-		$volume->save();
+		$volume->persistableData();
 	}
 
 	/**
 	 * @test
 	 */
-	function saveANewVolume() {
+	function gettingThePersistableDataForAnObjectWithCompleteDataSucceeds() {
 		$volume = new Volume($this->setup);
-		$volume->number = 6;
-		$volume->title = 'My book, volume VI';
-		$volume->pagenumber = 1234;
-		$volume->save();
+		$volume->title = 'Foo';
+		$volume->number = 2;
+		$volume->pagenumber = 123;
+		$data = $volume->persistableData();
+		$this->assertInternalType('array', $data);
 	}
-
 }
 
