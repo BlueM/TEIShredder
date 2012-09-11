@@ -8,7 +8,7 @@ use \InvalidArgumentException;
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for TEIShredder_SectionDataMapper.
+ * Test class for TEIShredder_SectionGateway.
  * @package TEIShredder
  * @subpackage Tests
  */
@@ -30,8 +30,8 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function flushTheData() {
-		SectionDataMapper::flush($this->setup);
-		$objs = SectionDataMapper::findAll($this->setup);
+		SectionGateway::flush($this->setup);
+		$objs = SectionGateway::findAll($this->setup);
 		$this->assertTrue(0 == count($objs));
 	}
 
@@ -39,7 +39,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function saveASection() {
-		SectionDataMapper::flush($this->setup);
+		SectionGateway::flush($this->setup);
 
 		$section = new Section($this->setup);
 		$section->id = 5;
@@ -48,9 +48,9 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 		$section->page = 55;
 		$section->level = 1;
 		$section->element = 'div';
-		$section->save();
+		SectionGateway::save($this->setup, $section);
 
-		$obj = SectionDataMapper::find($this->setup, 5);
+		$obj = SectionGateway::find($this->setup, 5);
 		$this->assertInstanceOf('\TEIShredder\Section', $obj);
 	}
 
@@ -58,8 +58,8 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException InvalidArgumentException
 	 */
-	function tryingToFetchASectionDataMapperByAnUnknownSectionDataMappernumberThrowsAnException() {
-		SectionDataMapper::find($this->setup, 9999999);
+	function tryingToFetchASectionGatewayByAnUnknownSectionGatewaynumberThrowsAnException() {
+		SectionGateway::find($this->setup, 9999999);
 	}
 
 	/**
@@ -67,7 +67,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findASectionByItsId() {
 
-		SectionDataMapper::flush($this->setup);
+		SectionGateway::flush($this->setup);
 
 		// First, create object
 		$section = new Section($this->setup);
@@ -77,9 +77,9 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 		$section->page= 17;
 		$section->level = 3;
 		$section->element = 'div';
-		$section->save();
+		SectionGateway::save($this->setup, $section);
 
-		$obj = SectionDataMapper::find($this->setup, 17);
+		$obj = SectionGateway::find($this->setup, 17);
 		$this->assertInstanceOf('\TEIShredder\Section', $obj);
 		$this->assertEquals("Chapter 17", $section->title);
 	}
@@ -89,7 +89,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAllSections() {
 
-		SectionDataMapper::flush($this->setup);
+		SectionGateway::flush($this->setup);
 
 		$section = new Section($this->setup);
 		$section->id = 17;
@@ -98,7 +98,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 		$section->page= 17;
 		$section->level = 3;
 		$section->element = 'div';
-		$section->save();
+		SectionGateway::save($this->setup, $section);
 
 		$section = new Section($this->setup);
 		$section->id = 23;
@@ -107,9 +107,9 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 		$section->page = 180;
 		$section->level = 2;
 		$section->element = 'div';
-		$section->save();
+		SectionGateway::save($this->setup, $section);
 
-		$objs = SectionDataMapper::findAll($this->setup);
+		$objs = SectionGateway::findAll($this->setup);
 		$this->assertInternalType('array', $objs);
 		$this->assertSame(2, count($objs));
 		foreach ($objs as $obj) {
@@ -122,7 +122,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAllSectionsInAVolume() {
 
-		SectionDataMapper::flush($this->setup);
+		SectionGateway::flush($this->setup);
 
 		$section = new Section($this->setup);
 		$section->id = 17;
@@ -131,7 +131,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 		$section->page= 17;
 		$section->level = 3;
 		$section->element = 'div';
-		$section->save();
+		SectionGateway::save($this->setup, $section);
 
 		$section = new Section($this->setup);
 		$section->id = 23;
@@ -140,9 +140,9 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 		$section->page = 180;
 		$section->level = 2;
 		$section->element = 'div';
-		$section->save();
+		SectionGateway::save($this->setup, $section);
 
-		$objs = SectionDataMapper::findAllInVolume($this->setup, 2);
+		$objs = SectionGateway::findAllInVolume($this->setup, 2);
 		$this->assertInternalType('array', $objs);
 		$this->assertSame(1, count($objs));
 		$this->assertInstanceOf('\TEIShredder\Section', $objs[0]);
