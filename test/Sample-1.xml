@@ -107,6 +107,8 @@
 
 	<text>
 
+		<pb xml:id="page-vol2-01" n="1" />
+
 		<front>
 			<titlePage>
 				<docTitle>
@@ -116,7 +118,7 @@
 		</front>
 
 		<body>
-			<pb xml:id="page-vol2-01" n="1" />
+
 			<div>
 				<head>Preface to the Reader</head>
 				<p>Due to the overwhelming success of the first volume of this completely useless example document, we decided to publish another volume, which is dedicated to demonstrating indexing several volumes.</p>
