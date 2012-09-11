@@ -66,11 +66,11 @@ class Section extends Model {
 	protected $xmlid;
 
 	/**
-	 * Adds an XML chunk (not expected to perform updates)
+	 * Returns data to be passed to a persistence layer.
+	 * @return array Associative array of property=>value pairs
 	 * @throws LogicException
 	 */
-	public function save() {
-
+	public function persistableData() {
 		// Basic integrity check
 		foreach (array('id', 'volume', 'page', 'level', 'element') as $property) {
 			if (is_null($this->$property) or
@@ -78,8 +78,7 @@ class Section extends Model {
 				throw new LogicException("Integrity check failed: $property cannot be empty.");
 			}
 		}
-
-		SectionDataMapper::save($this->_setup, $this);
+		return $this->toArray();
 	}
 
 }
