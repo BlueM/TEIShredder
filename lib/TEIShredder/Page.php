@@ -58,10 +58,12 @@ class Page extends Model {
 	protected $plaintext;
 
 	/**
-	 * Saves a page.
+	 * Returns an associative array of property=>value pairs to be
+	 * processed by a persistence layer.
+	 * @return array
 	 * @throws LogicException
 	 */
-	public function save() {
+	public function persistableData() {
 
 		// Basic integrity check
 		foreach (array('number', 'volume') as $property) {
@@ -70,7 +72,7 @@ class Page extends Model {
 			}
 		}
 
-		PageDataMapper::save($this->_setup, $this);
+		return $this->toArray();
 	}
 
 }

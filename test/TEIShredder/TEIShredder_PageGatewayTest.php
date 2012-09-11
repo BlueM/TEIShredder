@@ -8,11 +8,11 @@ use \InvalidArgumentException;
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for TEIShredder_PageDataMapper.
+ * Test class for TEIShredder_PageGateway.
  * @package TEIShredder
  * @subpackage Tests
  */
-class PageDataMapperTest extends \PHPUnit_Framework_TestCase {
+class PageGatewayTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @var Setup
@@ -30,7 +30,7 @@ class PageDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function flushTheData() {
-		PageDataMapper::flush($this->setup);
+		PageGateway::flush($this->setup);
 	}
 
 	/**
@@ -51,8 +51,8 @@ class PageDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException InvalidArgumentException
 	 */
-	function tryingToFetchAPageDataMapperByAnUnknownPagenumberThrowsAnException() {
-		PageDataMapper::find($this->setup, 9999999);
+	function tryingToFetchAPageGatewayByAnUnknownPagenumberThrowsAnException() {
+		PageGateway::find($this->setup, 9999999);
 	}
 
 	/**
@@ -65,7 +65,7 @@ class PageDataMapperTest extends \PHPUnit_Framework_TestCase {
 		$page->volume = 5;
 		$page->save();
 
-		$obj = PageDataMapper::find($this->setup, 20);
+		$obj = PageGateway::find($this->setup, 20);
 		$this->assertInstanceOf('\TEIShredder\Page', $obj);
 		$this->assertEquals(5, $page->volume);
 	}
@@ -80,7 +80,7 @@ class PageDataMapperTest extends \PHPUnit_Framework_TestCase {
 		$page->volume = 5;
 		$page->save();
 
-		$objs = PageDataMapper::findAll($this->setup);
+		$objs = PageGateway::findAll($this->setup);
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(0 < count($objs));
 		foreach ($objs as $obj) {
