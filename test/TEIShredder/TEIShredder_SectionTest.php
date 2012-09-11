@@ -3,7 +3,8 @@
 namespace TEIShredder;
 
 use \TEIShredder;
-use \SimpleXMLElement;
+use \LogicException;
+use \UnexpectedValueException;
 
 require_once __DIR__.'/../bootstrap.php';
 
@@ -92,7 +93,8 @@ class SectionTest extends \PHPUnit_Framework_TestCase {
 		$section->level = 2;
 		$section->element = 'div';
 		$section->xmlid = 'section-12345';
-		$section->save();
+
+		SectionGateway::save($this->setup, $section);
 	}
 
 	/**
@@ -106,7 +108,7 @@ class SectionTest extends \PHPUnit_Framework_TestCase {
 		$section->page = 57;
 		$section->level = 2;
 		$section->element = 'div';
-		$section->save();
+		$section->persistableData();
 	}
 
 	/**
@@ -116,11 +118,10 @@ class SectionTest extends \PHPUnit_Framework_TestCase {
 	function makeSureASectionRequiresAVolume() {
 		$section = new Section($this->setup);
 		$section->id = 13;
-		// $section->volume = 2;
 		$section->page = 57;
 		$section->level = 2;
 		$section->element = 'div';
-		$section->save();
+		$section->persistableData();
 	}
 
 	/**
@@ -131,10 +132,9 @@ class SectionTest extends \PHPUnit_Framework_TestCase {
 		$section = new Section($this->setup);
 		$section->id = 13;
 		$section->volume = 2;
-		// $section->page = 57;
 		$section->level = 2;
 		$section->element = 'div';
-		$section->save();
+		$section->persistableData();
 	}
 
 	/**
@@ -147,8 +147,7 @@ class SectionTest extends \PHPUnit_Framework_TestCase {
 		$section->volume = 2;
 		$section->page = 57;
 		$section->level = 2;
-		// $section->element = 'div';
-		$section->save();
+		$section->persistableData();
 	}
 
 	/**
@@ -160,9 +159,8 @@ class SectionTest extends \PHPUnit_Framework_TestCase {
 		$section->id = 13;
 		$section->volume = 2;
 		$section->page = 57;
-		// $section->level = 2;
 		$section->element = 'div';
-		$section->save();
+		$section->persistableData();
 	}
 
 }
