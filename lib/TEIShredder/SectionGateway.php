@@ -12,7 +12,7 @@ use \PDO;
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class SectionDataMapper extends AbstractGateway {
+class SectionGateway extends AbstractGateway {
 
 	/**
 	 * Returns the gateway's database table name
@@ -73,30 +73,5 @@ class SectionDataMapper extends AbstractGateway {
 		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Section', array($setup));
 		return $stm->fetchAll();
 	}
-
-//
-//	/**
-//	 * Saves a domain object
-//	 * @param Setup $setup
-//	 * @param Model $obj
-//	 */
-//	public static function save(Setup $setup, Model $obj) {
-//		$stm = $setup->database->prepare(
-//			'INSERT INTO '.$setup->prefix.'section '.
-//			'(id, volume, title, page, level, element, xmlid) '.
-//			'VALUES (?, ?, ?, ?, ?, ?, ?)'
-//		);
-//
-//		$stm->execute(array(
-//			$obj->id,
-//			$obj->volume,
-//			(string)$obj->title,
-//			$obj->page,
-//			$obj->level,
-//			$obj->element,
-//			(string)$obj->xmlid,
-//		));
-//
-//	}
 
 }
