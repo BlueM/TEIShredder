@@ -6,13 +6,20 @@ use \InvalidArgumentException;
 use \PDO;
 
 /**
- * Data Mapper for element objects
+ * Gateway for element objects
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class ElementDataMapper implements DataMapperInterface {
+class ElementGateway extends AbstractGateway {
+	/**
+	 * Returns the gateway's database table name
+	 * @return string Table name, without the configured prefix
+	 */
+	public static function tableName() {
+		return 'element';
+	}
 
 	/**
 	 * Returns an element by its unique xml:id
@@ -22,9 +29,10 @@ class ElementDataMapper implements DataMapperInterface {
 	 * @throws InvalidArgumentException
 	 */
 	public static function find(Setup $setup, $identifier) {
+		$table = $setup->prefix.self::tableName();
 		$stm = $setup->database->prepare(
 			'SELECT xmlid, element, page, chunk, attrn, attrtargetend, data '.
-			'FROM '.$setup->prefix.'element WHERE xmlid = ?'
+			"FROM $table WHERE xmlid = ?"
 		);
 		$stm->execute(array($identifier));
 		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Element', array($setup));
@@ -40,43 +48,13 @@ class ElementDataMapper implements DataMapperInterface {
 	 * @return Element[]
 	 */
 	public static function findAll(Setup $setup) {
+		$table = $setup->prefix.self::tableName();
 		$stm = $setup->database->query(
 			'SELECT xmlid, element, page, chunk, attrn, attrtargetend, data '.
-			'FROM '.$setup->prefix.'element ORDER BY chunk'
+			"FROM $table ORDER BY chunk"
 		);
 		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Element', array($setup));
 		return $stm->fetchAll();
-	}
-
-	/**
-	 * Saves a domain object
-	 * @param Setup $setup
-	 * @param Model $obj
-	 */
-	public static function save(Setup $setup, Model $obj) {
-		$stm = $setup->database->prepare(
-			'INSERT INTO '.$setup->prefix.'element '.
-			'(xmlid, element, page, chunk, attrn, attrtargetend, data) '.
-			'VALUES (?, ?, ?, ?, ?, ?, ?)'
-		);
-
-		$stm->execute(array(
-			$obj->xmlid,
-			$obj->element,
-			$obj->page,
-			$obj->chunk,
-			$obj->attrn,
-			$obj->attrtargetend,
-			$obj->data,
-		));
-	}
-
-	/**
-	 * Removes all data in the domain
-	 * @param Setup $setup
-	 */
-	public static function flush(Setup $setup) {
-		$setup->database->exec("DELETE FROM ".$setup->prefix.'element');
 	}
 
 }

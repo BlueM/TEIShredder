@@ -310,7 +310,7 @@ class Indexer_Extractor extends Indexer {
 	 * Setup method that will be called right before processing starts.
 	 */
 	protected function preProcessAction() {
-		ElementDataMapper::flush($this->setup);
+		ElementGateway::flush($this->setup);
 		NamedEntityDataMapper::flush($this->setup);
 	}
 

@@ -12,7 +12,7 @@ require_once __DIR__.'/../bootstrap.php';
  * @package TEIShredder
  * @subpackage Tests
  */
-class ElementDataMapperTest extends \PHPUnit_Framework_TestCase {
+class ElementGatewayTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @var Setup
@@ -30,8 +30,8 @@ class ElementDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function flushTheData() {
-		ElementDataMapper::flush($this->setup);
-		$objs = ElementDataMapper::findAll($this->setup);
+		ElementGateway::flush($this->setup);
+		$objs = ElementGateway::findAll($this->setup);
 		$this->assertTrue(0 == count($objs));
 	}
 
@@ -44,7 +44,7 @@ class ElementDataMapperTest extends \PHPUnit_Framework_TestCase {
 		$element->element = 'div';
 		$element->page = 23;
 		$element->chunk = 234;
-		$element->save();
+		ElementGateway::save($this->setup, $element);
 	}
 
 	/**
@@ -52,7 +52,7 @@ class ElementDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function tryingToFetchAnElementByAnUnknownXmlidThrowsAnException() {
-		ElementDataMapper::find($this->setup, 'element-123');
+		ElementGateway::find($this->setup, 'element-123');
 	}
 
 	/**
@@ -60,7 +60,7 @@ class ElementDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAnElementByItsXmlid() {
 
-		ElementDataMapper::flush($this->setup);
+		ElementGateway::flush($this->setup);
 
 		// First, create object
 		$element = new Element($this->setup);
@@ -68,9 +68,9 @@ class ElementDataMapperTest extends \PHPUnit_Framework_TestCase {
 		$element->element = 'div';
 		$element->page = 23;
 		$element->chunk = 234;
-		$element->save();
+		ElementGateway::save($this->setup, $element);
 
-		$obj = ElementDataMapper::find($this->setup, 'pb-15');
+		$obj = ElementGateway::find($this->setup, 'pb-15');
 		$this->assertInstanceOf('\TEIShredder\Element', $obj);
 		$this->assertEquals('div', $element->element);
 	}
@@ -85,16 +85,16 @@ class ElementDataMapperTest extends \PHPUnit_Framework_TestCase {
 		$element->element = 'p';
 		$element->page = 100;
 		$element->chunk= 350;
-		$element->save();
+		ElementGateway::save($this->setup, $element);
 
 		$element = new Element($this->setup);
 		$element->xmlid = 'element-2';
 		$element->element = 'lg';
 		$element->page = 200;
 		$element->chunk= 250;
-		$element->save();
+		ElementGateway::save($this->setup, $element);
 
-		$objs = ElementDataMapper::findAll($this->setup);
+		$objs = ElementGateway::findAll($this->setup);
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(2 == count($objs));
 		$this->assertInstanceOf('\TEIShredder\Element', $objs[0]);
