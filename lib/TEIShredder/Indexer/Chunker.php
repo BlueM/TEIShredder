@@ -328,7 +328,7 @@ class Indexer_Chunker extends Indexer {
 	protected function preProcessAction() {
 		SectionDataMapper::flush($this->setup);
 		PageDataMapper::flush($this->setup);
-		VolumeDataMapper::flush($this->setup);
+		VolumeGateway::flush($this->setup);
 		XMLChunk::flush($this->setup);
 	}
 
@@ -365,7 +365,7 @@ class Indexer_Chunker extends Indexer {
 		$volume->number = $this->data['currentVolume'];
 		$volume->title = $title;
 		$volume->pagenumber = $this->data['currTextStart'];
-		$volume->save();
+		VolumeGateway::save($this->setup, $volume);
 
 	}
 }
