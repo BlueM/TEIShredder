@@ -12,7 +12,7 @@ require_once __DIR__.'/../bootstrap.php';
  * @package TEIShredder
  * @subpackage Tests
  */
-class SectionDataMapperTest extends \PHPUnit_Framework_TestCase {
+class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @var Setup

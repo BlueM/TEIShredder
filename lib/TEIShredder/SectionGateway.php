@@ -6,13 +6,21 @@ use \InvalidArgumentException;
 use \PDO;
 
 /**
- * Data Mapper class for page objects
+ * Gateway for page objects
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class SectionDataMapper implements DataMapperInterface {
+class SectionDataMapper extends AbstractGateway {
+
+	/**
+	 * Returns the gateway's database table name
+	 * @return string Table name, without the configured prefix
+	 */
+	public static function tableName() {
+		return 'section';
+	}
 
 	/**
 	 * Returns an object by an identifier (which depends on the object domain)
@@ -22,9 +30,9 @@ class SectionDataMapper implements DataMapperInterface {
 	 * @throws InvalidArgumentException
 	 */
 	public static function find(Setup $setup, $identifier) {
+		$table = $setup->prefix.self::tableName();
 		$stm = $setup->database->query(
-			'SELECT id, volume, title, page, level, element, xmlid '.
-			'FROM '.$setup->prefix.'section WHERE id = ?'
+			"SELECT id, volume, title, page, level, element, xmlid FROM $table WHERE id = ?"
 		);
 		$stm->execute(array($identifier));
 		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Section', array($setup));
@@ -40,9 +48,10 @@ class SectionDataMapper implements DataMapperInterface {
 	 * @return Section[]
 	 */
 	public static function findAll(Setup $setup) {
+		$table = $setup->prefix.self::tableName();
 		$stm = $setup->database->query(
 			'SELECT id, volume, title, page, level, element, xmlid '.
-			'FROM '.$setup->prefix.'section WHERE level > 0 ORDER BY id'
+			"FROM $table WHERE level > 0 ORDER BY id"
 		);
 		$stm->execute();
 		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Section', array($setup));
@@ -65,36 +74,29 @@ class SectionDataMapper implements DataMapperInterface {
 		return $stm->fetchAll();
 	}
 
-	/**
-	 * Saves a domain object
-	 * @param Setup $setup
-	 * @param Model $obj
-	 */
-	public static function save(Setup $setup, Model $obj) {
-		$stm = $setup->database->prepare(
-			'INSERT INTO '.$setup->prefix.'section '.
-			'(id, volume, title, page, level, element, xmlid) '.
-			'VALUES (?, ?, ?, ?, ?, ?, ?)'
-		);
-
-		$stm->execute(array(
-			$obj->id,
-			$obj->volume,
-			(string)$obj->title,
-			$obj->page,
-			$obj->level,
-			$obj->element,
-			(string)$obj->xmlid,
-		));
-
-	}
-
-	/**
-	 * Removes all data in the domain
-	 * @param Setup $setup
-	 */
-	public static function flush(Setup $setup) {
-		$setup->database->exec("DELETE FROM ".$setup->prefix.'section');
-	}
+//
+//	/**
+//	 * Saves a domain object
+//	 * @param Setup $setup
+//	 * @param Model $obj
+//	 */
+//	public static function save(Setup $setup, Model $obj) {
+//		$stm = $setup->database->prepare(
+//			'INSERT INTO '.$setup->prefix.'section '.
+//			'(id, volume, title, page, level, element, xmlid) '.
+//			'VALUES (?, ?, ?, ?, ?, ?, ?)'
+//		);
+//
+//		$stm->execute(array(
+//			$obj->id,
+//			$obj->volume,
+//			(string)$obj->title,
+//			$obj->page,
+//			$obj->level,
+//			$obj->element,
+//			(string)$obj->xmlid,
+//		));
+//
+//	}
 
 }
