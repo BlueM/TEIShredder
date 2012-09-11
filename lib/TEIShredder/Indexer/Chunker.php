@@ -172,18 +172,6 @@ class Indexer_Chunker extends Indexer {
 	}
 
 	/**
-	 * Method that's called when the input stream reaches a text
-	 * node or significant whitespace
-	 */
-	protected function nodeContent() {
-		if (!$this->currentChunk) {
-			// Not in the main text -- ignore
-			return;
-		}
-		$this->xml .= htmlspecialchars($this->r->value);
-	}
-
-	/**
 	 * Called when a new page is encountered.
 	 */
 	protected function newPage() {
@@ -199,9 +187,26 @@ class Indexer_Chunker extends Indexer {
 		$this->pageObj->number = $this->page;
 		$this->pageObj->plaintext = '';
 		$this->pageObj->xmlid = $this->r->getAttribute('xml:id');
-		$this->pageObj->volume = $this->data['currentVolume'];
 		$this->pageObj->n = $this->r->getAttribute('n');
 		$this->pageObj->rend = $this->r->getAttribute('rend');
+
+		if ($this->textBeforePb) {
+			$this->pageObj->volume = $this->data['currentVolume'];
+		} else {
+			$this->pageObj->volume = $this->data['currentVolume'] + 1;
+		}
+	}
+
+	/**
+	 * Method that's called when the input stream reaches a text
+	 * node or significant whitespace
+	 */
+	protected function nodeContent() {
+		if (!$this->currentChunk) {
+			// Not in the main text -- ignore
+			return;
+		}
+		$this->xml .= htmlspecialchars($this->r->value);
 	}
 
 	/**
@@ -335,12 +340,14 @@ class Indexer_Chunker extends Indexer {
 	}
 
 	/**
-	 * #todo
+	 * Callback function for occurrences of <titlePart> elements.
+	 *
+	 * This method expects each <text> to have one <titlePart>. If there is
+	 * more than one, subclasses may be used to filter the unwanted title(s).
 	 * @throws RuntimeException
 	 */
 	protected function processTitlePart() {
 
-			'main' != $this->r->getAttribute('type')) {
 		$title = call_user_func(
 			$this->setup->plaintextCallback,
 			$this->r->readOuterXML()
@@ -357,7 +364,7 @@ class Indexer_Chunker extends Indexer {
 		$volume->number = $this->data['currentVolume'];
 		$volume->title = $title;
 		$volume->pagenumber = $this->data['currTextStart'];
-		VolumeGateway::save($this->setup, $volume);
 
+		VolumeGateway::save($this->setup, $volume);
 	}
 }
