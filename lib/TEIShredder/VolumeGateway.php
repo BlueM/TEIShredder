@@ -6,13 +6,21 @@ use \InvalidArgumentException;
 use \PDO;
 
 /**
- * Data Mapper for volume objects
+ * Gateway for volume objects
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class VolumeGateway implements DataMapperInterface {
+class VolumeGateway extends AbstractGateway {
+
+	/**
+	 * Returns the gateway's database table name
+	 * @return string Table name, without the configured prefix
+	 */
+	public static function tableName() {
+		return 'volume';
+	}
 
 	/**
 	 * Returns an object by the volume number
@@ -22,9 +30,11 @@ class VolumeGateway implements DataMapperInterface {
 	 * @throws InvalidArgumentException
 	 */
 	public static function find(Setup $setup, $identifier) {
-		$stm = $setup->database->query(
-			'SELECT number, title, pagenumber FROM '.$setup->prefix.'volume ORDER BY number'
+		$table = $setup->prefix.self::tableName();
+		$stm = $setup->database->prepare(
+			"SELECT number, title, pagenumber FROM $table WHERE number = ?"
 		);
+		$stm->execute(array($identifier));
 		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Volume', array($setup));
 		if (false === $obj = $stm->fetch()) {
 			throw new InvalidArgumentException('Invalid volume number');
@@ -38,35 +48,13 @@ class VolumeGateway implements DataMapperInterface {
 	 * @return Volume[]
 	 */
 	public static function findAll(Setup $setup) {
+		$table = $setup->prefix.self::tableName();
 		$stm = $setup->database->query(
-			'SELECT number, title, pagenumber FROM '.$setup->prefix.'volume ORDER BY number'
+			"SELECT number, title, pagenumber FROM $table ORDER BY number"
 		);
 		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Volume', array($setup));
 		return $stm->fetchAll();
 	}
 
-	/**
-	 * Saves a domain object
-	 * @param Setup $setup
-	 * @param Model $obj
-	 */
-	public static function save(Setup $setup, Model $obj) {
-		$data = $obj->persistableData();
-		$columns = join(', ', array_keys($data));
-		$values = array_values($data);
-		$stm = $setup->database->prepare(
-			'INSERT INTO '.$setup->prefix."volume ($columns) ".
-			'VALUES ('.trim(str_repeat('?, ', count($values)), ', ').')'
-		);
-		$stm->execute($values);
-	}
-
-	/**
-	 * Removes all data in the domain
-	 * @param Setup $setup
-	 */
-	public static function flush(Setup $setup) {
-		$setup->database->exec("DELETE FROM ".$setup->prefix.'volume');
-	}
 
 }
