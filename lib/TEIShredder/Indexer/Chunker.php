@@ -17,6 +17,13 @@ use \RuntimeException;
 class Indexer_Chunker extends Indexer {
 
 	/**
+	 * Does a text's <text> element enclose its first <pb /> element?
+	 * Set to false, if the order is <pb /> ... <text>
+	 * @var bool
+	 */
+	public $textBeforePb = true;
+
+	/**
 	 * String that will be used as title for <titlePage> sections
 	 * @var string
 	 */
@@ -129,7 +136,7 @@ class Indexer_Chunker extends Indexer {
 					$this->insidetext = true;
 					$this->data['currentVolume'] ++;
 
-					if ($this->settings['textbeforepb']) {
+					if ($this->textBeforePb) {
 						$this->data['currTextStart'] = $this->page + 1;
 					} else {
 						$this->data['currTextStart'] = $this->page;
