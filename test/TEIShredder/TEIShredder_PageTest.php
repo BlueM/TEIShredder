@@ -68,7 +68,7 @@ class PageTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function makeSureAPageRequiresANumber() {
 		$page = new Page($this->setup);
-		$page->save();
+		$page->persistableData();
 	}
 
 	/**
@@ -78,7 +78,7 @@ class PageTest extends \PHPUnit_Framework_TestCase {
 	function makeSureAPageRequiresAVolume() {
 		$page = new Page($this->setup);
 		$page->number = 1234;
-		$page->save();
+		$page->persistableData();
 	}
 
 }
