@@ -88,10 +88,12 @@ class NamedEntity extends Model {
 	protected $notationhash;
 
 	/**
-	 * Adds an XML chunk (not expected to perform updates)
+	 * Returns an associative array of property=>value pairs to be
+	 * processed by a persistence layer.
+	 * @return array
 	 * @throws LogicException
 	 */
-	public function save() {
+	public function persistableData() {
 
 		// Basic integrity check
 		foreach (array('page', 'domain', 'identifier', 'notation') as $property) {
@@ -108,7 +110,7 @@ class NamedEntity extends Model {
 			}
 		}
 
-		NamedEntityDataMapper::save($this->_setup, $this);
+		return $this->toArray();
 	}
 
 	/**

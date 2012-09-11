@@ -3,7 +3,7 @@
 namespace TEIShredder;
 
 use \TEIShredder;
-use \SimpleXMLNamedEntity;
+use \LogicException;
 
 require_once __DIR__.'/../bootstrap.php';
 
@@ -45,24 +45,6 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @depends createANewNamedEntity
-	 * @expectedException UnexpectedValueException
-	 */
-	function tryingToSetAnInvalidPropertyThrowsAnException(NamedEntity $element) {
-		$element->foo= 'bar';
-	}
-
-	/**
-	 * @test
-	 * @depends createANewNamedEntity
-	 * @expectedException UnexpectedValueException
-	 */
-	function tryingToSetAnUnsettablePropertyThrowsAnException(NamedEntity $element) {
-		$element->_setup = 'something';
-	}
-
-	/**
-	 * @test
-	 * @depends createANewNamedEntity
 	 */
 	function setTheXmlId(NamedEntity $element) {
 		$element->xmlid = 'my-xml-id';
@@ -71,29 +53,21 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * @depends createANewNamedEntity
-	 * @expectedException UnexpectedValueException
 	 */
-	function tryingToGetAnInvalidPropertyThrowsAnException(NamedEntity $element) {
-		$element->foo;
-	}
-
-	/**
-	 * @test
-	 */
-	function saveANewNamedEntity() {
-		$element = new NamedEntity($this->setup);
-		$element->xmlid = 'element-01';
-		$element->page = 123;
-		$element->domain = 'person';
-		$element->identifier = 'http://d-nb.info/gnd/118582143';
-		$element->contextstart = 'Painter ';
-		$element->notation = 'Michelangelo';
-		$element->contextend = ' lived in the renaissance';
-		$element->container = 'p';
-		$element->chunk = 456;
-		$element->notationhash = 'd1f9cc6d';
-		$element->save();
+	function getThePersistableDataForAnEntity() {
+		$entity = new NamedEntity($this->setup);
+		$entity->xmlid = 'element-01';
+		$entity->page = 123;
+		$entity->domain = 'person';
+		$entity->identifier = 'http://d-nb.info/gnd/118582143';
+		$entity->contextstart = 'Painter ';
+		$entity->notation = 'Michelangelo';
+		$entity->contextend = ' lived in the renaissance';
+		$entity->container = 'p';
+		$entity->chunk = 456;
+		$entity->notationhash = 'd1f9cc6d';
+		$data = $entity->persistableData();
+		$this->assertInternalType('array', $data);
 	}
 
 	/**
@@ -101,12 +75,11 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException LogicException
 	 */
 	function makeSureANamedEntityRequiresAPageNumber() {
-		$element = new NamedEntity($this->setup);
-		// $element->page = 123;
-		$element->domain = 'person';
-		$element->identifier = 'http://d-nb.info/gnd/118582143';
-		$element->notation = 'Michelangelo';
-		$element->save();
+		$entity = new NamedEntity($this->setup);
+		$entity->domain = 'person';
+		$entity->identifier = 'http://d-nb.info/gnd/118582143';
+		$entity->notation = 'Michelangelo';
+		$entity->persistableData();
 	}
 
 	/**
@@ -114,12 +87,11 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException LogicException
 	 */
 	function makeSureANamedEntityRequiresADomain() {
-		$element = new NamedEntity($this->setup);
-		$element->page = 123;
-		// $element->domain = 'person';
-		$element->identifier = 'http://d-nb.info/gnd/118582143';
-		$element->notation = 'Michelangelo';
-		$element->save();
+		$entity = new NamedEntity($this->setup);
+		$entity->page = 123;
+		$entity->identifier = 'http://d-nb.info/gnd/118582143';
+		$entity->notation = 'Michelangelo';
+		$entity->persistableData();
 	}
 
 	/**
@@ -127,12 +99,11 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException LogicException
 	 */
 	function makeSureANamedEntityRequiresAKey() {
-		$element = new NamedEntity($this->setup);
-		$element->page = 123;
-		$element->domain = 'person';
-		// $element->key = 'http://d-nb.info/gnd/118582143';
-		$element->notation = 'Michelangelo';
-		$element->save();
+		$entity = new NamedEntity($this->setup);
+		$entity->page = 123;
+		$entity->domain = 'person';
+		$entity->notation = 'Michelangelo';
+		$entity->persistableData();
 	}
 
 	/**
@@ -140,12 +111,11 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException LogicException
 	 */
 	function makeSureANamedEntityRequiresANotation() {
-		$element = new NamedEntity($this->setup);
-		$element->page = 123;
-		$element->domain = 'person';
-		$element->identifier = 'http://d-nb.info/gnd/118582143';
-		// $element->notation = 'Michelangelo';
-		$element->save();
+		$entity = new NamedEntity($this->setup);
+		$entity->page = 123;
+		$entity->domain = 'person';
+		$entity->identifier = 'http://d-nb.info/gnd/118582143';
+		$entity->persistableData();
 	}
 
 }
