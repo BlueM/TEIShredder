@@ -35,18 +35,19 @@ class Volume extends Model {
 	protected $pagenumber;
 
 	/**
-	 * Adds an XML chunk (not expected to perform updates)
+	 * Returns an associative array of property=>value pairs to be
+	 * processed by a persistence layer.
+	 * @return array
+	 * @throws LogicException
 	 */
-	public function save() {
-
+	public function persistableData() {
 		// Basic integrity check
 		foreach (array('number', 'pagenumber') as $property) {
 			if (0 >= intval($this->$property)) {
 				throw new LogicException("Integrity check failed: $property cannot be empty.");
 			}
 		}
-
-		VolumeDataMapper::save($this->_setup, $this);
+		return $this->toArray();
 	}
 
 }
