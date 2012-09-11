@@ -30,8 +30,8 @@ class VolumeDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function flushTheData() {
-		VolumeDataMapper::flush($this->setup);
-		$objs = VolumeDataMapper::findAll($this->setup);
+		VolumeGateway::flush($this->setup);
+		$objs = VolumeGateway::findAll($this->setup);
 		$this->assertTrue(0 == count($objs));
 	}
 
@@ -39,15 +39,15 @@ class VolumeDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function saveAVolume() {
-		VolumeDataMapper::flush($this->setup);
+		VolumeGateway::flush($this->setup);
 
 		$volume = new Volume($this->setup);
 		$volume->number = 3;
 		$volume->title = "Hello world";
 		$volume->pagenumber = 123;
-		VolumeDataMapper::save($this->setup, $volume);
+		VolumeGateway::save($this->setup, $volume);
 
-		$obj = VolumeDataMapper::find($this->setup, 3);
+		$obj = VolumeGateway::find($this->setup, 3);
 		$this->assertInstanceOf('\TEIShredder\Volume', $obj);
 	}
 
@@ -56,7 +56,7 @@ class VolumeDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function tryingToFetchAVolumeDataMapperByAnUnknownVolumeDataMappernumberThrowsAnException() {
-		VolumeDataMapper::find($this->setup, 9999999);
+		VolumeGateway::find($this->setup, 9999999);
 	}
 
 	/**
@@ -64,16 +64,16 @@ class VolumeDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAVolumeByItsNumber() {
 
-		VolumeDataMapper::flush($this->setup);
+		VolumeGateway::flush($this->setup);
 
 		// First, create object
 		$volume = new Volume($this->setup);
 		$volume->number = 17;
 		$volume->title = "Volume 17";
 		$volume->pagenumber = 17;
-		VolumeDataMapper::save($this->setup, $volume);
+		VolumeGateway::save($this->setup, $volume);
 
-		$obj = VolumeDataMapper::find($this->setup, 17);
+		$obj = VolumeGateway::find($this->setup, 17);
 		$this->assertInstanceOf('\TEIShredder\Volume', $obj);
 		$this->assertEquals("Volume 17", $volume->title);
 	}
@@ -83,15 +83,15 @@ class VolumeDataMapperTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAllVolumes() {
 
-		VolumeDataMapper::flush($this->setup);
+		VolumeGateway::flush($this->setup);
 
 		$volume = new Volume($this->setup);
 		$volume->number = 20;
 		$volume->title = "Volume 20";
 		$volume->pagenumber = 20;
-		VolumeDataMapper::save($this->setup, $volume);
+		VolumeGateway::save($this->setup, $volume);
 
-		$objs = VolumeDataMapper::findAll($this->setup);
+		$objs = VolumeGateway::findAll($this->setup);
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(1 == count($objs));
 		foreach ($objs as $obj) {

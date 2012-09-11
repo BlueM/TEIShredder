@@ -12,7 +12,7 @@ use \PDO;
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class VolumeDataMapper implements DataMapperInterface {
+class VolumeGateway implements DataMapperInterface {
 
 	/**
 	 * Returns an object by the volume number
