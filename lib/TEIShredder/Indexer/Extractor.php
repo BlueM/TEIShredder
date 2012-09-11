@@ -311,7 +311,7 @@ class Indexer_Extractor extends Indexer {
 	 */
 	protected function preProcessAction() {
 		ElementGateway::flush($this->setup);
-		NamedEntityDataMapper::flush($this->setup);
+		NamedEntityGateway::flush($this->setup);
 	}
 
 }
