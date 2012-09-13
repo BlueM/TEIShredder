@@ -9,7 +9,7 @@ require_once __DIR__.'/../bootstrap.php';
  * @package TEIShredder
  * @subpackage Tests
  */
-class ModelTest extends \PHPUnit_Framework_TestCase {
+class DefaultFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @var DefaultFactory $obj
