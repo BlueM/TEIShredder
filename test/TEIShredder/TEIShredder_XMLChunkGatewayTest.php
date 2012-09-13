@@ -15,31 +15,31 @@ require_once __DIR__.'/../bootstrap.php';
 class XMLChunkGatewayTest extends \PHPUnit_Framework_TestCase {
 
 	/**
-	 * @var Setup
+	 * @var XMLChunkGateway
 	 */
-	var $setup;
+	var $obj;
 
 	/**
 	 * Sets up the fixture
 	 */
 	function setUp() {
-		$this->setup = prepare_default_data();
+		$setup = prepare_default_data();
+		$this->obj = new XMLChunkGateway($setup->database, $setup->factory, $setup->prefix);
 	}
 
 	/**
 	 * @test
 	 */
 	function saveAnXMLChunk() {
-		$xcg = new XMLChunkGateway;
-		$xcg->flush($this->setup);
+		$this->obj->flush();
 
-		$chunk = new XMLChunk($this->setup);
+		$chunk = new XMLChunk();
 		$chunk->page = 3;
 		$chunk->section = 4;
 		$chunk->xml = '<foot/>';
-		$xcg->save($this->setup, $chunk);
+		$this->obj->save($chunk);
 
-		$chunks = $xcg->findByPageNumber($this->setup, 3);
+		$chunks = $this->obj->findByPageNumber(3);
 		$this->assertInternalType('array', $chunks);
 		$this->assertInstanceOf('\TEIShredder\XMLChunk', $chunks[0]);
 	}
@@ -49,8 +49,7 @@ class XMLChunkGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @todo Add assertion
 	 */
 	function flushTheData() {
-		$xcg = new XMLChunkGateway;
-		$xcg->flush($this->setup);
+		$this->obj->flush();
 	}
 
 

@@ -15,24 +15,24 @@ require_once __DIR__.'/../bootstrap.php';
 class NamedEntityGatewayTest extends \PHPUnit_Framework_TestCase {
 
 	/**
-	 * @var Setup
+	 * @var NamedEntityGateway
 	 */
-	var $setup;
+	var $obj;
 
 	/**
 	 * Sets up the fixture
 	 */
 	function setUp() {
-		$this->setup = prepare_default_data();
+		$setup = prepare_default_data();
+		$this->obj = new NamedEntityGateway($setup->database, $setup->factory, $setup->prefix);
 	}
 
 	/**
 	 * @test
 	 */
 	function flushTheData() {
-		$neg = new NamedEntityGateway;
-		$neg->flush($this->setup);
-		$objs = $neg->findAll($this->setup);
+		$this->obj->flush();
+		$objs = $this->obj->findAll();
 		$this->assertTrue(0 == count($objs));
 	}
 
@@ -41,20 +41,18 @@ class NamedEntityGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function saveANamedEntity() {
 
-		$neg = new NamedEntityGateway;
+		$this->obj->flush();
 
-		$neg->flush($this->setup);
-
-		$ent = new NamedEntity($this->setup);
+		$ent = new NamedEntity();
 		$ent->xmlid = 'entity-123';
 		$ent->page = 22;
 		$ent->chunk = 33;
 		$ent->domain = 'demo';
 		$ent->identifier= '4711';
 		$ent->notation = 'Named Entity';
-		$neg->save($this->setup, $ent);
+		$this->obj->save($ent);
 
-		$obj = $neg->find($this->setup, 'entity-123');
+		$obj = $this->obj->find('entity-123');
 		$this->assertInstanceOf('\TEIShredder\NamedEntity', $obj);
 	}
 
@@ -63,30 +61,26 @@ class NamedEntityGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function tryingToFetchANamedEntityByAnUnknownIdentifierThrowsAnException() {
-		$neg = new NamedEntityGateway;
-		$neg->find($this->setup, 9999999);
+		$this->obj->find(9999999);
 	}
 
 	/**
 	 * @test
-	 * @todo Will have to be changed
 	 */
 	function findANamedEntityByItsXmlId() {
 
-		$neg = new NamedEntityGateway;
+		$this->obj->flush();
 
-		$neg->flush($this->setup);
-
-		$ent = new NamedEntity($this->setup);
+		$ent = new NamedEntity();
 		$ent->xmlid = 'entity-123';
 		$ent->page = 22;
 		$ent->chunk = 33;
 		$ent->domain = 'demo';
 		$ent->identifier= '4711';
 		$ent->notation = 'Named Entity';
-		$neg->save($this->setup, $ent);
+		$this->obj->save($ent);
 
-		$obj = $neg->find($this->setup, 'entity-123');
+		$obj = $this->obj->find('entity-123');
 		$this->assertInstanceOf('\TEIShredder\NamedEntity', $obj);
 		$this->assertEquals("Named Entity", $ent->notation);
 	}
@@ -96,29 +90,27 @@ class NamedEntityGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAllNamedEntitys() {
 
-		$neg = new NamedEntityGateway;
+		$this->obj->flush();
 
-		$neg->flush($this->setup);
-
-		$ent = new NamedEntity($this->setup);
+		$ent = new NamedEntity();
 		$ent->xmlid = 'entity-1';
 		$ent->page = 22;
 		$ent->chunk = 33;
 		$ent->domain = 'person';
 		$ent->identifier= 44;
 		$ent->notation = 'Named Entity 1';
-		$neg->save($this->setup, $ent);
+		$this->obj->save($ent);
 
-		$ent = new NamedEntity($this->setup);
+		$ent = new NamedEntity;
 		$ent->xmlid = 'entity-123';
 		$ent->page = 55;
 		$ent->chunk = 66;
 		$ent->domain = 'person';
 		$ent->identifier= 77;
 		$ent->notation = 'Named Entity 2';
-		$neg->save($this->setup, $ent);
+		$this->obj->save($ent);
 
-		$objs = $neg->findAll($this->setup);
+		$objs = $this->obj->findAll();
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(2 == count($objs));
 		$this->assertInstanceOf('\TEIShredder\NamedEntity', $objs[0]);

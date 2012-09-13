@@ -15,24 +15,24 @@ require_once __DIR__.'/../bootstrap.php';
 class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 
 	/**
-	 * @var Setup
+	 * @var SectionGateway
 	 */
-	var $setup;
+	var $obj;
 
 	/**
 	 * Sets up the fixture
 	 */
 	function setUp() {
-		$this->setup = prepare_default_data();
+		$setup = prepare_default_data();
+		$this->obj = new SectionGateway($setup->database, $setup->factory, $setup->prefix);
 	}
 
 	/**
 	 * @test
 	 */
 	function flushTheData() {
-		$sg = new SectionGateway;
-		$sg->flush($this->setup);
-		$objs = $sg->findAll($this->setup);
+		$this->obj->flush();
+		$objs = $this->obj->findAll();
 		$this->assertTrue(0 == count($objs));
 	}
 
@@ -40,19 +40,18 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function saveASection() {
-		$sg = $sg = new SectionGateway;
-		$sg->flush($this->setup);
+		$this->obj->flush();
 
-		$section = new Section($this->setup);
+		$section = new Section;
 		$section->id = 5;
 		$section->volume = 3;
 		$section->title = "Section 5";
 		$section->page = 55;
 		$section->level = 1;
 		$section->element = 'div';
-		$sg->save($this->setup, $section);
+		$this->obj->save($section);
 
-		$obj = $sg->find($this->setup, 5);
+		$obj = $this->obj->find(5);
 		$this->assertInstanceOf('\TEIShredder\Section', $obj);
 	}
 
@@ -61,8 +60,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function tryingToFetchASectionGatewayByAnUnknownSectionGatewaynumberThrowsAnException() {
-		$sg = new SectionGateway;
-		$sg->find($this->setup, 9999999);
+		$this->obj->find(9999999);
 	}
 
 	/**
@@ -70,20 +68,19 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findASectionByItsId() {
 
-		$sg = new SectionGateway;
-		$sg->flush($this->setup);
+		$this->obj->flush();
 
 		// First, create object
-		$section = new Section($this->setup);
+		$section = new Section();
 		$section->id = 17;
 		$section->volume = 1;
 		$section->title = "Chapter 17";
 		$section->page= 17;
 		$section->level = 3;
 		$section->element = 'div';
-		$sg->save($this->setup, $section);
+		$this->obj->save($section);
 
-		$obj = $sg->find($this->setup, 17);
+		$obj = $this->obj->find(17);
 		$this->assertInstanceOf('\TEIShredder\Section', $obj);
 		$this->assertEquals("Chapter 17", $section->title);
 	}
@@ -93,29 +90,27 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAllSections() {
 
-		$sg = new SectionGateway;
+		$this->obj->flush();
 
-		$sg->flush($this->setup);
-
-		$section = new Section($this->setup);
+		$section = new Section();
 		$section->id = 17;
 		$section->volume = 1;
 		$section->title = "Chapter 17";
 		$section->page= 17;
 		$section->level = 3;
 		$section->element = 'div';
-		$sg->save($this->setup, $section);
+		$this->obj->save($section);
 
-		$section = new Section($this->setup);
+		$section = new Section();
 		$section->id = 23;
 		$section->volume = 2;
 		$section->title = "Chapter 23";
 		$section->page = 180;
 		$section->level = 2;
 		$section->element = 'div';
-		$sg->save($this->setup, $section);
+		$this->obj->save($section);
 
-		$objs = $sg->findAll($this->setup);
+		$objs = $this->obj->findAll();
 		$this->assertInternalType('array', $objs);
 		$this->assertSame(2, count($objs));
 		foreach ($objs as $obj) {
@@ -128,28 +123,27 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAllSectionsInAVolume() {
 
-		$sg = new SectionGateway;
-		$sg->flush($this->setup);
+		$this->obj->flush();
 
-		$section = new Section($this->setup);
+		$section = new Section;
 		$section->id = 17;
 		$section->volume = 1;
 		$section->title = "Chapter 17";
 		$section->page= 17;
 		$section->level = 3;
 		$section->element = 'div';
-		$sg->save($this->setup, $section);
+		$this->obj->save($section);
 
-		$section = new Section($this->setup);
+		$section = new Section;
 		$section->id = 23;
 		$section->volume = 2;
 		$section->title = "Chapter 23";
 		$section->page = 180;
 		$section->level = 2;
 		$section->element = 'div';
-		$sg->save($this->setup, $section);
+		$this->obj->save($section);
 
-		$objs = $sg->findAllInVolume($this->setup, 2);
+		$objs = $this->obj->findAllInVolume(2);
 		$this->assertInternalType('array', $objs);
 		$this->assertSame(1, count($objs));
 		$this->assertInstanceOf('\TEIShredder\Section', $objs[0]);

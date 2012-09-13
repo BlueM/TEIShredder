@@ -3,6 +3,7 @@
 namespace TEIShredder;
 
 use \InvalidArgumentException;
+use \PDO;
 
 /**
  * Default factory for creating objects.
@@ -12,6 +13,26 @@ use \InvalidArgumentException;
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 class DefaultFactory implements FactoryInterface {
+
+	/**
+	 * @var PDO $db
+	 */
+	protected $db;
+
+	/**
+	 * @var string $prefix
+	 */
+	protected $prefix;
+
+	/**
+	 * Constructor.
+	 * @param PDO $db
+	 * @param string $prefix
+	 */
+	public function __construct(PDO $db, $prefix = '') {
+		$this->db = $db;
+		$this->prefix = $prefix;
+	}
 
 	/**
 	 * @return NamedEntity
@@ -24,7 +45,7 @@ class DefaultFactory implements FactoryInterface {
 	 * @return NamedEntityGateway
 	 */
 	public function createNamedEntityGateway() {
-		return new NamedEntityGateway;
+		return new NamedEntityGateway($this->db, $this, $this->prefix);
 	}
 
 	/**
@@ -38,7 +59,7 @@ class DefaultFactory implements FactoryInterface {
 	 * @return VolumeGateway
 	 */
 	public function createVolumeGateway() {
-		return new VolumeGateway();
+		return new VolumeGateway($this->db, $this, $this->prefix);
 	}
 
 	/**
@@ -52,7 +73,7 @@ class DefaultFactory implements FactoryInterface {
 	 * @return SectionGateway
 	 */
 	public function createSectionGateway() {
-		return new SectionGateway;
+		return new SectionGateway($this->db, $this, $this->prefix);
 	}
 
 	/**
@@ -66,7 +87,7 @@ class DefaultFactory implements FactoryInterface {
 	 * @return PageGateway
 	 */
 	public function createPageGateway() {
-		return new PageGateway;
+		return new PageGateway($this->db, $this, $this->prefix);
 	}
 
 	/**
@@ -80,7 +101,7 @@ class DefaultFactory implements FactoryInterface {
 	 * @return ElementGateway
 	 */
 	public function createElementGateway() {
-		return new ElementGateway;
+		return new ElementGateway($this->db, $this, $this->prefix);
 	}
 
 	/**
@@ -94,7 +115,7 @@ class DefaultFactory implements FactoryInterface {
 	 * @return XMLChunkGateway
 	 */
 	public function createXMLChunkGateway() {
-		return new XMLChunkGateway();
+		return new XMLChunkGateway($this->db, $this, $this->prefix);
 	}
 
 }

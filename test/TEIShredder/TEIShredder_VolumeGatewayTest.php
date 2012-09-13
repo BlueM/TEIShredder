@@ -15,7 +15,7 @@ require_once __DIR__.'/../bootstrap.php';
 class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 
 	/**
-	 * @var Setup
+	 * @var VolumeGateway
 	 */
 	var $setup;
 
@@ -23,16 +23,16 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * Sets up the fixture
 	 */
 	function setUp() {
-		$this->setup = prepare_default_data();
+		$setup = prepare_default_data();
+		$this->obj = new VolumeGateway($setup->database, $setup->factory, $setup->prefix);
 	}
 
 	/**
 	 * @test
 	 */
 	function flushTheData() {
-		$vg = new VolumeGateway;
-		$vg->flush($this->setup);
-		$objs = $vg->findAll($this->setup);
+		$this->obj->flush();
+		$objs = $this->obj->findAll();
 		$this->assertTrue(0 == count($objs));
 	}
 
@@ -40,16 +40,15 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function saveAVolume() {
-		$vg = new VolumeGateway;
-		$vg->flush($this->setup);
+		$this->obj->flush();
 
-		$volume = new Volume($this->setup);
+		$volume = new Volume;
 		$volume->number = 3;
 		$volume->title = "Hello world";
 		$volume->pagenumber = 123;
-		$vg->save($this->setup, $volume);
+		$this->obj->save($volume);
 
-		$obj = $vg->find($this->setup, 3);
+		$obj = $this->obj->find(3);
 		$this->assertInstanceOf('\TEIShredder\Volume', $obj);
 	}
 
@@ -58,8 +57,7 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function tryingToFindAVolumeByAnUnknownVolumeNumberThrowsAnException() {
-		$vg = new VolumeGateway;
-		$vg->find($this->setup, 9999999);
+		$this->obj->find(9999999);
 	}
 
 	/**
@@ -67,17 +65,16 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAVolumeByItsNumber() {
 
-		$vg = new VolumeGateway;
-		$vg->flush($this->setup);
+		$this->obj->flush();
 
 		// First, create object
-		$volume = new Volume($this->setup);
+		$volume = new Volume;
 		$volume->number = 17;
 		$volume->title = "Volume 17";
 		$volume->pagenumber = 17;
-		$vg->save($this->setup, $volume);
+		$this->obj->save($volume);
 
-		$obj = $vg->find($this->setup, 17);
+		$obj = $this->obj->find(17);
 		$this->assertInstanceOf('\TEIShredder\Volume', $obj);
 		$this->assertEquals("Volume 17", $volume->title);
 	}
@@ -87,16 +84,15 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAllVolumes() {
 
-		$vg = new VolumeGateway;
-		$vg->flush($this->setup);
+		$this->obj->flush();
 
-		$volume = new Volume($this->setup);
+		$volume = new Volume;
 		$volume->number = 20;
 		$volume->title = "Volume 20";
 		$volume->pagenumber = 20;
-		$vg->save($this->setup, $volume);
+		$this->obj->save($volume);
 
-		$objs = $vg->findAll($this->setup);
+		$objs = $this->obj->findAll();
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(1 == count($objs));
 		foreach ($objs as $obj) {

@@ -15,39 +15,37 @@ require_once __DIR__.'/../bootstrap.php';
 class PageGatewayTest extends \PHPUnit_Framework_TestCase {
 
 	/**
-	 * @var Setup
+	 * @var PageGateway
 	 */
-	var $setup;
+	var $obj;
 
 	/**
 	 * Sets up the fixture
 	 */
 	function setUp() {
-		$this->setup = prepare_default_data();
+		$setup = prepare_default_data();
+		$this->obj = new PageGateway($setup->database, $setup->factory, $setup->prefix);
 	}
 
 	/**
 	 * @test
 	 */
 	function flushTheData() {
-		$pg = new PageGateway;
-		$pg->flush($this->setup);
+		$this->obj->flush();
 	}
 
 	/**
 	 * @test
 	 */
 	function saveANewPage() {
-		$pg = new PageGateway;
-
-		$page = new Page($this->setup);
+		$page = new Page;
 		$page->number = 15;
 		$page->xmlid = "pb-15";
 		$page->rend = "normal";
 		$page->n = "XV";
 		$page->volume = 2;
 		$page->plaintext = 'Foo';
-		$pg->save($this->setup, $page);
+		$this->obj->save($page);
 	}
 
 	/**
@@ -55,23 +53,21 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function tryingToFetchAPageGatewayByAnUnknownPagenumberThrowsAnException() {
-		$pg = new PageGateway;
-		$pg->find($this->setup, 9999999);
+		$this->obj->find(9999999);
 	}
 
 	/**
 	 * @test
 	 */
 	function findAPageByItsNumber() {
-		$pg = new PageGateway;
 
 		// First, create object
-		$page = new Page($this->setup);
+		$page = new Page;
 		$page->number = 20;
 		$page->volume = 5;
-		$pg->save($this->setup, $page);
+		$this->obj->save($page);
 
-		$obj = $pg->find($this->setup, 20);
+		$obj = $this->obj->find(20);
 		$this->assertInstanceOf('\TEIShredder\Page', $obj);
 		$this->assertEquals(5, $page->volume);
 	}
@@ -80,15 +76,12 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function findAllPages() {
-
-		$pg = new PageGateway;
-
-		$page = new Page($this->setup);
+		$page = new Page;
 		$page->number = 20;
 		$page->volume = 5;
-		$pg->save($this->setup, $page);
+		$this->obj->save($page);
 
-		$objs = $pg->findAll($this->setup);
+		$objs = $this->obj->findAll();
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(0 < count($objs));
 		foreach ($objs as $obj) {

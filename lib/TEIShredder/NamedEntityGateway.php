@@ -16,29 +16,28 @@ class NamedEntityGateway extends AbstractGateway {
 
 	/**
 	 * Returns the gateway's database table name
-	 * @return string Table name, without the configured prefix
+	 * @return string
 	 */
 	public function tableName() {
-		return 'entity';
+		return $this->prefix.'entity';
 	}
 
 	/**
 	 * Returns a named entity by its xml:id attribute value
-	 * @param Setup $setup
 	 * @param mixed $identifier @xml:id value in the underlying TEI document
 	 * @return NamedEntity
 	 * @throws InvalidArgumentException
 	 * @todo xml:id not suitable (multi-links!)
 	 */
-	public function find(Setup $setup, $identifier) {
-		$table = $setup->prefix.$this->tableName();
+	public function find($identifier) {
+		$table = $this->tableName();
 
-		$stm = $setup->database->prepare(
+		$stm = $this->db->prepare(
 			'SELECT xmlid, page, domain, identifier, contextstart, notation, contextend, container, chunk, notationhash '.
 			"FROM $table WHERE xmlid = ?"
 		);
 		$stm->execute(array($identifier));
-		$stm->setFetchMode(PDO::FETCH_INTO, $setup->factory->createNamedEntity());
+		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createNamedEntity());
 		if (false === $obj = $stm->fetch()) {
 			throw new InvalidArgumentException('Invalid xml:id value');
 		}
@@ -47,16 +46,15 @@ class NamedEntityGateway extends AbstractGateway {
 
 	/**
 	 * Returns all objects
-	 * @param Setup $setup
 	 * @return NamedEntity[]
 	 */
-	public function findAll(Setup $setup) {
-		$table = $setup->prefix.$this->tableName();
-		$stm = $setup->database->query(
+	public function findAll() {
+		$table = $this->tableName();
+		$stm = $this->db->query(
 			'SELECT xmlid, page, domain, identifier, contextstart, notation, contextend, container, chunk, notationhash '.
 			"FROM $table ORDER BY chunk"
 		);
-		$entity = $setup->factory->createNamedEntity();
+		$entity = $this->factory->createNamedEntity();
 		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($entity));
 		return $stm->fetchAll();
 	}

@@ -15,27 +15,26 @@ use \PDO;
 class ElementGateway extends AbstractGateway {
 	/**
 	 * Returns the gateway's database table name
-	 * @return string Table name, without the configured prefix
+	 * @return string
 	 */
 	public function tableName() {
-		return 'element';
+		return $this->prefix.'element';
 	}
 
 	/**
 	 * Returns an element by its unique xml:id
-	 * @param Setup $setup
 	 * @param mixed $identifier xml:id attribute value
 	 * @return Element
 	 * @throws InvalidArgumentException
 	 */
-	public function find(Setup $setup, $identifier) {
-		$table = $setup->prefix.$this->tableName();
-		$stm = $setup->database->prepare(
+	public function find($identifier) {
+		$table = $this->tableName();
+		$stm = $this->db->prepare(
 			'SELECT xmlid, element, page, chunk, attrn, attrtargetend, data '.
 			"FROM $table WHERE xmlid = ?"
 		);
 		$stm->execute(array($identifier));
-		$stm->setFetchMode(PDO::FETCH_INTO, $setup->factory->createElement());
+		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createElement());
 		if (false === $obj = $stm->fetch()) {
 			throw new InvalidArgumentException('No such element');
 		}

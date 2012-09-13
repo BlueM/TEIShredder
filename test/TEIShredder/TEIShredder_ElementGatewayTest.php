@@ -17,26 +17,26 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @var Setup
 	 */
-	var $setup;
+	var $obj;
 
 	/**
 	 * Sets up the fixture
 	 */
 	function setUp() {
-		$this->setup = prepare_default_data();
+		$setup = prepare_default_data();
+		$this->obj = new ElementGateway($setup->database, $setup->factory, $setup->prefix);
 	}
 
 	/**
 	 * @test
 	 */
 	function saveANewElement() {
-		$element = new Element($this->setup);
+		$element = new Element();
 		$element->xmlid = "pb-15";
 		$element->element = 'div';
 		$element->page = 23;
 		$element->chunk = 234;
-		$eg = new ElementGateway;
-		$eg->save($this->setup, $element);
+		$this->obj->save($element);
 	}
 
 	/**
@@ -44,8 +44,7 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function tryingToFetchAnElementByAnUnknownXmlidThrowsAnException() {
-		$eg = new ElementGateway;
-		$eg->find($this->setup, 'element-123');
+		$this->obj->find('element-123');
 	}
 
 	/**
@@ -53,18 +52,17 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAnElementByItsXmlid() {
 
-		$eg = new ElementGateway;
-		$eg->flush($this->setup);
+		$this->obj->flush();
 
 		// First, create object
-		$element = new Element($this->setup);
+		$element = new Element();
 		$element->xmlid = "pb-15";
 		$element->element = 'div';
 		$element->page = 23;
 		$element->chunk = 234;
-		$eg->save($this->setup, $element);
+		$this->obj->save($element);
 
-		$obj = $eg->find($this->setup, 'pb-15');
+		$obj = $this->obj->find('pb-15');
 		$this->assertInstanceOf('\TEIShredder\Element', $obj);
 		$this->assertEquals('div', $element->element);
 	}
@@ -74,21 +72,18 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function flushTheData() {
-
-		$eg = new ElementGateway;
-
 		// First, create object
-		$element = new Element($this->setup);
+		$element = new Element();
 		$element->xmlid = "pb-15";
 		$element->element = 'div';
 		$element->page = 23;
 		$element->chunk = 234;
-		$eg->save($this->setup, $element);
+		$this->obj->save($element);
 
-		$eg->flush($this->setup);
+		$this->obj->flush();
 
 		// Now, we shouldn’t be able to find the element
-		$eg->find($this->setup, 'pb-15');
+		$this->obj->find('pb-15');
 	}
 
 }

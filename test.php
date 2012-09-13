@@ -34,9 +34,9 @@ $extractor->process();
 echo "\nSome information on ".basename($path).":\n";
 
 // 1) Volumes
-$volumes = $setup->factory->createVolumeGateway($setup);
+$volumes = $setup->factory->createVolumeGateway()->findAll();
 printf(
-	"\n* Document consists of %d volumes\n",
+	"\n* Document consists of %d volumes:\n",
 	count($volumes)
 );
 foreach ($volumes as $volume) {
@@ -49,9 +49,9 @@ foreach ($volumes as $volume) {
 }
 
 // 2) Pages
-$pages = $setup->factory->createPageGateway()->findAll($setup);
+$pages = $setup->factory->createPageGateway()->findAll();
 printf(
-	"\n* Document contains %d pages (i.e.: %d <pb /> elements)\n",
+	"\n* Document contains %d pages (i.e.: %d <pb /> elements):\n",
 	count($pages),
 	count($pages)
 );
@@ -67,9 +67,9 @@ foreach ($pages as $page) {
 
 // 3) Sections
 foreach ($volumes as $volume) {
-	$sections = $setup->factory->createSectionGateway()->findAllInVolume($setup, $volume->number);
+	$sections = $setup->factory->createSectionGateway()->findAllInVolume($volume->number);
 	printf(
-		"\n* Document contains %d sections in volume %d\n",
+		"\n* Document contains %d sections in volume %d:\n",
 		count($sections),
 		$volume->number
 	);
@@ -84,9 +84,9 @@ foreach ($volumes as $volume) {
 }
 
 // 4) Named Entities mentioned in the text
-$entities = $setup->factory->createNamedEntityGateway()->findAll($setup);
+$entities = $setup->factory->createNamedEntityGateway()->findAll();
 printf(
-	"\n* Document contains %d occurrences of tagged named entities\n",
+	"\n* Document contains %d occurrences of tagged named entities:\n",
 	count($entities)
 );
 foreach ($entities as $entity) {

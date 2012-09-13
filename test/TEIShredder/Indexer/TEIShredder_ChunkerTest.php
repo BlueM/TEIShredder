@@ -14,7 +14,14 @@ require_once __DIR__.'/../../bootstrap.php';
  */
 class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase {
 
+	/**
+	 * @var Setup $setup
+	 */
 	var $setup;
+
+	/**
+	 * @var XMLReader $xmlreader
+	 */
 	var $xmlreader;
 
 	/**
@@ -134,7 +141,7 @@ _XML_;
 		$chunker->textBeforePb = false;
 		$chunker->process();
 
-		$vg = new VolumeGateway;
+		$vg = $this->setup->factory->createVolumeGateway();
 		$volumes = $vg->findAll($this->setup);
 
 		$this->assertEquals(1, $volumes[0]->number);

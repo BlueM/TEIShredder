@@ -16,26 +16,26 @@ class XMLChunkGateway extends AbstractGateway {
 
 	/**
 	 * Returns the gateway's database table name
-	 * @return string Table name, without the configured prefix
+	 * @return string
 	 */
 	public function tableName() {
-		return 'xmlchunk';
+		return $this->prefix.'xmlchunk';
 	}
 
 	/**
 	 * Returns all chunks that are on a given page.
-	 * @param Setup $setup
 	 * @param int $page Page number
 	 * @return XMLChunk[]
 	 */
-	public function findByPageNumber(Setup $setup, $page) {
-		$table = $setup->prefix.$this->tableName();
-		$stm = $setup->database->prepare(
+	public function findByPageNumber($page) {
+		$table = $this->tableName();
+		$stm = $this->db->prepare(
 			"SELECT id, page, milestone, prestack, xml, poststack, section, plaintext ".
 		    "FROM $table WHERE xml != '' AND page = ? ORDER BY id"
 		);
 		$stm->execute(array($page));
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\XMLChunk');
+		$chunk = $this->factory->createXMLChunk();
+		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($chunk));
 		return $stm->fetchAll();
 	}
 

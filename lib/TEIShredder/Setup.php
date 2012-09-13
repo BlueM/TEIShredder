@@ -117,7 +117,7 @@ class Setup {
 		if ($factory) {
 			$this->factory = $factory;
 		} else {
-			$this->factory = new DefaultFactory;
+			$this->factory = new DefaultFactory($db, $prefix);
 		}
 
 		$this->prefix = $prefix;

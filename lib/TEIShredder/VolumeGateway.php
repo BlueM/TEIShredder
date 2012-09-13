@@ -16,26 +16,25 @@ class VolumeGateway extends AbstractGateway {
 
 	/**
 	 * Returns the gateway's database table name
-	 * @return string Table name, without the configured prefix
+	 * @return string Table name
 	 */
 	public function tableName() {
-		return 'volume';
+		return $this->prefix.'volume';
 	}
 
 	/**
 	 * Returns an object by the volume number
-	 * @param Setup $setup
 	 * @param mixed $identifier Volume number
 	 * @return Volume
 	 * @throws InvalidArgumentException
 	 */
-	public function find(Setup $setup, $identifier) {
-		$table = $setup->prefix.$this->tableName();
-		$stm = $setup->database->prepare(
+	public function find($identifier) {
+		$table = $this->tableName();
+		$stm = $this->db->prepare(
 			"SELECT number, title, pagenumber FROM $table WHERE number = ?"
 		);
 		$stm->execute(array($identifier));
-		$stm->setFetchMode(PDO::FETCH_INTO, $setup->factory->createVolume());
+		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createVolume());
 		if (false === $obj = $stm->fetch()) {
 			throw new InvalidArgumentException('Invalid volume number');
 		}
@@ -44,15 +43,14 @@ class VolumeGateway extends AbstractGateway {
 
 	/**
 	 * Returns all objects
-	 * @param Setup $setup
 	 * @return Volume[]
 	 */
-	public function findAll(Setup $setup) {
-		$table = $setup->prefix.$this->tableName();
-		$stm = $setup->database->query(
+	public function findAll() {
+		$table = $this->tableName();
+		$stm = $this->db->query(
 			"SELECT number, title, pagenumber FROM $table ORDER BY number"
 		);
-		$page = $setup->factory->createVolume();
+		$page = $this->factory->createVolume();
 		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($page));
 		return $stm->fetchAll();
 	}

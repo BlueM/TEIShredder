@@ -16,26 +16,25 @@ class SectionGateway extends AbstractGateway {
 
 	/**
 	 * Returns the gateway's database table name
-	 * @return string Table name, without the configured prefix
+	 * @return string
 	 */
 	public function tableName() {
-		return 'section';
+		return $this->prefix.'section';
 	}
 
 	/**
 	 * Returns an object by an identifier (which depends on the object domain)
-	 * @param Setup $setup
 	 * @param mixed $identifier Section ID
 	 * @return Model
 	 * @throws InvalidArgumentException
 	 */
-	public function find(Setup $setup, $identifier) {
-		$table = $setup->prefix.$this->tableName();
-		$stm = $setup->database->query(
+	public function find($identifier) {
+		$table = $this->tableName();
+		$stm = $this->db->query(
 			"SELECT id, volume, title, page, level, element, xmlid FROM $table WHERE id = ?"
 		);
 		$stm->execute(array($identifier));
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Section');
+		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createSection());
 		if (false === $obj = $stm->fetch()) {
 			throw new InvalidArgumentException('Invalid section ID');
 		}
@@ -44,34 +43,34 @@ class SectionGateway extends AbstractGateway {
 
 	/**
 	 * Returns all sections, ordered by their ID
-	 * @param Setup $setup
 	 * @return Section[]
 	 */
-	public function findAll(Setup $setup) {
-		$table = $setup->prefix.$this->tableName();
-		$stm = $setup->database->query(
+	public function findAll() {
+		$table = $this->tableName();
+		$stm = $this->db->query(
 			'SELECT id, volume, title, page, level, element, xmlid '.
 			"FROM $table WHERE level > 0 ORDER BY id"
 		);
 		$stm->execute();
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Section');
+		$section = $this->factory->createSection();
+		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($section));
 		return $stm->fetchAll();
 	}
 
 	/**
 	 * Returns all sections in a given volume, ordered by their ID
-	 * @param Setup $setup
 	 * @param int $volume Volume number
 	 * @return Section[]
 	 */
-	public function findAllInVolume(Setup $setup, $volume) {
-		$table = $setup->prefix.$this->tableName();
-		$stm = $setup->database->prepare(
+	public function findAllInVolume($volume) {
+		$table = $this->tableName();
+		$stm = $this->db->prepare(
 			'SELECT id, volume, title, page, level, element, xmlid '.
 			"FROM $table WHERE level > 0 AND volume = ? ORDER BY id"
 		);
+		$section = $this->factory->createSection();
 		$stm->execute(array($volume));
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Section');
+		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($section));
 		return $stm->fetchAll();
 	}
 

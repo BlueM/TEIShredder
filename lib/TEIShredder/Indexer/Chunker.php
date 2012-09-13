@@ -196,7 +196,7 @@ class Indexer_Chunker extends Indexer {
 
 		if ($this->pageObj) {
 			// Finish previous page
-			$this->gateways['page']->save($this->setup, $this->pageObj);
+			$this->gateways['page']->save($this->pageObj);
 		}
 
 		$this->page ++;
@@ -233,7 +233,7 @@ class Indexer_Chunker extends Indexer {
 	protected function save() {
 		if ($this->pageObj) {
 			// Finish previous page
-			$this->gateways['page']->save($this->setup, $this->pageObj);
+			$this->gateways['page']->save($this->pageObj);
 		}
 	}
 
@@ -297,7 +297,7 @@ class Indexer_Chunker extends Indexer {
 		$section->level = $this->level;
 		$section->element = $this->r->localName;
 		$section->xmlid = $this->r->getAttribute('xml:id');
-		$this->gateways['section']->save($this->setup, $section);
+		$this->gateways['section']->save($section);
 	}
 
 	/**
@@ -339,7 +339,7 @@ class Indexer_Chunker extends Indexer {
 		$chunk->xml = $this->xml;
 		$chunk->plaintext = $plaintext;
 		$chunk->poststack = join(' ', $this->poststack);
-		$this->gateways['xmlchunk']->save($this->setup, $chunk);
+		$this->gateways['xmlchunk']->save($chunk);
 
 		// Dispose of the chunk
 		unset($this->chunks[$this->currentChunk]);
@@ -383,6 +383,6 @@ class Indexer_Chunker extends Indexer {
 		$volume->title = $title;
 		$volume->pagenumber = $this->data['currTextStart'];
 
-		$this->gateways['volume']->save($this->setup, $volume);
+		$this->gateways['volume']->save($volume);
 	}
 }

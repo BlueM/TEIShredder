@@ -15,26 +15,25 @@ use \PDO;
 class PageGateway extends AbstractGateway {
 	/**
 	 * Returns the gateway's database table name
-	 * @return string Table name, without the configured prefix
+	 * @return string
 	 */
 	public function tableName() {
-		return 'page';
+		return $this->prefix.'page';
 	}
 
 	/**
 	 * Returns a page object by its page number
-	 * @param Setup $setup
 	 * @param mixed $number
 	 * @return Page
 	 * @throws InvalidArgumentException;
 	 */
-	public function find(Setup $setup, $number) {
-		$table = $setup->prefix.$this->tableName();
-		$stm = $setup->database->prepare(
+	public function find($number) {
+		$table = $this->tableName();
+		$stm = $this->db->prepare(
 			"SELECT number, xmlid, volume, plaintext, n, rend FROM $table WHERE number = ?"
 		);
 		$stm->execute(array($number));
-		$stm->setFetchMode(PDO::FETCH_INTO, $setup->factory->createPage());
+		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createPage());
 		if (false === $obj = $stm->fetch()) {
 			throw new InvalidArgumentException('No such element');
 		}
@@ -43,15 +42,14 @@ class PageGateway extends AbstractGateway {
 
 	/**
 	 * Returns all objects
-	 * @param Setup $setup
 	 * @return Page[]
 	 */
-	public function findAll(Setup $setup) {
-		$table = $setup->prefix.$this->tableName();
-		$stm = $setup->database->query(
+	public function findAll() {
+		$table = $this->tableName();
+		$stm = $this->db->query(
 			"SELECT number, xmlid, n, rend, volume, plaintext FROM $table ORDER BY number"
 		);
-		$page = $setup->factory->createPage();
+		$page = $this->factory->createPage();
 		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($page));
 		return $stm->fetchAll();
 	}

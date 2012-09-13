@@ -2,6 +2,8 @@
 
 namespace TEIShredder;
 
+use \PDO;
+
 require_once __DIR__.'/../bootstrap.php';
 
 /**
@@ -20,7 +22,8 @@ class DefaultFactoryTest extends \PHPUnit_Framework_TestCase {
 	 * Sets up the fixture
 	 */
 	function setUp() {
-		$this->obj = new DefaultFactory;
+		$pdo = new PDO('sqlite::memory:');
+		$this->obj = new DefaultFactory($pdo);
 	}
 
 	/**

@@ -3,7 +3,7 @@
 namespace TEIShredder;
 
 use \InvalidArgumentException;
-
+use \PDO;
 
 /**
  * Abstract base class for all gateway classes
@@ -11,22 +11,48 @@ use \InvalidArgumentException;
 abstract class AbstractGateway {
 
 	/**
+	 * @var PDO $db
+	 */
+	protected $db;
+
+	/**
+	 * @var string $prefix
+	 */
+	protected $prefix;
+
+	/**
+	 * @var FactoryInterface $db
+	 */
+	protected $factory;
+
+	/**
 	 * Returns the gateway's database table name
-	 * @return string Table name, without the configured prefix
+	 * @return string
 	 */
 	abstract public function tableName();
 
 	/**
+	 * Constructor.
+	 * @param PDO $db
+	 * @param FactoryInterface $factory
+	 * @param string $prefix
+	 */
+	public function __construct(PDO $db, FactoryInterface $factory, $prefix = '') {
+		$this->db = $db;
+		$this->factory = $factory;
+		$this->prefix = $prefix;
+	}
+
+	/**
 	 * Saves the model
-	 * @param Setup $setup
 	 * @param Model $obj
 	 */
-	public function save(Setup $setup, Model $obj) {
-		$table = $setup->prefix.$this->tableName();
+	public function save(Model $obj) {
+		$table = $this->tableName();
 		$data = $obj->persistableData();
 		$columns = join(', ', array_keys($data));
 		$values = array_values($data);
-		$stm = $setup->database->prepare(
+		$stm =$this->db->prepare(
 			"INSERT INTO $table ($columns) VALUES (".trim(str_repeat('?, ', count($values)), ', ').')'
 		);
 		$stm->execute($values);
@@ -34,11 +60,10 @@ abstract class AbstractGateway {
 
 	/**
 	 * Removes all data in the domain
-	 * @param Setup $setup
 	 */
-	public function flush(Setup $setup) {
-		$table = $setup->prefix.$this->tableName();
-		$setup->database->exec("DELETE FROM ".$table);
+	public function flush() {
+		$table = $this->tableName();
+		$this->db->exec("DELETE FROM ".$table);
 	}
 
 }

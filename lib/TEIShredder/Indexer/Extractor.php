@@ -259,7 +259,7 @@ class Indexer_Extractor extends Indexer {
 				// a different target. If there are multiple entries,
 				// we have to add multiple records to support links
 				// with multiple targets
-				$entity = new NamedEntity($this->setup);
+				$entity = $this->setup->factory->createNamedEntity($this->setup);
 				$entity->xmlid = $tag['xmlid'];
 				$entity->page = $tag['page'];
 				$entity->domain = $tag['domain'];
@@ -269,7 +269,7 @@ class Indexer_Extractor extends Indexer {
 				$entity->contextend = $after;
 				$entity->container = $this->containerTypes[$tag['container']];
 				$entity->chunk = $tag['chunk'];
-				$this->gateways['namedentity']->save($this->setup, $entity);
+				$this->gateways['namedentity']->save($entity);
 			}
 		}
 	}
@@ -291,7 +291,7 @@ class Indexer_Extractor extends Indexer {
 			$attrs = array('attrn'=>'', 'attrtargetend'=>'', 'data'=>'');
 		}
 
-		$e = new Element($this->setup);
+		$e = $this->setup->factory->createElement($this->setup);
 		$e->xmlid = $xmlid;
 		$e->element = $this->r->localName;
 		$e->page = $this->page;
@@ -299,7 +299,7 @@ class Indexer_Extractor extends Indexer {
 		$e->attrn = $attrs['attrn'];
 		$e->attrtargetend = $attrs['attrtargetend'];
 		$e->data = $attrs['data'];
-		$this->gateways['element']->save($this->setup, $e);
+		$this->gateways['element']->save($e);
 	}
 
 	/**
