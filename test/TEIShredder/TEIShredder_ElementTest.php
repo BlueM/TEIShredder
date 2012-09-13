@@ -4,7 +4,6 @@ namespace TEIShredder;
 
 use \TEIShredder;
 use \LogicException;
-use \UnexpectedValueException;
 use \InvalidArgumentException;
 
 require_once __DIR__.'/../bootstrap.php';

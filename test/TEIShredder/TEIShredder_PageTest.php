@@ -2,7 +2,6 @@
 
 namespace TEIShredder;
 
-use \UnexpectedValueException;
 use \LogicException;
 use \PDO;
 
