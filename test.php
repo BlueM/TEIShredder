@@ -5,10 +5,6 @@ use \TEIShredder\Setup;
 use \TEIShredder\XMLReader;
 use \TEIShredder\Indexer_Chunker;
 use \TEIShredder\Indexer_Extractor;
-use \TEIShredder\PageGateway;
-use \TEIShredder\VolumeGateway;
-use \TEIShredder\SectionGateway;
-use \TEIShredder\NamedEntityGateway;
 
 require __DIR__.'/autoload.php';
 
@@ -38,7 +34,7 @@ $extractor->process();
 echo "\nSome information on ".basename($path).":\n";
 
 // 1) Volumes
-$volumes = VolumeGateway::findAll($setup);
+$volumes = $setup->factory->createVolumeGateway($setup);
 printf(
 	"\n* Document consists of %d volumes\n",
 	count($volumes)
@@ -53,7 +49,7 @@ foreach ($volumes as $volume) {
 }
 
 // 2) Pages
-$pages = PageGateway::findAll($setup);
+$pages = $setup->factory->createPageGateway()->findAll($setup);
 printf(
 	"\n* Document contains %d pages (i.e.: %d <pb /> elements)\n",
 	count($pages),
@@ -71,7 +67,7 @@ foreach ($pages as $page) {
 
 // 3) Sections
 foreach ($volumes as $volume) {
-	$sections = SectionGateway::findAllInVolume($setup, $volume->number);
+	$sections = $setup->factory->createSectionGateway()->findAllInVolume($setup, $volume->number);
 	printf(
 		"\n* Document contains %d sections in volume %d\n",
 		count($sections),
@@ -88,7 +84,7 @@ foreach ($volumes as $volume) {
 }
 
 // 4) Named Entities mentioned in the text
-$entities = NamedEntityGateway::findAll($setup);
+$entities = $setup->factory->createNamedEntityGateway()->findAll($setup);
 printf(
 	"\n* Document contains %d occurrences of tagged named entities\n",
 	count($entities)
