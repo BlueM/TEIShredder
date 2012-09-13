@@ -35,7 +35,7 @@ class XMLChunkGateway extends AbstractGateway {
 		    "FROM $table WHERE xml != '' AND page = ? ORDER BY id"
 		);
 		$stm->execute(array($page));
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\XMLChunk', array($setup));
+		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\XMLChunk');
 		return $stm->fetchAll();
 	}
 

@@ -34,7 +34,7 @@ class PageGateway extends AbstractGateway {
 			"SELECT number, xmlid, volume, plaintext, n, rend FROM $table WHERE number = ?"
 		);
 		$sth->execute(array($number));
-		$sth->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Page', array($setup));
+		$sth->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Page');
 		if (false === $obj = $sth->fetch()) {
 			throw new InvalidArgumentException('No such element');
 		}
@@ -51,7 +51,7 @@ class PageGateway extends AbstractGateway {
 		$stm = $setup->database->query(
 			"SELECT number, xmlid, n, rend, volume, plaintext FROM $table ORDER BY number"
 		);
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Page', array($setup));
+		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Page');
 		return $stm->fetchAll();
 	}
 

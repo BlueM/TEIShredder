@@ -37,7 +37,7 @@ class NamedEntityGateway extends AbstractGateway {
 			"FROM $table WHERE xmlid = ?"
 		);
 		$stm->execute(array($identifier));
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\NamedEntity', array($setup));
+		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\NamedEntity');
 		if (false === $obj = $stm->fetch()) {
 			throw new InvalidArgumentException('Invalid xml:id value');
 		}
@@ -55,7 +55,7 @@ class NamedEntityGateway extends AbstractGateway {
 			'SELECT xmlid, page, domain, identifier, contextstart, notation, contextend, container, chunk, notationhash '.
 			"FROM $table ORDER BY chunk"
 		);
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\NamedEntity', array($setup));
+		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\NamedEntity');
 		return $stm->fetchAll();
 	}
 

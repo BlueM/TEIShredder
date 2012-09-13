@@ -35,7 +35,7 @@ class SectionGateway extends AbstractGateway {
 			"SELECT id, volume, title, page, level, element, xmlid FROM $table WHERE id = ?"
 		);
 		$stm->execute(array($identifier));
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Section', array($setup));
+		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Section');
 		if (false === $obj = $stm->fetch()) {
 			throw new InvalidArgumentException('Invalid section ID');
 		}
@@ -54,7 +54,7 @@ class SectionGateway extends AbstractGateway {
 			"FROM $table WHERE level > 0 ORDER BY id"
 		);
 		$stm->execute();
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Section', array($setup));
+		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Section');
 		return $stm->fetchAll();
 	}
 
@@ -71,7 +71,7 @@ class SectionGateway extends AbstractGateway {
 			"FROM $table WHERE level > 0 AND volume = ? ORDER BY id"
 		);
 		$stm->execute(array($volume));
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Section', array($setup));
+		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Section');
 		return $stm->fetchAll();
 	}
 

@@ -15,12 +15,6 @@ use \LogicException;
 abstract class Model {
 
 	/**
-	 * Instance of the Setup class.
-	 * @var Setup
-	 */
-	protected $_setup;
-
-	/**
 	 * Returns data to be passed to a persistence layer.
 	 *
 	 * Concrete subclasses can use this method to check the consistency
@@ -28,16 +22,6 @@ abstract class Model {
 	 * @return array Associative array of property=>value pairs
 	 */
 	abstract public function persistableData();
-
-	/**
-	 * Constructor.
-	 * @param Setup $setup
-	 * @todo Do we still need the Setup instance once the persistence is not done
-	 *       by the model classes anymore?
-	 */
-	public function __construct(Setup $setup) {
-		$this->_setup = $setup;
-	}
 
 	/**
 	 * Returns one of the class properties' values
