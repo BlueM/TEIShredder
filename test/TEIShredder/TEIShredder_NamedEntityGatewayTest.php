@@ -8,7 +8,7 @@ use \InvalidArgumentException;
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for TEIShredder_NamedEntityDataMapper.
+ * Test class for NamedEntityGateway
  * @package TEIShredder
  * @subpackage Tests
  */

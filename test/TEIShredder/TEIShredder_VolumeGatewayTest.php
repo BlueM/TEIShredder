@@ -8,7 +8,7 @@ use \InvalidArgumentException;
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for TEIShredder_VolumeDataMapper.
+ * Test class for VolumeGatewayTest
  * @package TEIShredder
  * @subpackage Tests
  */

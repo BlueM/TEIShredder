@@ -6,7 +6,7 @@ use \InvalidArgumentException;
 use \PDO;
 
 /**
- * Data Mapper for volume objects
+ * Gateway for volume objects
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
