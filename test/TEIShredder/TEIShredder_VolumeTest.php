@@ -46,39 +46,10 @@ class VolumeTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @depends createANewVolume
-	 * @expectedException UnexpectedValueException
-	 * @expectedExceptionMessage Invalid property
-	 */
-	function tryingToSetAnInvalidPropertyThrowsAnException(Volume $volume) {
-		$volume->foo= 'bar';
-	}
-
-	/**
-	 * @test
-	 * @depends createANewVolume
-	 * @expectedException UnexpectedValueException
-	 * @expectedExceptionMessage can not be set
-	 */
-	function tryingToSetAnUnsettablePropertyThrowsAnException(Volume $volume) {
-		$volume->_setup = 'something';
-	}
-
-	/**
-	 * @test
-	 * @depends createANewVolume
 	 */
 	function setTheTitle(Volume $volume) {
 		$volume->title = 'My book, volume IV';
 		$this->assertEquals('My book, volume IV', $volume->title);
-	}
-
-	/**
-	 * @test
-	 * @depends createANewVolume
-	 * @expectedException UnexpectedValueException
-	 */
-	function tryingToGetAnInvalidPropertyThrowsAnException(Volume $volume) {
-		$volume->foo;
 	}
 
 	/**
