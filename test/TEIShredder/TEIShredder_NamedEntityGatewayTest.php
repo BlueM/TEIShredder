@@ -58,7 +58,7 @@ class NamedEntityGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException InvalidArgumentException
 	 */
-	function tryingToFetchANamedEntityDataMapperByAnUnknownNamedEntityDataMappernumberThrowsAnException() {
+	function tryingToFetchANamedEntityByAnUnknownIdentifierThrowsAnException() {
 		NamedEntityGateway::find($this->setup, 9999999);
 	}
 
