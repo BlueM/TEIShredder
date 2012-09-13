@@ -2,8 +2,6 @@
 
 namespace TEIShredder;
 
-use \TEIShredder;
-use \UnexpectedValueException;
 use \LogicException;
 
 require_once __DIR__.'/../bootstrap.php';
@@ -41,15 +39,6 @@ class VolumeTest extends \PHPUnit_Framework_TestCase {
 		$volume = new Volume($this->setup);
 		$this->assertInstanceOf('\TEIShredder\Volume', $volume);
 		return $volume;
-	}
-
-	/**
-	 * @test
-	 * @depends createANewVolume
-	 */
-	function setTheTitle(Volume $volume) {
-		$volume->title = 'My book, volume IV';
-		$this->assertEquals('My book, volume IV', $volume->title);
 	}
 
 	/**

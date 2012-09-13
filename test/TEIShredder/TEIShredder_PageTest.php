@@ -2,7 +2,6 @@
 
 namespace TEIShredder;
 
-use \TEIShredder;
 use \UnexpectedValueException;
 use \LogicException;
 use \PDO;
@@ -46,28 +45,11 @@ class PageTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * @depends createANewPage
-	 */
-	function setAPagesNumber(Page $page) {
-		$page->number = 222;
-		$this->assertEquals(222, $page->number);
-	}
-
-	/**
-	 * @test
-	 * @depends createANewPage
-	 * @expectedException UnexpectedValueException
-	 */
-	function tryingToGetAnInvalidPropertyThrowsAnException(Page $page) {
-		$page->foo;
-	}
-
-	/**
-	 * @test
 	 * @expectedException LogicException
 	 */
 	function makeSureAPageRequiresANumber() {
 		$page = new Page($this->setup);
+		$page->volume = 2;
 		$page->persistableData();
 	}
 
@@ -81,5 +63,14 @@ class PageTest extends \PHPUnit_Framework_TestCase {
 		$page->persistableData();
 	}
 
+	/**
+	 * @test
+	 */
+	function getThePersistableDataOfAnObjectWithAllRequiredProperties() {
+		$page = new Page($this->setup);
+		$page->volume = 2;
+		$page->number = 1234;
+		$this->assertInternalType('array', $page->persistableData());
+	}
 }
 

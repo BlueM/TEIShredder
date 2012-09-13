@@ -2,7 +2,6 @@
 
 namespace TEIShredder;
 
-use \TEIShredder;
 use \UnexpectedValueException;
 use \PDO;
 

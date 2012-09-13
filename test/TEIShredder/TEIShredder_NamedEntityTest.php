@@ -44,15 +44,6 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * @depends createANewNamedEntity
-	 */
-	function setTheXmlId(NamedEntity $element) {
-		$element->xmlid = 'my-xml-id';
-		$this->assertEquals('my-xml-id', $element->xmlid);
-	}
-
-	/**
-	 * @test
 	 */
 	function getThePersistableDataForAnEntity() {
 		$entity = new NamedEntity($this->setup);

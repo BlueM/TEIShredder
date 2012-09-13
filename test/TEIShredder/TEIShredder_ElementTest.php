@@ -46,59 +46,11 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * @depends createANewElement
-	 * @expectedException UnexpectedValueException
-	 */
-	function tryingToSetAnInvalidPropertyThrowsAnException(Element $element) {
-		$element->foo= 'bar';
-	}
-
-	/**
-	 * @test
-	 * @depends createANewElement
-	 * @expectedException UnexpectedValueException
-	 */
-	function tryingToSetAnUnsettablePropertyThrowsAnException(Element $element) {
-		$element->_setup = 'something';
-	}
-
-	/**
-	 * @test
-	 * @depends createANewElement
-	 */
-	function setTheXmlId(Element $element) {
-		$element->xmlid = 'my-xml-id';
-		$this->assertEquals('my-xml-id', $element->xmlid);
-	}
-
-	/**
-	 * @test
-	 * @depends createANewElement
-	 * @expectedException UnexpectedValueException
-	 */
-	function tryingToGetAnInvalidPropertyThrowsAnException(Element $element) {
-		$element->foo;
-	}
-
-	/**
-	 * @test
 	 * @expectedException LogicException
 	 */
-	function makeSureAElementRequiresAnId() {
+	function makeSureAElementRequiresAnXmlid() {
 		$element = new Element($this->setup);
 		$element->element = 'rs';
-		$element->page = 57;
-		$element->chunk = 99;
-		$element->persistableData();
-	}
-
-	/**
-	 * @test
-	 * @expectedException LogicException
-	 */
-	function makeSureAElementRequiresAVolume() {
-		$element = new Element($this->setup);
-		$element->xmlid = 'element-01';
 		$element->page = 57;
 		$element->chunk = 99;
 		$element->persistableData();
@@ -120,12 +72,37 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException LogicException
 	 */
-	function makeSureAElementRequiresAnElement() {
+	function makeSureAElementRequiresAChunk() {
 		$element = new Element($this->setup);
 		$element->xmlid = 'element-01';
 		$element->element = 'rs';
 		$element->page = 57;
 		$element->persistableData();
+	}
+
+	/**
+	 * @test
+	 * @expectedException LogicException
+	 */
+	function makeSureAElementRequiresAnElement() {
+		$element = new Element($this->setup);
+		$element->xmlid = 'element-01';
+		$element->chunk = 123;
+		$element->page = 57;
+		$element->persistableData();
+	}
+
+	/**
+	 * @test
+	 */
+	function getThePersistableDataOfAnObjectWithAllRequiredProperties() {
+		$element = new Element($this->setup);
+		$element->xmlid = 'element-01';
+		$element->element = 'rs';
+		$element->page = 57;
+		$element->chunk = 99;
+		$element->persistableData();
+		$this->assertInternalType('array', $element->persistableData());
 	}
 
 }

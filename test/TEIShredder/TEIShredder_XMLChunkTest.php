@@ -2,7 +2,6 @@
 
 namespace TEIShredder;
 
-use \TEIShredder;
 use \LogicException;
 
 require_once __DIR__.'/../bootstrap.php';
