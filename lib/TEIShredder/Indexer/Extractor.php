@@ -81,6 +81,22 @@ class Indexer_Extractor extends Indexer {
 	 */
 	protected $containerTypes = array();
 
+	#todo
+	protected $gateways = array();
+
+	/**
+	 * Constructor.
+	 * @param Setup $setup
+	 * @param XMLReader $xmlreader
+	 * @param string $xml Input XML
+	 * @param XMLReader $xmlreader
+	 */
+	public function __construct(Setup $setup, XMLReader $xmlreader, $xml) {
+		parent::__construct($setup, $xmlreader, $xml);
+		$this->gateways['namedentity'] = $setup->factory->createNamedEntityGateway();
+		$this->gateways['element'] = $setup->factory->createElementGateway();
+	}
+
 	/**
 	 * Method that's called when the stream reaches an opening or empty tag.
 	 * @return mixed
@@ -253,7 +269,7 @@ class Indexer_Extractor extends Indexer {
 				$entity->contextend = $after;
 				$entity->container = $this->containerTypes[$tag['container']];
 				$entity->chunk = $tag['chunk'];
-				NamedEntityGateway::save($this->setup, $entity);
+				$this->gateways['namedentity']->save($this->setup, $entity);
 			}
 		}
 	}
@@ -283,7 +299,7 @@ class Indexer_Extractor extends Indexer {
 		$e->attrn = $attrs['attrn'];
 		$e->attrtargetend = $attrs['attrtargetend'];
 		$e->data = $attrs['data'];
-		ElementGateway::save($this->setup, $e);
+		$this->gateways['element']->save($this->setup, $e);
 	}
 
 	/**
@@ -309,8 +325,8 @@ class Indexer_Extractor extends Indexer {
 	 * Setup method that will be called right before processing starts.
 	 */
 	protected function preProcessAction() {
-		ElementGateway::flush($this->setup);
-		NamedEntityGateway::flush($this->setup);
+		$this->gateways['element']->flush($this->setup);
+		$this->gateways['element']->flush($this->setup);
 	}
 
 }

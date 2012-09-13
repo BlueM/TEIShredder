@@ -96,6 +96,24 @@ class Indexer_Chunker extends Indexer {
 	 */
 	protected $pageObj;
 
+	#todo
+	protected $gateways = array();
+
+	/**
+	 * Constructor.
+	 * @param Setup $setup
+	 * @param XMLReader $xmlreader
+	 * @param string $xml Input XML
+	 * @param XMLReader $xmlreader
+	 */
+	public function __construct(Setup $setup, XMLReader $xmlreader, $xml) {
+		parent::__construct($setup, $xmlreader, $xml);
+		$this->gateways['volume'] = $setup->factory->createVolumeGateway();
+		$this->gateways['section'] = $setup->factory->createSectionGateway();
+		$this->gateways['page'] = $setup->factory->createPageGateway();
+		$this->gateways['xmlchunk'] = $setup->factory->createXMLChunkGateway();
+	}
+
 	/**
 	 * Method that's called when the input stream reaches an opening
 	 * tag (or an empty tag)
@@ -178,12 +196,12 @@ class Indexer_Chunker extends Indexer {
 
 		if ($this->pageObj) {
 			// Finish previous page
-			PageGateway::save($this->setup, $this->pageObj);
+			$this->gateways['page']->save($this->setup, $this->pageObj);
 		}
 
 		$this->page ++;
 
-		$this->pageObj = new Page($this->setup);
+		$this->pageObj = $this->setup->factory->createPage();
 		$this->pageObj->number = $this->page;
 		$this->pageObj->plaintext = '';
 		$this->pageObj->xmlid = $this->r->getAttribute('xml:id');
@@ -215,7 +233,7 @@ class Indexer_Chunker extends Indexer {
 	protected function save() {
 		if ($this->pageObj) {
 			// Finish previous page
-			PageGateway::save($this->setup, $this->pageObj);
+			$this->gateways['page']->save($this->setup, $this->pageObj);
 		}
 	}
 
@@ -271,7 +289,7 @@ class Indexer_Chunker extends Indexer {
 			$title = call_user_func($this->setup->titleCallback, $this->r->readOuterXML());
 		}
 
-		$section = new Section($this->setup);
+		$section = $this->setup->factory->createSection();
 		$section->id = $this->currentSection;
 		$section->volume = $this->data['currentVolume'];
 		$section->title = $title;
@@ -279,7 +297,7 @@ class Indexer_Chunker extends Indexer {
 		$section->level = $this->level;
 		$section->element = $this->r->localName;
 		$section->xmlid = $this->r->getAttribute('xml:id');
-		SectionGateway::save($this->setup, $section);
+		$this->gateways['section']->save($this->setup, $section);
 	}
 
 	/**
@@ -287,7 +305,7 @@ class Indexer_Chunker extends Indexer {
 	 * XMLChunk instance and fills it with some data.
 	 */
 	protected function startChunk() {
-		$chunk = new XMLChunk($this->setup);
+		$chunk = $this->setup->factory->createXMLChunk();
 		$chunk->id = $this->currentChunk;
 		$chunk->page = $this->page;
 		$chunk->section = $this->currentSection;
@@ -321,7 +339,7 @@ class Indexer_Chunker extends Indexer {
 		$chunk->xml = $this->xml;
 		$chunk->plaintext = $plaintext;
 		$chunk->poststack = join(' ', $this->poststack);
-		XMLChunkGateway::save($this->setup, $chunk);
+		$this->gateways['xmlchunk']->save($this->setup, $chunk);
 
 		// Dispose of the chunk
 		unset($this->chunks[$this->currentChunk]);
@@ -333,10 +351,10 @@ class Indexer_Chunker extends Indexer {
 	 * or to perform initialization steps.
 	 */
 	protected function preProcessAction() {
-		SectionGateway::flush($this->setup);
-		PageGateway::flush($this->setup);
-		VolumeGateway::flush($this->setup);
-		XMLChunkGateway::flush($this->setup);
+		$this->gateways['volume']->flush($this->setup);
+		$this->gateways['section']->flush($this->setup);
+		$this->gateways['page']->flush($this->setup);
+		$this->gateways['xmlchunk']->flush($this->setup);
 	}
 
 	/**
@@ -360,11 +378,11 @@ class Indexer_Chunker extends Indexer {
 
 		$this->data['volTitles'][$this->data['currentVolume']] = true;
 
-		$volume = new Volume($this->setup);
+		$volume = $this->setup->factory->createVolume();
 		$volume->number = $this->data['currentVolume'];
 		$volume->title = $title;
 		$volume->pagenumber = $this->data['currTextStart'];
 
-		VolumeGateway::save($this->setup, $volume);
+		$this->gateways['volume']->save($this->setup, $volume);
 	}
 }
