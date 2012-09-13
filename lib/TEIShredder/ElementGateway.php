@@ -17,7 +17,7 @@ class ElementGateway extends AbstractGateway {
 	 * Returns the gateway's database table name
 	 * @return string Table name, without the configured prefix
 	 */
-	public static function tableName() {
+	public function tableName() {
 		return 'element';
 	}
 
@@ -28,8 +28,8 @@ class ElementGateway extends AbstractGateway {
 	 * @return Element
 	 * @throws InvalidArgumentException
 	 */
-	public static function find(Setup $setup, $identifier) {
-		$table = $setup->prefix.self::tableName();
+	public function find(Setup $setup, $identifier) {
+		$table = $setup->prefix.$this->tableName();
 		$stm = $setup->database->prepare(
 			'SELECT xmlid, element, page, chunk, attrn, attrtargetend, data '.
 			"FROM $table WHERE xmlid = ?"

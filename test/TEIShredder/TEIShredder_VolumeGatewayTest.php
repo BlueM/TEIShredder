@@ -30,8 +30,9 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function flushTheData() {
-		VolumeGateway::flush($this->setup);
-		$objs = VolumeGateway::findAll($this->setup);
+		$vg = new VolumeGateway;
+		$vg->flush($this->setup);
+		$objs = $vg->findAll($this->setup);
 		$this->assertTrue(0 == count($objs));
 	}
 
@@ -39,15 +40,16 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function saveAVolume() {
-		VolumeGateway::flush($this->setup);
+		$vg = new VolumeGateway;
+		$vg->flush($this->setup);
 
 		$volume = new Volume($this->setup);
 		$volume->number = 3;
 		$volume->title = "Hello world";
 		$volume->pagenumber = 123;
-		VolumeGateway::save($this->setup, $volume);
+		$vg->save($this->setup, $volume);
 
-		$obj = VolumeGateway::find($this->setup, 3);
+		$obj = $vg->find($this->setup, 3);
 		$this->assertInstanceOf('\TEIShredder\Volume', $obj);
 	}
 
@@ -56,7 +58,8 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function tryingToFindAVolumeByAnUnknownVolumeNumberThrowsAnException() {
-		VolumeGateway::find($this->setup, 9999999);
+		$vg = new VolumeGateway;
+		$vg->find($this->setup, 9999999);
 	}
 
 	/**
@@ -64,16 +67,17 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAVolumeByItsNumber() {
 
-		VolumeGateway::flush($this->setup);
+		$vg = new VolumeGateway;
+		$vg->flush($this->setup);
 
 		// First, create object
 		$volume = new Volume($this->setup);
 		$volume->number = 17;
 		$volume->title = "Volume 17";
 		$volume->pagenumber = 17;
-		VolumeGateway::save($this->setup, $volume);
+		$vg->save($this->setup, $volume);
 
-		$obj = VolumeGateway::find($this->setup, 17);
+		$obj = $vg->find($this->setup, 17);
 		$this->assertInstanceOf('\TEIShredder\Volume', $obj);
 		$this->assertEquals("Volume 17", $volume->title);
 	}
@@ -83,15 +87,16 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAllVolumes() {
 
-		VolumeGateway::flush($this->setup);
+		$vg = new VolumeGateway;
+		$vg->flush($this->setup);
 
 		$volume = new Volume($this->setup);
 		$volume->number = 20;
 		$volume->title = "Volume 20";
 		$volume->pagenumber = 20;
-		VolumeGateway::save($this->setup, $volume);
+		$vg->save($this->setup, $volume);
 
-		$objs = VolumeGateway::findAll($this->setup);
+		$objs = $vg->findAll($this->setup);
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(1 == count($objs));
 		foreach ($objs as $obj) {

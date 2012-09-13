@@ -45,46 +45,8 @@ class SectionTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * @depends createANewSection
-	 * @expectedException UnexpectedValueException
-	 * @expectedExceptionMessage Invalid property
 	 */
-	function tryingToSetAnInvalidPropertyThrowsAnException(Section $section) {
-		$section->foo= 'bar';
-	}
-
-	/**
-	 * @test
-	 * @depends createANewSection
-	 * @expectedException UnexpectedValueException
-	 * @expectedExceptionMessage can not be set
-	 */
-	function tryingToSetAnUnsettablePropertyThrowsAnException(Section $section) {
-		$section->_setup = 'something';
-	}
-
-	/**
-	 * @test
-	 * @depends createANewSection
-	 */
-	function setTheTitle(Section $section) {
-		$section->title = 'Chapter 2';
-		$this->assertEquals('Chapter 2', $section->title);
-	}
-
-	/**
-	 * @test
-	 * @depends createANewSection
-	 * @expectedException UnexpectedValueException
-	 */
-	function tryingToGetAnInvalidPropertyThrowsAnException(Section $section) {
-		$section->foo;
-	}
-
-	/**
-	 * @test
-	 */
-	function saveANewSection() {
+	function getThePersistableDataOfAnObjectWithAllRequiredProperties() {
 		$section = new Section($this->setup);
 		$section->id = 13;
 		$section->volume = 2;
@@ -93,8 +55,7 @@ class SectionTest extends \PHPUnit_Framework_TestCase {
 		$section->level = 2;
 		$section->element = 'div';
 		$section->xmlid = 'section-12345';
-
-		SectionGateway::save($this->setup, $section);
+		$this->assertInternalType('array', $section->persistableData());
 	}
 
 	/**

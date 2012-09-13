@@ -18,7 +18,7 @@ class VolumeGateway extends AbstractGateway {
 	 * Returns the gateway's database table name
 	 * @return string Table name, without the configured prefix
 	 */
-	public static function tableName() {
+	public function tableName() {
 		return 'volume';
 	}
 
@@ -29,8 +29,8 @@ class VolumeGateway extends AbstractGateway {
 	 * @return Volume
 	 * @throws InvalidArgumentException
 	 */
-	public static function find(Setup $setup, $identifier) {
-		$table = $setup->prefix.self::tableName();
+	public function find(Setup $setup, $identifier) {
+		$table = $setup->prefix.$this->tableName();
 		$stm = $setup->database->prepare(
 			"SELECT number, title, pagenumber FROM $table WHERE number = ?"
 		);
@@ -47,8 +47,8 @@ class VolumeGateway extends AbstractGateway {
 	 * @param Setup $setup
 	 * @return Volume[]
 	 */
-	public static function findAll(Setup $setup) {
-		$table = $setup->prefix.self::tableName();
+	public function findAll(Setup $setup) {
+		$table = $setup->prefix.$this->tableName();
 		$stm = $setup->database->query(
 			"SELECT number, title, pagenumber FROM $table ORDER BY number"
 		);

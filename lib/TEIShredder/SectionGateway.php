@@ -18,7 +18,7 @@ class SectionGateway extends AbstractGateway {
 	 * Returns the gateway's database table name
 	 * @return string Table name, without the configured prefix
 	 */
-	public static function tableName() {
+	public function tableName() {
 		return 'section';
 	}
 
@@ -29,8 +29,8 @@ class SectionGateway extends AbstractGateway {
 	 * @return Model
 	 * @throws InvalidArgumentException
 	 */
-	public static function find(Setup $setup, $identifier) {
-		$table = $setup->prefix.self::tableName();
+	public function find(Setup $setup, $identifier) {
+		$table = $setup->prefix.$this->tableName();
 		$stm = $setup->database->query(
 			"SELECT id, volume, title, page, level, element, xmlid FROM $table WHERE id = ?"
 		);
@@ -47,8 +47,8 @@ class SectionGateway extends AbstractGateway {
 	 * @param Setup $setup
 	 * @return Section[]
 	 */
-	public static function findAll(Setup $setup) {
-		$table = $setup->prefix.self::tableName();
+	public function findAll(Setup $setup) {
+		$table = $setup->prefix.$this->tableName();
 		$stm = $setup->database->query(
 			'SELECT id, volume, title, page, level, element, xmlid '.
 			"FROM $table WHERE level > 0 ORDER BY id"
@@ -64,8 +64,8 @@ class SectionGateway extends AbstractGateway {
 	 * @param int $volume Volume number
 	 * @return Section[]
 	 */
-	public static function findAllInVolume(Setup $setup, $volume) {
-		$table = $setup->prefix.self::tableName();
+	public function findAllInVolume(Setup $setup, $volume) {
+		$table = $setup->prefix.$this->tableName();
 		$stm = $setup->database->prepare(
 			'SELECT id, volume, title, page, level, element, xmlid '.
 			"FROM $table WHERE level > 0 AND volume = ? ORDER BY id"

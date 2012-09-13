@@ -17,7 +17,7 @@ class PageGateway extends AbstractGateway {
 	 * Returns the gateway's database table name
 	 * @return string Table name, without the configured prefix
 	 */
-	public static function tableName() {
+	public function tableName() {
 		return 'page';
 	}
 
@@ -28,8 +28,8 @@ class PageGateway extends AbstractGateway {
 	 * @return Page
 	 * @throws InvalidArgumentException;
 	 */
-	public static function find(Setup $setup, $number) {
-		$table = $setup->prefix.self::tableName();
+	public function find(Setup $setup, $number) {
+		$table = $setup->prefix.$this->tableName();
 		$stm = $setup->database->prepare(
 			"SELECT number, xmlid, volume, plaintext, n, rend FROM $table WHERE number = ?"
 		);
@@ -46,8 +46,8 @@ class PageGateway extends AbstractGateway {
 	 * @param Setup $setup
 	 * @return Page[]
 	 */
-	public static function findAll(Setup $setup) {
-		$table = $setup->prefix.self::tableName();
+	public function findAll(Setup $setup) {
+		$table = $setup->prefix.$this->tableName();
 		$stm = $setup->database->query(
 			"SELECT number, xmlid, n, rend, volume, plaintext FROM $table ORDER BY number"
 		);

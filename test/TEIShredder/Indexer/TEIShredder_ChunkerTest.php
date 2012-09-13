@@ -134,7 +134,8 @@ _XML_;
 		$chunker->textBeforePb = false;
 		$chunker->process();
 
-		$volumes = VolumeGateway::findAll($this->setup);
+		$vg = new VolumeGateway;
+		$volumes = $vg->findAll($this->setup);
 
 		$this->assertEquals(1, $volumes[0]->number);
 		$this->assertEquals(2, $volumes[1]->number);

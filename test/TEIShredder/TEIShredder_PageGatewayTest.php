@@ -30,13 +30,16 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	function flushTheData() {
-		PageGateway::flush($this->setup);
+		$pg = new PageGateway;
+		$pg->flush($this->setup);
 	}
 
 	/**
 	 * @test
 	 */
 	function saveANewPage() {
+		$pg = new PageGateway;
+
 		$page = new Page($this->setup);
 		$page->number = 15;
 		$page->xmlid = "pb-15";
@@ -44,7 +47,7 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase {
 		$page->n = "XV";
 		$page->volume = 2;
 		$page->plaintext = 'Foo';
-		PageGateway::save($this->setup, $page);
+		$pg->save($this->setup, $page);
 	}
 
 	/**
@@ -52,20 +55,23 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function tryingToFetchAPageGatewayByAnUnknownPagenumberThrowsAnException() {
-		PageGateway::find($this->setup, 9999999);
+		$pg = new PageGateway;
+		$pg->find($this->setup, 9999999);
 	}
 
 	/**
 	 * @test
 	 */
 	function findAPageByItsNumber() {
+		$pg = new PageGateway;
+
 		// First, create object
 		$page = new Page($this->setup);
 		$page->number = 20;
 		$page->volume = 5;
-		PageGateway::save($this->setup, $page);
+		$pg->save($this->setup, $page);
 
-		$obj = PageGateway::find($this->setup, 20);
+		$obj = $pg->find($this->setup, 20);
 		$this->assertInstanceOf('\TEIShredder\Page', $obj);
 		$this->assertEquals(5, $page->volume);
 	}
@@ -75,12 +81,14 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAllPages() {
 
+		$pg = new PageGateway;
+
 		$page = new Page($this->setup);
 		$page->number = 20;
 		$page->volume = 5;
-		PageGateway::save($this->setup, $page);
+		$pg->save($this->setup, $page);
 
-		$objs = PageGateway::findAll($this->setup);
+		$objs = $pg->findAll($this->setup);
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(0 < count($objs));
 		foreach ($objs as $obj) {

@@ -18,7 +18,7 @@ class NamedEntityGateway extends AbstractGateway {
 	 * Returns the gateway's database table name
 	 * @return string Table name, without the configured prefix
 	 */
-	public static function tableName() {
+	public function tableName() {
 		return 'entity';
 	}
 
@@ -30,8 +30,8 @@ class NamedEntityGateway extends AbstractGateway {
 	 * @throws InvalidArgumentException
 	 * @todo xml:id not suitable (multi-links!)
 	 */
-	public static function find(Setup $setup, $identifier) {
-		$table = $setup->prefix.self::tableName();
+	public function find(Setup $setup, $identifier) {
+		$table = $setup->prefix.$this->tableName();
 
 		$stm = $setup->database->prepare(
 			'SELECT xmlid, page, domain, identifier, contextstart, notation, contextend, container, chunk, notationhash '.
@@ -50,8 +50,8 @@ class NamedEntityGateway extends AbstractGateway {
 	 * @param Setup $setup
 	 * @return NamedEntity[]
 	 */
-	public static function findAll(Setup $setup) {
-		$table = $setup->prefix.self::tableName();
+	public function findAll(Setup $setup) {
+		$table = $setup->prefix.$this->tableName();
 		$stm = $setup->database->query(
 			'SELECT xmlid, page, domain, identifier, contextstart, notation, contextend, container, chunk, notationhash '.
 			"FROM $table ORDER BY chunk"

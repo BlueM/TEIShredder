@@ -35,7 +35,8 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase {
 		$element->element = 'div';
 		$element->page = 23;
 		$element->chunk = 234;
-		ElementGateway::save($this->setup, $element);
+		$eg = new ElementGateway;
+		$eg->save($this->setup, $element);
 	}
 
 	/**
@@ -43,7 +44,8 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function tryingToFetchAnElementByAnUnknownXmlidThrowsAnException() {
-		ElementGateway::find($this->setup, 'element-123');
+		$eg = new ElementGateway;
+		$eg->find($this->setup, 'element-123');
 	}
 
 	/**
@@ -51,7 +53,8 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function findAnElementByItsXmlid() {
 
-		ElementGateway::flush($this->setup);
+		$eg = new ElementGateway;
+		$eg->flush($this->setup);
 
 		// First, create object
 		$element = new Element($this->setup);
@@ -59,9 +62,9 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase {
 		$element->element = 'div';
 		$element->page = 23;
 		$element->chunk = 234;
-		ElementGateway::save($this->setup, $element);
+		$eg->save($this->setup, $element);
 
-		$obj = ElementGateway::find($this->setup, 'pb-15');
+		$obj = $eg->find($this->setup, 'pb-15');
 		$this->assertInstanceOf('\TEIShredder\Element', $obj);
 		$this->assertEquals('div', $element->element);
 	}
@@ -72,18 +75,20 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function flushTheData() {
 
+		$eg = new ElementGateway;
+
 		// First, create object
 		$element = new Element($this->setup);
 		$element->xmlid = "pb-15";
 		$element->element = 'div';
 		$element->page = 23;
 		$element->chunk = 234;
-		ElementGateway::save($this->setup, $element);
+		$eg->save($this->setup, $element);
 
-		ElementGateway::flush($this->setup);
+		$eg->flush($this->setup);
 
 		// Now, we shouldn’t be able to find the element
-		ElementGateway::find($this->setup, 'pb-15');
+		$eg->find($this->setup, 'pb-15');
 	}
 
 }

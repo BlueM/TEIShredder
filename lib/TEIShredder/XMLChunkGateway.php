@@ -18,7 +18,7 @@ class XMLChunkGateway extends AbstractGateway {
 	 * Returns the gateway's database table name
 	 * @return string Table name, without the configured prefix
 	 */
-	public static function tableName() {
+	public function tableName() {
 		return 'xmlchunk';
 	}
 
@@ -28,8 +28,8 @@ class XMLChunkGateway extends AbstractGateway {
 	 * @param int $page Page number
 	 * @return XMLChunk[]
 	 */
-	public static function findByPageNumber(Setup $setup, $page) {
-		$table = $setup->prefix.self::tableName();
+	public function findByPageNumber(Setup $setup, $page) {
+		$table = $setup->prefix.$this->tableName();
 		$stm = $setup->database->prepare(
 			"SELECT id, page, milestone, prestack, xml, poststack, section, plaintext ".
 		    "FROM $table WHERE xml != '' AND page = ? ORDER BY id"
