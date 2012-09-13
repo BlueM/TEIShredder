@@ -3,6 +3,7 @@
 namespace TEIShredder;
 
 use \PDO;
+use \LogicException;
 
 /**
  * Class for retrieving well-formed XML fragments from the source TEI document.
@@ -71,54 +72,20 @@ class XMLChunk extends Model {
 	protected $plaintext;
 
 	/**
-	 * Removes all data
-	 * @param Setup $setup
+	 * Returns an associative array of property=>value pairs to be
+	 * processed by a persistence layer.
+	 * @return array
+	 * @throws LogicException
 	 */
-	public static function flush(Setup $setup) {
-		$setup->database->exec("DELETE FROM ".$setup->prefix.'xmlchunk');
-	}
-
-	/**
-	 * Adds an XML chunk
-	 */
-	public function save() {
-
-		$db = $this->_setup->database;
-
-		$stm = $db->prepare(
-			'INSERT INTO '.$this->_setup->prefix.'xmlchunk '.
-			'(id, page, section, milestone, prestack, xml, poststack, plaintext) '.
-			'VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-		);
-
-		$stm->execute(array(
-			$this->id,
-			$this->page,
-			$this->section,
-			(string)$this->milestone,
-			$this->prestack,
-			$this->xml,
-			$this->poststack,
-			$this->plaintext,
-		));
-	}
-
-	/**
-	 * Returns all chunks that are on a given page.
-	 * @param Setup $setup
-	 * @param int $page Page number
-	 * @return XMLChunk[]
-	 */
-	public static function fetchObjectsByPageNumber(Setup $setup, $page) {
-		$stm = $setup->database->prepare(
-			"SELECT eid.id, eid.milestone, eid.prestack, eid.xml, eid.poststack, eid.section, eid.plaintext
-		     FROM ".$setup->prefix."xmlchunk AS eid
-		     WHERE xml != '' AND eid.page = ?
-		     ORDER BY eid.id"
-		);
-		$stm->execute(array($page));
-		$stm->setFetchMode(PDO::FETCH_CLASS, __CLASS__, array($setup));
-		return $stm->fetchAll();
+	public function persistableData() {
+		// Basic integrity check
+		foreach (array('page', 'section') as $property) {
+			if (is_null($this->$property) or
+			    '' === $this->$property) {
+				throw new LogicException("Integrity check failed: $property cannot be empty.");
+			}
+		}
+		return $this->toArray();
 	}
 
 	/**

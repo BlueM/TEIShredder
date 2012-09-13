@@ -29,75 +29,28 @@ class XMLChunkGatewayTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
+	function saveAnXMLChunk() {
+		XMLChunkGateway::flush($this->setup);
+
+		$chunk = new XMLChunk($this->setup);
+		$chunk->page = 3;
+		$chunk->section = 4;
+		$chunk->xml = '<foot/>';
+		XMLChunkGateway::save($this->setup, $chunk);
+
+		$chunks = XMLChunkGateway::findByPageNumber($this->setup, 3);
+		$this->assertInternalType('array', $chunks);
+		$this->assertInstanceOf('\TEIShredder\XMLChunk', $chunks[0]);
+	}
+
+	/**
+	 * @test
+	 * @todo Add assertion
+	 */
 	function flushTheData() {
 		XMLChunkGateway::flush($this->setup);
-		$objs = XMLChunkGateway::findAll($this->setup);
-		$this->assertTrue(0 == count($objs));
 	}
 
-	/**
-	 * @test
-	 */
-	function saveAXMLChunk() {
-		XMLChunkGateway::flush($this->setup);
-
-		$volume = new XMLChunk($this->setup);
-		$volume->number = 3;
-		$volume->title = "Hello world";
-		$volume->pagenumber = 123;
-		XMLChunkGateway::save($this->setup, $volume);
-
-		$obj = XMLChunkGateway::find($this->setup, 3);
-		$this->assertInstanceOf('\TEIShredder\XMLChunk', $obj);
-	}
-
-	/**
-	 * @test
-	 * @expectedException InvalidArgumentException
-	 */
-	function tryingToFindAXMLChunkByAnUnknownXMLChunkNumberThrowsAnException() {
-		XMLChunkGateway::find($this->setup, 9999999);
-	}
-
-	/**
-	 * @test
-	 */
-	function findAXMLChunkByItsNumber() {
-
-		XMLChunkGateway::flush($this->setup);
-
-		// First, create object
-		$volume = new XMLChunk($this->setup);
-		$volume->number = 17;
-		$volume->title = "XMLChunk 17";
-		$volume->pagenumber = 17;
-		XMLChunkGateway::save($this->setup, $volume);
-
-		$obj = XMLChunkGateway::find($this->setup, 17);
-		$this->assertInstanceOf('\TEIShredder\XMLChunk', $obj);
-		$this->assertEquals("XMLChunk 17", $volume->title);
-	}
-
-	/**
-	 * @test
-	 */
-	function findAllXMLChunks() {
-
-		XMLChunkGateway::flush($this->setup);
-
-		$volume = new XMLChunk($this->setup);
-		$volume->number = 20;
-		$volume->title = "XMLChunk 20";
-		$volume->pagenumber = 20;
-		XMLChunkGateway::save($this->setup, $volume);
-
-		$objs = XMLChunkGateway::findAll($this->setup);
-		$this->assertInternalType('array', $objs);
-		$this->assertTrue(1 == count($objs));
-		foreach ($objs as $obj) {
-			$this->assertInstanceOf('\TEIShredder\XMLChunk', $obj);
-		}
-	}
 
 }
 

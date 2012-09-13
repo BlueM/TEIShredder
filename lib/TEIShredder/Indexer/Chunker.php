@@ -318,10 +318,10 @@ class Indexer_Chunker extends Indexer {
 		}
 
 		$chunk = $this->chunks[$this->currentChunk];
-		$chunk->xml = trim($this->xml);
+		$chunk->xml = $this->xml;
 		$chunk->plaintext = $plaintext;
 		$chunk->poststack = join(' ', $this->poststack);
-		$chunk->save();
+		XMLChunkGateway::save($this->setup, $chunk);
 
 		// Dispose of the chunk
 		unset($this->chunks[$this->currentChunk]);
@@ -336,7 +336,7 @@ class Indexer_Chunker extends Indexer {
 		SectionGateway::flush($this->setup);
 		PageGateway::flush($this->setup);
 		VolumeGateway::flush($this->setup);
-		XMLChunk::flush($this->setup);
+		XMLChunkGateway::flush($this->setup);
 	}
 
 	/**
