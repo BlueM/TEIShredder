@@ -21,6 +21,15 @@ abstract class Model {
 	protected $_setup;
 
 	/**
+	 * Returns data to be passed to a persistence layer.
+	 *
+	 * Concrete subclasses can use this method to check the consistency
+	 * of the objects state and throw an exception, if validation failed.
+	 * @return array Associative array of property=>value pairs
+	 */
+	abstract public function persistableData();
+
+	/**
 	 * Constructor.
 	 * @param Setup $setup
 	 * @todo Do we still need the Setup instance once the persistence is not done
@@ -70,20 +79,6 @@ abstract class Model {
 		}
 		$properties = join(', ', $properties);
 		return get_class($this).($properties ? " [$properties]" : '');
-	}
-
-	/**
-	 * Returns data to be passed to a persistence layer.
-	 *
-	 * This default implementation simply returns the visible (= not prefixed
-	 * with an underscore) class properties and their values. Concrete subclasses
-	 * may overwrite this method to alter this and/or to check the consistency
-	 * of the objects state.
-	 * @return array Associative array of property=>value pairs
-	 * @throws LogicException
-	 */
-	public function persistableData() {
-		return $this->toArray();
 	}
 
 	/**
