@@ -336,7 +336,7 @@ class Indexer_Chunker extends Indexer {
 		}
 
 		$chunk = $this->chunks[$this->currentChunk];
-		$chunk->xml = $this->xml;
+		$chunk->xml = trim($this->xml);
 		$chunk->plaintext = $plaintext;
 		$chunk->poststack = join(' ', $this->poststack);
 		$this->gateways['xmlchunk']->save($chunk);
