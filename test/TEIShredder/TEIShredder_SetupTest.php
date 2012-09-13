@@ -4,6 +4,8 @@ namespace TEIShredder;
 
 use \TEIShredder;
 use \PDO;
+use \UnexpectedValueException;
+use \InvalidArgumentException;
 
 require_once __DIR__.'/../bootstrap.php';
 
@@ -29,7 +31,7 @@ class SetupTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedExceptionMessage Plaintext conversion callback is invalid
 	 */
 	function tryingToCreateAnObjectWithAnInvalidPlaintextCallbackThrowsAnException() {
-		new Setup(new PDO('sqlite::memory:'), '', 'abc');
+		new Setup(new PDO('sqlite::memory:'), null, '', 'abc');
 	}
 
 	/**
@@ -38,6 +40,7 @@ class SetupTest extends \PHPUnit_Framework_TestCase {
 	function creatingAnObjectWithACustomPlaintextCallbacksWorks() {
 		$setup = new Setup(
 			new PDO('sqlite::memory:'),
+			null,
 			'',
 			function($str) { return $str; } // Dummy plaintext conversion callback closure
 		);
@@ -50,7 +53,7 @@ class SetupTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedExceptionMessage Title extraction callback is invalid
 	 */
 	function tryingToCreateAnObjectWithAnInvalidTitleExtractionCallbackThrowsAnException() {
-		new Setup(new PDO('sqlite::memory:'), '', null, 'abc');
+		new Setup(new PDO('sqlite::memory:'), null, '', null, 'abc');
 	}
 
 	/**
@@ -59,11 +62,28 @@ class SetupTest extends \PHPUnit_Framework_TestCase {
 	function creatingAnObjectWithACustomTitleExtractionCallbacksWorks() {
 		$setup = new Setup(
 			new PDO('sqlite::memory:'),
+			null,
 			'',
 			null,
 			function($str) { return $str; } // Dummy title extraction callback closure
 		);
 		$this->assertInstanceOf('\\'.__NAMESPACE__.'\\Setup', $setup);
+	}
+
+	/**
+	 * @test
+	 */
+	function creatingAnObjectWithADifferentFactoryWorks() {
+		$factory = $this->getMock('\TEIShredder\FactoryInterface');
+		$setup = new Setup(
+			new PDO('sqlite::memory:'),
+			$factory,
+			'',
+			null,
+			function($str) { return $str; } // Dummy title extraction callback closure
+		);
+		$this->assertInstanceOf('\\'.__NAMESPACE__.'\\Setup', $setup);
+		$this->assertInstanceOf('\TEIShredder\FactoryInterface', $setup->factory);
 	}
 
 	/**

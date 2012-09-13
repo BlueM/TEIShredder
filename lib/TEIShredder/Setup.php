@@ -15,6 +15,7 @@ use \UnexpectedValueException;
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  * @property string $prefix
+ * @property FactoryInterface $factory
  * @property string|array|Closure $titleCallback
  * @property string|array|Closure $plaintextCallback
  * @property array $chunktags
@@ -84,6 +85,12 @@ class Setup {
 	                             'text', 'body', 'argument', 'lb', 'head');
 
 	/**
+	 * Factory instance
+	 * @var FactoryInterface
+	 */
+	protected $factory;
+
+	/**
 	 * Database table prefix.
 	 * @var PDO
 	 */
@@ -92,6 +99,7 @@ class Setup {
 	/**
 	 * Constructor.
 	 * @param PDO $db
+	 * @param FactoryInterface $factory [optional]
 	 * @param string $prefix
 	 * @param string|array|Closure $ptcallb [optional] Callback for converting to
 	 *                             plaintext. If none given, defaults to strip_tags() plus
@@ -100,11 +108,18 @@ class Setup {
 	 *                             from part of a TEI document. If none given, defaults
 	 *                             to extracting the first <head> child of the section and
 	 *                             converting it to plaintext using the plaintext callback.
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
-	public function __construct(PDO $db, $prefix = '', $ptcallb = null, $ttlcallb = null) {
+	public function __construct(PDO $db, FactoryInterface $factory = null, $prefix = '', $ptcallb = null, $ttlcallb = null) {
 
 		$this->database = $db;
+
+		if ($factory) {
+			$this->factory = $factory;
+		} else {
+			$this->factory = new DefaultFactory;
+		}
+
 		$this->prefix = $prefix;
 
 		if ($ptcallb) {

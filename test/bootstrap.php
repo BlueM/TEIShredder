@@ -16,6 +16,7 @@ function prepare_default_data() {
 
 	$setup = new \TEIShredder\Setup(
 		$pdo,
+		null,
 		'prefix_'
 	);
 
