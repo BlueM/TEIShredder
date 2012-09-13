@@ -35,7 +35,7 @@ class VolumeGateway extends AbstractGateway {
 			"SELECT number, title, pagenumber FROM $table WHERE number = ?"
 		);
 		$stm->execute(array($identifier));
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Volume');
+		$stm->setFetchMode(PDO::FETCH_INTO, $setup->factory->createVolume());
 		if (false === $obj = $stm->fetch()) {
 			throw new InvalidArgumentException('Invalid volume number');
 		}
@@ -52,7 +52,8 @@ class VolumeGateway extends AbstractGateway {
 		$stm = $setup->database->query(
 			"SELECT number, title, pagenumber FROM $table ORDER BY number"
 		);
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Volume');
+		$page = $setup->factory->createVolume();
+		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($page));
 		return $stm->fetchAll();
 	}
 
