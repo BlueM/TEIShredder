@@ -4,8 +4,6 @@ namespace TEIShredder;
 
 use \InvalidArgumentException;
 
-require 'FactoryInterface.php';
-
 /**
  * Default factory for creating objects.
  * @package TEIShredder
@@ -27,6 +25,20 @@ class DefaultFactory implements FactoryInterface {
 	 */
 	public function createNamedEntityGateway() {
 		return new NamedEntityGateway;
+	}
+
+	/**
+	 * @return Page
+	 */
+	public function createPage() {
+		return new Page;
+	}
+
+	/**
+	 * @return PageGateway
+	 */
+	public function createPageGateway() {
+		return new PageGateway;
 	}
 
 }

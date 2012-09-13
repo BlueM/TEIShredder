@@ -21,5 +21,14 @@ interface FactoryInterface {
 	 */
 	public function createNamedEntityGateway();
 
+	/**
+	 * @return Page
+	 */
+	public function createPage();
+
+	/**
+	 * @return PageGateway
+	 */
+	public function createPageGateway();
 }
 
