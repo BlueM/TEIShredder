@@ -65,9 +65,10 @@ class SectionGateway extends AbstractGateway {
 	 * @return Section[]
 	 */
 	public static function findAllInVolume(Setup $setup, $volume) {
-		$stm = $setup->database->query(
+		$table = $setup->prefix.self::tableName();
+		$stm = $setup->database->prepare(
 			'SELECT id, volume, title, page, level, element, xmlid '.
-			'FROM '.$setup->prefix.'section WHERE level > 0 AND volume = ? ORDER BY id'
+			"FROM $table WHERE level > 0 AND volume = ? ORDER BY id"
 		);
 		$stm->execute(array($volume));
 		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Section', array($setup));
