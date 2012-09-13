@@ -19,7 +19,6 @@ use \UnexpectedValueException;
  * @property string|array|Closure $plaintextCallback
  * @property array $chunktags
  * @property array $nostacktags
- * @property array $sectiontags
  * @property array $ignorabletags
  * @property array $structureleveltags
  * @property array $blocktags
@@ -63,12 +62,6 @@ class Setup {
 	protected $nostacktags = array('text', 'group');
 
 	/**
-	 * Array of element types / tag names that mark the beginning of
-	 * a new text section.
-	 */
-	#protected $sectiontags = array('text', 'div', 'titlePage', 'front');
-
-	/**
 	 * Text that is inside these tags will skipped when extracting
 	 * plaintext fragments of the text.
 	 * @var string[]
@@ -76,7 +69,7 @@ class Setup {
 	protected $ignorabletags = array('sic', 'del', 'orig');
 
 	/**
-	 * Text that is inside these tags will skipped when extracting
+	 * Text that is inside these tags will be skipped when extracting
 	 * plaintext fragments of the text.
 	 * @var string[]
 	 */

@@ -75,9 +75,10 @@ abstract class Model {
 	/**
 	 * Returns data to be passed to a persistence layer.
 	 *
-	 * This default implementation simply returns the visible class properties
-	 * and their values. Concrete subclasses may overwrite this method to alter
-	 * this and/or to check the consistency of the objects state.
+	 * This default implementation simply returns the visible (= not prefixed
+	 * with an underscore) class properties and their values. Concrete subclasses
+	 * may overwrite this method to alter this and/or to check the consistency
+	 * of the objects state.
 	 * @return array Associative array of property=>value pairs
 	 * @throws LogicException
 	 */
