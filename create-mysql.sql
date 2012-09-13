@@ -62,7 +62,7 @@ CREATE TABLE `<prefix>volume` (
 CREATE TABLE `<prefix>xmlchunk` (
   `id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Chunk''s primary key',
   `page` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Number of the page this chunk is on',
-  `milestone` varchar(10) NOT NULL DEFAULT '' COMMENT 'Current <milestone /> context',
+  `milestone` varchar(10) DEFAULT '' COMMENT 'Current <milestone /> context',
   `prestack` text NOT NULL COMMENT 'Tags that are opened before this text chunk',
   `xml` text NOT NULL COMMENT 'The chunk''s XML source (not well-formed)',
   `poststack` text NOT NULL COMMENT 'Tags that have to be closed behind this text chunk',
