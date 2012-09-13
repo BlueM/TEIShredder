@@ -6,13 +6,14 @@ use \InvalidArgumentException;
 use \PDO;
 
 /**
- * Gateway for element objects
+ * Gateway for Element objects
  * @package TEIShredder
  * @author Carsten Bluem <carsten@bluem.net>
  * @link https://github.com/BlueM/TEIShredder
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 class ElementGateway extends AbstractGateway {
+
 	/**
 	 * Returns the gateway's database table name
 	 * @return string
@@ -30,8 +31,7 @@ class ElementGateway extends AbstractGateway {
 	public function find($identifier) {
 		$table = $this->tableName();
 		$stm = $this->db->prepare(
-			'SELECT xmlid, element, page, chunk, attrn, attrtargetend, data '.
-			"FROM $table WHERE xmlid = ?"
+			"SELECT * FROM $table WHERE xmlid = ?"
 		);
 		$stm->execute(array($identifier));
 		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createElement());
