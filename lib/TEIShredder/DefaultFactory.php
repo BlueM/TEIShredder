@@ -28,6 +28,20 @@ class DefaultFactory implements FactoryInterface {
 	}
 
 	/**
+	 * @return Volume
+	 */
+	public function createVolume() {
+		return new Volume;
+	}
+
+	/**
+	 * @return VolumeGateway
+	 */
+	public function createVolumeGateway() {
+		return new VolumeGateway();
+	}
+
+	/**
 	 * @return Page
 	 */
 	public function createPage() {

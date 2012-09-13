@@ -32,6 +32,16 @@ interface FactoryInterface {
 	public function createPageGateway();
 
 	/**
+	 * @return Volume
+	 */
+	public function createVolume();
+
+	/**
+	 * @return VolumeGateway
+	 */
+	public function createVolumeGateway();
+
+	/**
 	 * @return Element
 	 */
 	public function createElement();

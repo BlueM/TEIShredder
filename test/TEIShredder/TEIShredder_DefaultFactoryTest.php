@@ -49,6 +49,22 @@ class DefaultFactoryTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
+	function createAVolume() {
+		$obj = $this->obj->createVolume();
+		$this->assertInstanceOf('\TEIShredder\Volume', $obj);
+	}
+
+	/**
+	 * @test
+	 */
+	function createVolumeGateway() {
+		$obj = $this->obj->createVolumeGateway();
+		$this->assertInstanceOf('\TEIShredder\VolumeGateway', $obj);
+	}
+
+	/**
+	 * @test
+	 */
 	function createANamedEntity() {
 		$obj = $this->obj->createNamedEntity();
 		$this->assertInstanceOf('\TEIShredder\NamedEntity', $obj);
