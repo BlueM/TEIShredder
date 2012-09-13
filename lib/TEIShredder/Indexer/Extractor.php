@@ -25,12 +25,6 @@ class Indexer_Extractor extends Indexer {
 	                              'byLine', 'titlePart', 'byline', 'item');
 
 	/**
-	 * Callbacks (function, method or closure) for elements.
-	 * @var array Associative array containing element name=>callback pairs
-	 */
-	protected $elementCallbacks = array();
-
-	/**
 	 * Array that will be filled with data for all the elements found
 	 * @var array Assoc. array of ID=>data pairs
 	 */
@@ -93,7 +87,7 @@ class Indexer_Extractor extends Indexer {
 	 */
 	public function __construct(Setup $setup, XMLReader $xmlreader, $xml) {
 		parent::__construct($setup, $xmlreader, $xml);
-		$this->gateways['namedentity'] = $setup->factory->createNamedEntityGateway();
+		$this->gateways['entity'] = $setup->factory->createNamedEntityGateway();
 		$this->gateways['element'] = $setup->factory->createElementGateway();
 	}
 
@@ -269,7 +263,7 @@ class Indexer_Extractor extends Indexer {
 				$entity->contextend = $after;
 				$entity->container = $this->containerTypes[$tag['container']];
 				$entity->chunk = $tag['chunk'];
-				$this->gateways['namedentity']->save($entity);
+				$this->gateways['entity']->save($entity);
 			}
 		}
 	}
@@ -284,41 +278,12 @@ class Indexer_Extractor extends Indexer {
 			return;
 		}
 
-		// Add attributes we need for various purposes
-		if (isset($this->elementCallbacks[$this->r->localName])) {
-			$attrs = call_user_func($this->elementCallbacks[$this->r->localName], $this->r);
-		} else {
-			$attrs = array('attrn'=>'', 'attrtargetend'=>'', 'data'=>'');
-		}
-
 		$e = $this->setup->factory->createElement($this->setup);
 		$e->xmlid = $xmlid;
 		$e->element = $this->r->localName;
 		$e->page = $this->page;
 		$e->chunk = $this->currentChunk;
-		$e->attrn = $attrs['attrn'];
-		$e->attrtargetend = $attrs['attrtargetend'];
-		$e->data = $attrs['data'];
 		$this->gateways['element']->save($e);
-	}
-
-	/**
-	 * Defines a callback for specific elements.
-	 *
-	 * This callback is expected to return an array with three keys: "data" is arbitrary
-	 * data to index, "attrn" is the value of the "n" attribute (if present) and "attrtargetend"
-	 * (the value of the @targetEnd attribute). The callback is given one argument, which is
-	 * an XMLReader instance of the node.
-	 * @param string $element
-	 * @param mixed $callback
-	 * @throws InvalidArgumentException
-	 */
-	public function setElementCallback($element, $callback) {
-		if (!is_callable($callback)) {
-			throw new InvalidArgumentException('Argument 2 must be a function name, method (as array) '.
-					                           'or Closure. Given: '.print_r($callback, true));
-		}
-		$this->elementCallbacks[$element] = $callback;
 	}
 
 	/**
@@ -326,7 +291,7 @@ class Indexer_Extractor extends Indexer {
 	 */
 	protected function preProcessAction() {
 		$this->gateways['element']->flush($this->setup);
-		$this->gateways['element']->flush($this->setup);
+		$this->gateways['entity']->flush($this->setup);
 	}
 
 }
