@@ -14,6 +14,13 @@ require_once __DIR__.'/../bootstrap.php';
 class ConcreteModel extends Model {
 	protected $a = 'A';
 	protected $b = 'B';
+
+	/**
+	 * Returns data to be passed to a persistence layer.
+	 */
+	public function persistableData() {
+		return $this->toArray();
+	}
 }
 
 /**
