@@ -42,6 +42,20 @@ class DefaultFactory implements FactoryInterface {
 	}
 
 	/**
+	 * @return Section
+	 */
+	public function createSection() {
+		return new Section;
+	}
+
+	/**
+	 * @return SectionGateway
+	 */
+	public function createSectionGateway() {
+		return new SectionGateway;
+	}
+
+	/**
 	 * @return Page
 	 */
 	public function createPage() {
@@ -67,6 +81,20 @@ class DefaultFactory implements FactoryInterface {
 	 */
 	public function createElementGateway() {
 		return new ElementGateway;
+	}
+
+	/**
+	 * @return XMLChunk
+	 */
+	public function createXMLChunk() {
+		return new XMLChunk;
+	}
+
+	/**
+	 * @return XMLChunkGateway
+	 */
+	public function createXMLChunkGateway() {
+		return new XMLChunkGateway();
 	}
 
 }

@@ -32,6 +32,16 @@ interface FactoryInterface {
 	public function createPageGateway();
 
 	/**
+	 * @return Section
+	 */
+	public function createSection();
+
+	/**
+	 * @return SectionGateway
+	 */
+	public function createSectionGateway();
+
+	/**
 	 * @return Volume
 	 */
 	public function createVolume();
@@ -50,6 +60,16 @@ interface FactoryInterface {
 	 * @return ElementGateway
 	 */
 	public function createElementGateway();
+
+	/**
+	 * @return XMLChunk
+	 */
+	public function createXMLChunk();
+
+	/**
+	 * @return XMLChunkGateway
+	 */
+	public function createXMLChunkGateway();
 
 }
 
