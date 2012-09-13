@@ -41,4 +41,18 @@ class DefaultFactory implements FactoryInterface {
 		return new PageGateway;
 	}
 
+	/**
+	 * @return Element
+	 */
+	public function createElement() {
+		return new Element;
+	}
+
+	/**
+	 * @return ElementGateway
+	 */
+	public function createElementGateway() {
+		return new ElementGateway;
+	}
+
 }

@@ -30,5 +30,16 @@ interface FactoryInterface {
 	 * @return PageGateway
 	 */
 	public function createPageGateway();
+
+	/**
+	 * @return Element
+	 */
+	public function createElement();
+
+	/**
+	 * @return ElementGateway
+	 */
+	public function createElementGateway();
+
 }
 
