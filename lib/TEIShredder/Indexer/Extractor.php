@@ -3,7 +3,6 @@
 namespace TEIShredder;
 
 use \PDO;
-use \PDOStatement;
 use \InvalidArgumentException;
 use \RuntimeException;
 
