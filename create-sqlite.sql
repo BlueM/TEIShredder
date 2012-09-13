@@ -4,10 +4,7 @@ CREATE TABLE "<prefix>element" (
 	"xmlid" TEXT PRIMARY KEY,
 	"element" TEXT NOT NULL,
 	"page" INTEGER NOT NULL,
-	"chunk" INTEGER NOT NULL,
-	"attrn" TEXT,
-	"attrtargetend" TEXT,
-	"data" TEXT
+	"chunk" INTEGER NOT NULL
 );
 
 CREATE TABLE "<prefix>entity" (

@@ -5,13 +5,8 @@ CREATE TABLE `<prefix>element` (
   `element` varchar(20) NOT NULL DEFAULT '' COMMENT 'Name of XML element',
   `page` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'ID of page that this element is on',
   `chunk` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'ID of chunk this element belongs to',
-  `attrn` varchar(20) DEFAULT '' COMMENT 'Value of tei:n attribute, if present',
-  `attrtargetend` varchar(30) DEFAULT '' COMMENT 'Value of tei:targetEnd attribute',
-  `data` text COMMENT 'Element-dependend data, e.g. @indexName value or JSONed array',
   PRIMARY KEY (`xmlid`),
-  KEY `attrn` (`attrn`),
-  KEY `element` (`element`),
-  KEY `attrtargetend` (`attrtargetend`)
+  KEY `element` (`element`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Tracks elements with xml:id attributes and related data';
 
 CREATE TABLE `<prefix>entity` (

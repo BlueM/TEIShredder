@@ -17,9 +17,6 @@ use \PDO;
  * @property int $element
  * @property int $page
  * @property int $chunk
- * @property string $attrn
- * @property string $attrtargetend
- * @property string $data
  */
 class Element extends Model {
 
@@ -47,24 +44,6 @@ class Element extends Model {
 	 * @var int
 	 */
 	protected $chunk;
-
-	/**
-	 * Value of @n attribute
-	 * @var string
-	 */
-	protected $attrn;
-
-	/**
-	 * Value of @targetEnd attribute
-	 * @var string
-	 */
-	protected $attrtargetend;
-
-	/**
-	 * Arbitrary other data (depends on element)
-	 * @var string
-	 */
-	protected $data;
 
 	/**
 	 * Returns an associative array of property=>value pairs to be
