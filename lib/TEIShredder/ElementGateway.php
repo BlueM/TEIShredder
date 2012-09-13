@@ -35,7 +35,7 @@ class ElementGateway extends AbstractGateway {
 			"FROM $table WHERE xmlid = ?"
 		);
 		$stm->execute(array($identifier));
-		$stm->setFetchMode(PDO::FETCH_CLASS, '\TEIShredder\Element');
+		$stm->setFetchMode(PDO::FETCH_INTO, $setup->factory->createElement());
 		if (false === $obj = $stm->fetch()) {
 			throw new InvalidArgumentException('No such element');
 		}
