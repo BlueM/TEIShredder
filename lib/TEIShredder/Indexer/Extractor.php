@@ -196,7 +196,7 @@ class Indexer_Extractor extends Indexer {
 	 */
 	protected function nodeClose() {
 
-		// Update the elements stack
+		// Remove the closed element from the element stack
 		array_pop($this->elementStack);
 
 		if (in_array($this->r->localName, $this->containertags)) {
