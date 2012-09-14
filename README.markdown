@@ -32,7 +32,7 @@ For a first quick test, open a shell on a Unix-oid system (Mac OS X, Linux, BSD,
 
 …, which means: “Take the contents of ‘create-sqlite.sql’ in this directory, remove &lt;prefix&gt; from the tables’ names and create an empty SQLite database called ‘test.sqlite’ in this directory which contains these tables”.
 
-Then, you can run “test.php”, which takes an input XML file from the “_TESTS” directory, indexes it and saves the result in that database. (If you are more familiar with MySQL and/or don’t have an sqlite3 executable at hand, you could of course also use MySQL by changing the PDO constructor in “test.php”.)
+Then, you can run “test.php”, which takes an input XML file from the “_TESTS” directory, indexes it and saves the result in that database. (If you are more familiar with MySQL and/or don’t have an sqlite3 executable at hand, you could of course also use MySQL by changing the PDO constructor in “test.php”.) Then, it displays information on the data that has been collected, for instance the number and titles of the volumes in the TEI document, occurrences of sections, named entities etc.
 
 If you like, you can now inspect the database’s contents. For instance, you can view the elements that were indexed by executing ...
 
@@ -42,7 +42,7 @@ If you like, you can now inspect the database’s contents. For instance, you ca
 
 TEI != TEI
 ----------
-TEI can be used in many different ways. In my eyes, this is one of the very appealing features of TEI, but on the other hand, it makes developing generic tools much harder or impossible. TEIShredder is, to some extent, a generic tool insofar as it just processes TEI – but on the other hand, it has certain expectations of the TEI. Therefore, most likely, TEIShredder will not be able to process your unmodified TEI document, but it will be necessary to pre-process the document (for instance, using XSL-T or [CBXMLTransformer](https://github.com/BlueM/CBXMLTransformer)) to match these expectations.
+TEI can be used in many different ways. In my eyes, this is one of the very appealing features of TEI, but on the other hand, it makes developing generic tools much harder or impossible. TEIShredder is, to some extent, a generic tool insofar as it just processes TEI – but on the other hand, it has certain expectations of the TEI. Therefore, most likely, TEIShredder will not be able to process your unmodified TEI document, but it might be necessary to pre-process the document (for instance, using XSL-T or [CBXMLTransformer](https://github.com/BlueM/CBXMLTransformer)) to match these expectations.
 
 Conventions / expectations
 --------------------------
