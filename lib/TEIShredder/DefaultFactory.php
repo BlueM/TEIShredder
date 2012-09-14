@@ -34,86 +34,86 @@ class DefaultFactory implements FactoryInterface {
 		$this->prefix = $prefix;
 	}
 
-	/**
-	 * @return NamedEntity
-	 */
+    /**
+     * {@inheritdoc}
+     */
 	public function createNamedEntity() {
 		return new NamedEntity;
 	}
 
-	/**
-	 * @return NamedEntityGateway
-	 */
+    /**
+     * {@inheritdoc}
+     */
 	public function createNamedEntityGateway() {
 		return new NamedEntityGateway($this->db, $this, $this->prefix);
 	}
 
-	/**
-	 * @return Volume
-	 */
+    /**
+     * {@inheritdoc}
+     */
 	public function createVolume() {
 		return new Volume;
 	}
 
-	/**
-	 * @return VolumeGateway
-	 */
+    /**
+     * {@inheritdoc}
+     */
 	public function createVolumeGateway() {
 		return new VolumeGateway($this->db, $this, $this->prefix);
 	}
 
-	/**
-	 * @return Section
-	 */
+    /**
+     * {@inheritdoc}
+     */
 	public function createSection() {
 		return new Section;
 	}
 
-	/**
-	 * @return SectionGateway
-	 */
+    /**
+     * {@inheritdoc}
+     */
 	public function createSectionGateway() {
 		return new SectionGateway($this->db, $this, $this->prefix);
 	}
 
-	/**
-	 * @return Page
-	 */
+    /**
+     * {@inheritdoc}
+     */
 	public function createPage() {
 		return new Page;
 	}
 
-	/**
-	 * @return PageGateway
-	 */
+    /**
+     * {@inheritdoc}
+     */
 	public function createPageGateway() {
 		return new PageGateway($this->db, $this, $this->prefix);
 	}
 
-	/**
-	 * @return Element
-	 */
+    /**
+     * {@inheritdoc}
+     */
 	public function createElement() {
 		return new Element;
 	}
 
-	/**
-	 * @return ElementGateway
-	 */
+    /**
+     * {@inheritdoc}
+     */
 	public function createElementGateway() {
 		return new ElementGateway($this->db, $this, $this->prefix);
 	}
 
-	/**
-	 * @return XMLChunk
-	 */
+    /**
+     * {@inheritdoc}
+     */
 	public function createXMLChunk() {
 		return new XMLChunk;
 	}
 
-	/**
-	 * @return XMLChunkGateway
-	 */
+    /**
+     * {@inheritdoc}
+     */
 	public function createXMLChunkGateway() {
 		return new XMLChunkGateway($this->db, $this, $this->prefix);
 	}
