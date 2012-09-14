@@ -14,11 +14,10 @@ use \PDO;
  */
 class VolumeGateway extends AbstractGateway {
 
-	/**
-	 * Returns the gateway's database table name
-	 * @return string Table name
-	 */
-	public function tableName() {
+    /**
+     * {@inheritdoc}
+     */
+	protected function tableName() {
 		return $this->prefix.'volume';
 	}
 

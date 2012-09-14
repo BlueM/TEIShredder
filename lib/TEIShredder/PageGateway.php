@@ -13,11 +13,11 @@ use \PDO;
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 class PageGateway extends AbstractGateway {
-	/**
-	 * Returns the gateway's database table name
-	 * @return string
-	 */
-	public function tableName() {
+
+    /**
+     * {@inheritdoc}
+     */
+	protected function tableName() {
 		return $this->prefix.'page';
 	}
 

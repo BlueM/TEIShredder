@@ -27,9 +27,9 @@ abstract class AbstractGateway {
 
 	/**
 	 * Returns the gateway's database table name
-	 * @return string
+	 * @return string Table name, including the configured prefix
 	 */
-	abstract public function tableName();
+	abstract protected function tableName();
 
 	/**
 	 * Constructor.
