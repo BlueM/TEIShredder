@@ -49,7 +49,7 @@ class Indexer_Extractor extends Indexer {
 	                              'byLine', 'titlePart', 'byline', 'item');
 
 	/**
-	 * Array that will be filled with data for all the elements found
+	 * Array that will be filled with data for all the named entities found
 	 * @var array Assoc. array of ID=>data pairs
 	 */
 	protected $tags = array();
