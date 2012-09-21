@@ -162,10 +162,8 @@ class Indexer_Extractor extends Indexer {
 			$this->entityStack[] = $index;
 			$this->containers[$containerindex] .= '<'.$index.'>';
 			$this->tags[$index] = array(
-				'id'=>$index,
 				'xmlid'=>$this->r->getAttribute('xml:id'),
 				'container'=>$containerindex,
-				'tag'=>$this->r->nodeOpenString(),
 				'page'=>$this->page,
 				'domain'=>$this->r->getAttribute('type'),
 				'key'=>explode(' ', $this->r->getAttribute('key')), // Supports multiple targets
@@ -237,7 +235,7 @@ class Indexer_Extractor extends Indexer {
 	 */
 	protected function save() {
 
-		foreach (array_values($this->tags) as $tag) {
+		foreach ($this->tags as $index=>$tag) {
 
 			$context = $this->containers[$tag['container']];
 
@@ -245,7 +243,7 @@ class Indexer_Extractor extends Indexer {
 			$context = preg_replace(
 				'#</?\d+>#',
 				'',
-				str_replace(array('<'.$tag['id'].'>', '</'.$tag['id'].'>'), '###', $context)
+				str_replace(array('<'.$index.'>', '</'.$index.'>'), '###', $context)
 			);
 
 			// Convert the context to plaintext. Therefore, escape special chars
