@@ -29,6 +29,7 @@ namespace TEIShredder;
 use \PDO;
 use \InvalidArgumentException;
 use \RuntimeException;
+use \SplObjectStorage;
 
 /**
  * Class for extracting some tags from a TEI Lite document and for
@@ -49,14 +50,13 @@ class Indexer_Extractor extends Indexer {
 	                              'byLine', 'titlePart', 'byline', 'item');
 
 	/**
-	 * Array that will be filled with data for all the named entities found
-	 * @var array Assoc. array of ID=>data pairs
+	 * @var SplObjectStorage
 	 */
-	protected $tags = array();
+	protected $entities;
 
 	/**
 	 * Stack of currently "open" entity tags
-	 * @var array Indexed array of index numbers
+	 * @var array Indexed array of xml:id values
 	 */
 	protected $entityStack = array();
 
@@ -107,6 +107,7 @@ class Indexer_Extractor extends Indexer {
 		parent::__construct($setup, $xmlreader, $xml);
 		$this->entityGateway = $setup->factory->createNamedEntityGateway();
 		$this->elementGateway = $setup->factory->createElementGateway();
+		$this->entities = new SplObjectStorage;
 	}
 
 	/**
@@ -115,9 +116,6 @@ class Indexer_Extractor extends Indexer {
 	 * @throws RuntimeException
 	 */
 	protected function nodeOpen() {
-
-		// $index is just a counter (not used outside) for ensuring unique container IDs
-		static $index = 0;
 
 		// Keep track of the chunk number
 		if (in_array($this->r->localName, $this->setup->chunktags) or
@@ -158,74 +156,92 @@ class Indexer_Extractor extends Indexer {
 			$this->registerNewContainer();
 		} elseif ($this->r->localName == 'rs') {
 			// Named entity
-			$index ++;
-			$this->entityStack[] = $index;
-			$this->containers[$containerindex] .= '<'.$index.'>';
-			$this->tags[$index] = array(
-				'xmlid'=>$this->r->getAttribute('xml:id'),
-				'page'=>$this->page,
-				'chunk'=>$this->currentChunk,
-				'domain'=>$this->r->getAttribute('type'),
-				'key'=>explode(' ', $this->r->getAttribute('key')), // Supports multiple targets
-				'container'=>$containerindex,
-			);
+			$entity = $this->setup->factory->createNamedEntity($this->setup);
+			$entity->xmlid = $this->r->getAttribute('xml:id');
+			$entity->page = $this->page;
+			$entity->chunk = $this->currentChunk;
+			$entity->domain = $this->r->getAttribute('type');
+			$entity->identifier = $this->r->getAttribute('key'); // Reminder: could be multiple
+			$this->entities->attach($entity, $containerindex);
+
+			$this->entityStack[] = $entity->xmlid;
+			$this->containers[$containerindex] .= '<:'.$entity->xmlid.'>';
 		}
 
 	}
 
 	/**
-	 * Saves all the named entities' data accumulated before (plus some
+	 * Completes all the named entities' data accumulated before (plus some
 	 * additional data, such as some context string) to the database.
 	 */
 	protected function save() {
 
-		foreach ($this->tags as $index=>$tag) {
+		$this->entities->rewind();
 
-			$context = $this->containers[$tag['container']];
+		while ($this->entities->valid()) {
 
-			// Insert marker for "own" notation, then remove other notations
-			$context = preg_replace(
-				'#</?\d+>#',
-				'',
-				str_replace(array('<'.$index.'>', '</'.$index.'>'), '###', $context)
-			);
-
-			// Convert the context to plaintext. Therefore, escape special chars
-			// in the plaintext, as the plaintext conversion code should expect XML.
-			$context = trim(
-				preg_replace(
-					'#\s+#u',
-					' ',
-					call_user_func($this->setup->plaintextCallback, htmlspecialchars($context))
-				)
-			);
+			$entity = $this->entities->current();
+			$containerindex = $this->entities->getInfo();
 
 			// Limit the amount of context
-			@list($before, $notation, $after) = explode('###', $context);
+			@list($before, $notation, $after) = $this->extractText($entity->xmlid, $containerindex);
 
-			if (!$notation) {
-				// If there's not textual content, provide at least an indicator
-				$notation = '[…]';
-			}
+			$entity->contextstart = $before;
+			$entity->notation = $notation;
+			$entity->contextend = $after;
+			$entity->container = $this->containerTypes[$containerindex];
 
-			for ($i = 0, $ii = count($tag['key']); $i < $ii; $i ++) {
-				// Each entry in array $tag['key'] points to
-				// a different target. If there are multiple entries,
-				// we have to add multiple records to support links
-				// with multiple targets
-				$entity = $this->setup->factory->createNamedEntity($this->setup);
-				$entity->xmlid = $tag['xmlid'];
-				$entity->page = $tag['page'];
-				$entity->chunk = $tag['chunk'];
-				$entity->domain = $tag['domain'];
-				$entity->identifier = $tag['key'][$i];
-				$entity->contextstart = $before;
-				$entity->notation = $notation;
-				$entity->contextend = $after;
-				$entity->container = $this->containerTypes[$tag['container']];
+			foreach (explode(' ', $entity->identifier) as $identifier) {
+				// Each entry in array $tag['key'] points to a different target. If
+				// there are multiple entries, we have to add multiple records to
+				// support links with multiple targets. Note: save() below will
+				// always insert a new record, therefore it doesn't matter that
+				// we pass the same object several times.
+				$entity->identifier = $identifier;
 				$this->entityGateway->save($entity);
 			}
+
+			$this->entities->next();
 		}
+	}
+
+	/**
+	 * Extracts the entity's notation and surrounding context from the text
+	 * @param $xmlid
+	 * @param $containerindex
+	 * @return array
+	 */
+	protected function extractText($xmlid, $containerindex) {
+
+		// Insert marker for "own" notation, then remove other notations
+		$context = preg_replace(
+			'#</?:[^>]+>#',
+			'',
+			str_replace(
+				array('<:'.$xmlid.'>', '</:'.$xmlid.'>'),
+				'###',
+				$this->containers[$containerindex]
+			)
+		);
+
+		// Convert the context to plaintext. Therefore, escape special chars
+		// in the plaintext, as the plaintext conversion code should expect XML.
+		$context = trim(
+			preg_replace(
+				'#\s+#u',
+				' ',
+				call_user_func($this->setup->plaintextCallback, htmlspecialchars($context))
+			)
+		);
+
+		$parts = explode('###', $context);
+
+		if (!$parts[1]) {
+			// If there's not textual content, provide at least an indicator
+			$parts[1] = '[…]';
+		}
+
+		return $parts;
 	}
 
 	/**
@@ -285,7 +301,6 @@ class Indexer_Extractor extends Indexer {
 		}
 
 		$containerindex = end($this->containerStack);
-
 		$this->containers[$containerindex] .= $this->r->value;
 	}
 
@@ -305,7 +320,7 @@ class Indexer_Extractor extends Indexer {
 			// Closing entity tag
 			$entityindex = array_pop($this->entityStack);
 			$containerindex = end($this->containerStack);
-			$this->containers[$containerindex] .= '</'.$entityindex.'>';
+			$this->containers[$containerindex] .= '</:'.$entityindex.'>';
 		}
 
 	}
