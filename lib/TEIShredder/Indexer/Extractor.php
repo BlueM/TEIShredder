@@ -56,16 +56,10 @@ class Indexer_Extractor extends Indexer {
 	protected $tags = array();
 
 	/**
-	 * Stack of currently "open" notation tags
+	 * Stack of currently "open" entity tags
 	 * @var array Indexed array of index numbers
 	 */
-	protected $notationStack = array();
-
-	/**
-	 * Index number of the current notation tag
-	 * @var int
-	 */
-	protected $currNotatIndex = null;
+	protected $entityStack = array();
 
 	/**
 	 * Stack of currently "open" container tags, which enclose the
@@ -78,7 +72,7 @@ class Indexer_Extractor extends Indexer {
 	 * Index number of the current container tag
 	 * @var int
 	 */
-	protected $currContainerIndex = null;
+	protected $containerIndex = 0;
 
 	/**
 	 * Indexed array of elements that are currently open. Will contain
@@ -132,34 +126,35 @@ class Indexer_Extractor extends Indexer {
 			$this->currentChunk ++;
 		}
 
-		// Update the elements stack, unless it's an empty element
-		if (!$this->r->isEmptyElement) {
-			$this->elementStack[] = $this->r->localName;
-		}
-
+		// New page: increase page number, save element and return
 		if ('pb' == $this->r->localName) {
-			// New page: increase page number, save element and return
 			$this->page ++;
 			$this->newElement();
 			return;
 		}
 
-		// Any other case: save element
-		$this->newElement();
-
+		// In case of <lb/> or <milestone/>, add space to the enclosing
+		// container (if any), but don't do anything else, i.e.: return.
 		if ('lb' == $this->r->localName or
 		    'milestone' == $this->r->localName) {
-			// Linebreak -- simply insert space
-			if (isset($this->containers[$this->currContainerIndex])) {
-				$this->containers[$this->currContainerIndex] .= ' ';
+			if (isset($this->containers[$this->containerIndex])) {
+				$this->containers[$this->containerIndex] .= ' ';
 			}
 			return;
 		}
 
+		// Update the elements stack, unless it's an empty element
+		if (!$this->r->isEmptyElement) {
+			$this->elementStack[] = $this->r->localName;
+		}
+
+		// Create a new element
+		$this->newElement();
+
 		if (in_array($this->r->localName, $this->containertags)) {
 			$index ++;
 			$this->containerStack[] = $index;
-			$this->currContainerIndex = end($this->containerStack);
+			$this->containerIndex = $index;
 
 			if (in_array('figure', $this->elementStack)) {
 				$this->containerTypes[$index] = 'figure';
@@ -172,20 +167,19 @@ class Indexer_Extractor extends Indexer {
 			return;
 		}
 
-		// If we reach this point, we are inside a container tag
+		// If we reach this point, it's a named entity (<rs>...</rs> tag)
 		$index ++;
-		$this->notationStack[] = $index;
-		$this->currNotatIndex = end($this->notationStack);
+		$this->entityStack[] = $index;
 
-		if (empty($this->containers[$this->currContainerIndex])) {
-			$this->containers[$this->currContainerIndex] = '';
+		if (empty($this->containers[$this->containerIndex])) {
+			$this->containers[$this->containerIndex] = '';
 		}
-		$this->containers[$this->currContainerIndex] .= '<'.$this->currNotatIndex.'>';
+		$this->containers[$this->containerIndex] .= '<'.$index.'>';
 
 		$this->tags[$index] = array(
 			'id'=>$index,
 			'xmlid'=>$this->r->getAttribute('xml:id'),
-			'container'=>$this->currContainerIndex,
+			'container'=>$this->containerIndex,
 			'tag'=>$this->r->nodeOpenString(),
 			'page'=>$this->page,
 			'domain'=>$this->r->getAttribute('type'),
@@ -209,11 +203,11 @@ class Indexer_Extractor extends Indexer {
 			return;
 		}
 
-		if (empty($this->containers[$this->currContainerIndex])) {
-			$this->containers[$this->currContainerIndex] = '';
+		if (empty($this->containers[$this->containerIndex])) {
+			$this->containers[$this->containerIndex] = '';
 		}
 
-		$this->containers[$this->currContainerIndex] .= $this->r->value;
+		$this->containers[$this->containerIndex] .= $this->r->value;
 	}
 
 	/**
@@ -226,18 +220,13 @@ class Indexer_Extractor extends Indexer {
 
 		if (in_array($this->r->localName, $this->containertags)) {
 			array_pop($this->containerStack);
-			$this->currContainerIndex = end($this->containerStack);
+			$this->containerIndex = end($this->containerStack);
 		}
 
 		if ($this->r->localName == 'rs') {
-			// Closing notation tag
-			$this->containers[$this->currContainerIndex] .= '</'.$this->currNotatIndex.'>';
-			array_pop($this->notationStack);
-			if (count($this->notationStack)) {
-				$this->currNotatIndex = end($this->notationStack);
-			} else {
-				$this->currNotatIndex = null;
-			}
+			// Closing entity tag
+			$index = array_pop($this->entityStack);
+			$this->containers[$this->containerIndex] .= '</'.$index.'>';
 		}
 
 	}
@@ -298,8 +287,8 @@ class Indexer_Extractor extends Indexer {
 	 */
 	protected function newElement() {
 
-		if ('' == $xmlid = $this->r->getAttribute('xml:id')) {
-			// No xml:id attribute >> nothing to do
+		if (null == $xmlid = $this->r->getAttribute('xml:id')) {
+			// No xml:id attribute >> Ignore
 			return;
 		}
 
