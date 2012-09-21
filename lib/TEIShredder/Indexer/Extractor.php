@@ -163,14 +163,91 @@ class Indexer_Extractor extends Indexer {
 			$this->containers[$containerindex] .= '<'.$index.'>';
 			$this->tags[$index] = array(
 				'xmlid'=>$this->r->getAttribute('xml:id'),
-				'container'=>$containerindex,
 				'page'=>$this->page,
+				'chunk'=>$this->currentChunk,
 				'domain'=>$this->r->getAttribute('type'),
 				'key'=>explode(' ', $this->r->getAttribute('key')), // Supports multiple targets
-				'chunk'=>$this->currentChunk,
+				'container'=>$containerindex,
 			);
 		}
 
+	}
+
+	/**
+	 * Saves all the named entities' data accumulated before (plus some
+	 * additional data, such as some context string) to the database.
+	 */
+	protected function save() {
+
+		foreach ($this->tags as $index=>$tag) {
+
+			$context = $this->containers[$tag['container']];
+
+			// Insert marker for "own" notation, then remove other notations
+			$context = preg_replace(
+				'#</?\d+>#',
+				'',
+				str_replace(array('<'.$index.'>', '</'.$index.'>'), '###', $context)
+			);
+
+			// Convert the context to plaintext. Therefore, escape special chars
+			// in the plaintext, as the plaintext conversion code should expect XML.
+			$context = call_user_func($this->setup->plaintextCallback, htmlspecialchars($context));
+
+			$context = trim(preg_replace('#\s+#u', ' ', $context));
+
+			// Limit the amount of context
+			@list($before, $notation, $after) = explode('###', $context);
+
+			if (!$notation) {
+				// If there's not textual content, provide at least an indicator
+				$notation = '[…]';
+			}
+
+			for ($i = 0, $ii = count($tag['key']); $i < $ii; $i ++) {
+				// Each entry in array $tag['key'] points to
+				// a different target. If there are multiple entries,
+				// we have to add multiple records to support links
+				// with multiple targets
+				$entity = $this->setup->factory->createNamedEntity($this->setup);
+				$entity->xmlid = $tag['xmlid'];
+				$entity->page = $tag['page'];
+				$entity->chunk = $tag['chunk'];
+				$entity->domain = $tag['domain'];
+				$entity->identifier = $tag['key'][$i];
+				$entity->contextstart = $before;
+				$entity->notation = $notation;
+				$entity->contextend = $after;
+				$entity->container = $this->containerTypes[$tag['container']];
+				$this->entityGateway->save($entity);
+			}
+		}
+	}
+
+	/**
+	 * Records occurrences of any elements that have an xml:id attribute.
+	 */
+	protected function newElement() {
+
+		if (null == $xmlid = $this->r->getAttribute('xml:id')) {
+			// No xml:id attribute >> Ignore
+			return;
+		}
+
+		$e = $this->setup->factory->createElement($this->setup);
+		$e->xmlid = $xmlid;
+		$e->element = $this->r->localName;
+		$e->page = $this->page;
+		$e->chunk = $this->currentChunk;
+		$this->elementGateway->save($e);
+	}
+
+	/**
+	 * Setup method that will be called right before processing starts.
+	 */
+	protected function preProcessAction() {
+		$this->elementGateway->flush($this->setup);
+		$this->entityGateway->flush($this->setup);
 	}
 
 	/**
@@ -227,83 +304,6 @@ class Indexer_Extractor extends Indexer {
 			$this->containers[$containerindex] .= '</'.$entityindex.'>';
 		}
 
-	}
-
-	/**
-	 * Saves all the named entities' data accumulated before (plus some
-	 * additional data, such as some context string) to the database.
-	 */
-	protected function save() {
-
-		foreach ($this->tags as $index=>$tag) {
-
-			$context = $this->containers[$tag['container']];
-
-			// Insert marker for "own" notation, then remove other notations
-			$context = preg_replace(
-				'#</?\d+>#',
-				'',
-				str_replace(array('<'.$index.'>', '</'.$index.'>'), '###', $context)
-			);
-
-			// Convert the context to plaintext. Therefore, escape special chars
-			// in the plaintext, as the plaintext conversion code should expect XML.
-			$context = call_user_func($this->setup->plaintextCallback, htmlspecialchars($context));
-
-			$context = trim(preg_replace('#\s+#u', ' ', $context));
-
-			// Limit the amount of context
-			@list($before, $notation, $after) = explode('###', $context);
-
-			if (!$notation) {
-				// If there's not textual content, provide at least an indicator
-				$notation = '[…]';
-			}
-
-			for ($i = 0, $ii = count($tag['key']); $i < $ii; $i ++) {
-				// Each entry in array $tag['key'] points to
-				// a different target. If there are multiple entries,
-				// we have to add multiple records to support links
-				// with multiple targets
-				$entity = $this->setup->factory->createNamedEntity($this->setup);
-				$entity->xmlid = $tag['xmlid'];
-				$entity->page = $tag['page'];
-				$entity->domain = $tag['domain'];
-				$entity->identifier = $tag['key'][$i];
-				$entity->contextstart = $before;
-				$entity->notation = $notation;
-				$entity->contextend = $after;
-				$entity->container = $this->containerTypes[$tag['container']];
-				$entity->chunk = $tag['chunk'];
-				$this->entityGateway->save($entity);
-			}
-		}
-	}
-
-	/**
-	 * Records occurrences of any elements that have an xml:id attribute.
-	 */
-	protected function newElement() {
-
-		if (null == $xmlid = $this->r->getAttribute('xml:id')) {
-			// No xml:id attribute >> Ignore
-			return;
-		}
-
-		$e = $this->setup->factory->createElement($this->setup);
-		$e->xmlid = $xmlid;
-		$e->element = $this->r->localName;
-		$e->page = $this->page;
-		$e->chunk = $this->currentChunk;
-		$this->elementGateway->save($e);
-	}
-
-	/**
-	 * Setup method that will be called right before processing starts.
-	 */
-	protected function preProcessAction() {
-		$this->elementGateway->flush($this->setup);
-		$this->entityGateway->flush($this->setup);
 	}
 
 }
