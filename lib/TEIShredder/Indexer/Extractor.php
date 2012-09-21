@@ -44,7 +44,6 @@ class Indexer_Extractor extends Indexer {
 	/**
 	 * Array of elements that are regarded as distinct text containers
 	 * @var string[] Indexed array of element names
-	 * @todo Move to setup class?
 	 */
 	public $containertags = array('l', 'p', 'head', 'note', 'docImprint',
 	                              'byLine', 'titlePart', 'byline', 'item');
@@ -62,17 +61,10 @@ class Indexer_Extractor extends Indexer {
 	protected $entityStack = array();
 
 	/**
-	 * Stack of currently "open" container tags, which enclose the
-	 * current point in the XML stream
-	 * @var array Indexed array of index numbers
+	 * Stack of counter numbers of currently "open" container tags
+	 * @var array Indexed array of index/counter numbers
 	 */
 	protected $containerStack = array();
-
-	/**
-	 * Index number of the current container tag
-	 * @var int
-	 */
-	protected $containerIndex = 0;
 
 	/**
 	 * Indexed array of elements that are currently open. Will contain
@@ -94,8 +86,15 @@ class Indexer_Extractor extends Indexer {
 	 */
 	protected $containerTypes = array();
 
-	#todo
-	protected $gateways = array();
+	/**
+	 * @var NamedEntityGateway
+	 */
+	protected $entityGateway;
+
+	/**
+	 * @var ElementGateway
+	 */
+	protected $elementGateway;
 
 	/**
 	 * Constructor.
@@ -106,8 +105,8 @@ class Indexer_Extractor extends Indexer {
 	 */
 	public function __construct(Setup $setup, XMLReader $xmlreader, $xml) {
 		parent::__construct($setup, $xmlreader, $xml);
-		$this->gateways['entity'] = $setup->factory->createNamedEntityGateway();
-		$this->gateways['element'] = $setup->factory->createElementGateway();
+		$this->entityGateway = $setup->factory->createNamedEntityGateway();
+		$this->elementGateway = $setup->factory->createElementGateway();
 	}
 
 	/**
@@ -133,13 +132,16 @@ class Indexer_Extractor extends Indexer {
 			return;
 		}
 
+		$containerindex = (int)end($this->containerStack);
+
 		// In case of <lb/> or <milestone/>, add space to the enclosing
 		// container (if any), but don't do anything else, i.e.: return.
 		if ('lb' == $this->r->localName or
 		    'milestone' == $this->r->localName) {
-			if (isset($this->containers[$this->containerIndex])) {
-				$this->containers[$this->containerIndex] .= ' ';
+			if (empty($this->containers[$containerindex])) {
+				$this->containers[$containerindex] = '';
 			}
+			$this->containers[$containerindex] .= ' ';
 			return;
 		}
 
@@ -152,14 +154,13 @@ class Indexer_Extractor extends Indexer {
 		$this->newElement();
 
 		if (in_array($this->r->localName, $this->containertags)) {
-			$index ++;
-			$this->containerStack[] = $index;
-			$this->containerIndex = $index;
-
+			$containerindex = ++ $index;
+			$this->containerStack[] = ++$containerindex;
+			$this->containers[$containerindex] = '';
 			if (in_array('figure', $this->elementStack)) {
-				$this->containerTypes[$index] = 'figure';
+				$this->containerTypes[$containerindex] = 'figure';
 			} else {
-				$this->containerTypes[$index] = $this->r->localName;
+				$this->containerTypes[$containerindex] = $this->r->localName;
 			}
 		}
 
@@ -170,16 +171,12 @@ class Indexer_Extractor extends Indexer {
 		// If we reach this point, it's a named entity (<rs>...</rs> tag)
 		$index ++;
 		$this->entityStack[] = $index;
-
-		if (empty($this->containers[$this->containerIndex])) {
-			$this->containers[$this->containerIndex] = '';
-		}
-		$this->containers[$this->containerIndex] .= '<'.$index.'>';
+		$this->containers[$containerindex] .= '<'.$index.'>';
 
 		$this->tags[$index] = array(
 			'id'=>$index,
 			'xmlid'=>$this->r->getAttribute('xml:id'),
-			'container'=>$this->containerIndex,
+			'container'=>$containerindex,
 			'tag'=>$this->r->nodeOpenString(),
 			'page'=>$this->page,
 			'domain'=>$this->r->getAttribute('type'),
@@ -194,7 +191,7 @@ class Indexer_Extractor extends Indexer {
 	 */
 	protected function nodeContent() {
 
-		if (array() == $this->containerStack) {
+		if (empty($this->containerStack)) {
 			// Not inside a container -- ignore
 			return;
 		}
@@ -203,11 +200,9 @@ class Indexer_Extractor extends Indexer {
 			return;
 		}
 
-		if (empty($this->containers[$this->containerIndex])) {
-			$this->containers[$this->containerIndex] = '';
-		}
+		$containerindex = end($this->containerStack);
 
-		$this->containers[$this->containerIndex] .= $this->r->value;
+		$this->containers[$containerindex] .= $this->r->value;
 	}
 
 	/**
@@ -220,13 +215,13 @@ class Indexer_Extractor extends Indexer {
 
 		if (in_array($this->r->localName, $this->containertags)) {
 			array_pop($this->containerStack);
-			$this->containerIndex = end($this->containerStack);
 		}
 
 		if ($this->r->localName == 'rs') {
 			// Closing entity tag
-			$index = array_pop($this->entityStack);
-			$this->containers[$this->containerIndex] .= '</'.$index.'>';
+			$entityindex = array_pop($this->entityStack);
+			$containerindex = end($this->containerStack);
+			$this->containers[$containerindex] .= '</'.$entityindex.'>';
 		}
 
 	}
@@ -277,7 +272,7 @@ class Indexer_Extractor extends Indexer {
 				$entity->contextend = $after;
 				$entity->container = $this->containerTypes[$tag['container']];
 				$entity->chunk = $tag['chunk'];
-				$this->gateways['entity']->save($entity);
+				$this->entityGateway->save($entity);
 			}
 		}
 	}
@@ -297,15 +292,15 @@ class Indexer_Extractor extends Indexer {
 		$e->element = $this->r->localName;
 		$e->page = $this->page;
 		$e->chunk = $this->currentChunk;
-		$this->gateways['element']->save($e);
+		$this->elementGateway->save($e);
 	}
 
 	/**
 	 * Setup method that will be called right before processing starts.
 	 */
 	protected function preProcessAction() {
-		$this->gateways['element']->flush($this->setup);
-		$this->gateways['entity']->flush($this->setup);
+		$this->elementGateway->flush($this->setup);
+		$this->entityGateway->flush($this->setup);
 	}
 
 }
