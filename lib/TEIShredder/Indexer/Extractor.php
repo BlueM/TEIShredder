@@ -154,35 +154,40 @@ class Indexer_Extractor extends Indexer {
 		$this->newElement();
 
 		if (in_array($this->r->localName, $this->containertags)) {
-			$containerindex = ++ $index;
-			$this->containerStack[] = ++$containerindex;
-			$this->containers[$containerindex] = '';
-			if (in_array('figure', $this->elementStack)) {
-				$this->containerTypes[$containerindex] = 'figure';
-			} else {
-				$this->containerTypes[$containerindex] = $this->r->localName;
-			}
+			// Container tags
+			$this->registerNewContainer();
+		} elseif ($this->r->localName == 'rs') {
+			// Named entity
+			$index ++;
+			$this->entityStack[] = $index;
+			$this->containers[$containerindex] .= '<'.$index.'>';
+			$this->tags[$index] = array(
+				'id'=>$index,
+				'xmlid'=>$this->r->getAttribute('xml:id'),
+				'container'=>$containerindex,
+				'tag'=>$this->r->nodeOpenString(),
+				'page'=>$this->page,
+				'domain'=>$this->r->getAttribute('type'),
+				'key'=>explode(' ', $this->r->getAttribute('key')), // Supports multiple targets
+				'chunk'=>$this->currentChunk,
+			);
 		}
 
-		if ($this->r->localName != 'rs') {
-			return;
+	}
+
+	/**
+	 * Called when a new container tag is encountered (i.e.: an XML
+	 * element which is in $this->containertags)
+	 */
+	protected function registerNewContainer() {
+		static $index = 0;
+		$this->containerStack[] = ++$index;
+		$this->containers[$index] = '';
+		if (in_array('figure', $this->elementStack)) {
+			$this->containerTypes[$index] = 'figure';
+		} else {
+			$this->containerTypes[$index] = $this->r->localName;
 		}
-
-		// If we reach this point, it's a named entity (<rs>...</rs> tag)
-		$index ++;
-		$this->entityStack[] = $index;
-		$this->containers[$containerindex] .= '<'.$index.'>';
-
-		$this->tags[$index] = array(
-			'id'=>$index,
-			'xmlid'=>$this->r->getAttribute('xml:id'),
-			'container'=>$containerindex,
-			'tag'=>$this->r->nodeOpenString(),
-			'page'=>$this->page,
-			'domain'=>$this->r->getAttribute('type'),
-			'key'=>explode(' ', $this->r->getAttribute('key')), // Supports multiple targets
-			'chunk'=>$this->currentChunk,
-		);
 	}
 
 	/**
