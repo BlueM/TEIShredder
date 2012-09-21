@@ -192,9 +192,13 @@ class Indexer_Extractor extends Indexer {
 
 			// Convert the context to plaintext. Therefore, escape special chars
 			// in the plaintext, as the plaintext conversion code should expect XML.
-			$context = call_user_func($this->setup->plaintextCallback, htmlspecialchars($context));
-
-			$context = trim(preg_replace('#\s+#u', ' ', $context));
+			$context = trim(
+				preg_replace(
+					'#\s+#u',
+					' ',
+					call_user_func($this->setup->plaintextCallback, htmlspecialchars($context))
+				)
+			);
 
 			// Limit the amount of context
 			@list($before, $notation, $after) = explode('###', $context);
