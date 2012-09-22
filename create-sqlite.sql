@@ -15,7 +15,6 @@ CREATE TABLE "<prefix>entity" (
 	"contextstart" TEXT,
 	"notation" TEXT,
 	"contextend" TEXT,
-	"container" TEXT,
 	"chunk" INTEGER,
 	"notationhash" TEXT
 );

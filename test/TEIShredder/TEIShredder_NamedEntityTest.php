@@ -54,7 +54,6 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
 		$entity->contextstart = 'Painter ';
 		$entity->notation = 'Michelangelo';
 		$entity->contextend = ' lived in the renaissance';
-		$entity->container = 'p';
 		$entity->chunk = 456;
 		$entity->notationhash = 'd1f9cc6d';
 		$data = $entity->persistableData();

@@ -42,7 +42,6 @@ use \LogicException;
  * @property string $contextstart
  * @property string $notation
  * @property string $contextend
- * @property string $container
  * @property int $chunk
  * @property string $notationhash
  */
@@ -91,14 +90,6 @@ class NamedEntity extends Model {
 	 * @var int
 	 */
 	protected $contextstart;
-
-	/**
-	 * Type of containing element.
-	 * @var string
-	 * @deprecated
-	 * @todo Remove
-	 */
-	protected $container;
 
 	/**
 	 * ID of the chunk which contains this entity's start

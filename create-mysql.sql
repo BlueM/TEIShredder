@@ -17,7 +17,6 @@ CREATE TABLE `<prefix>entity` (
   `contextstart` text COMMENT 'Context before the notation',
   `notation` text NOT NULL COMMENT 'The exact notation used in the text',
   `contextend` text COMMENT 'Context after the notation',
-  `container` varchar(16) DEFAULT NULL COMMENT 'Type (tag) of container',
   `chunk` int(11) unsigned DEFAULT NULL COMMENT 'ID of the chunk in the chunk table',
   `notationhash` varchar(16) NOT NULL DEFAULT '' COMMENT 'Truncated MD5 hash of the notation',
   KEY `page` (`page`),

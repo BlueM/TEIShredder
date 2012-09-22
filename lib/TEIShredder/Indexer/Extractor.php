@@ -189,7 +189,6 @@ class Indexer_Extractor extends Indexer {
 			$entity->contextstart = $before;
 			$entity->notation = $notation;
 			$entity->contextend = $after;
-			$entity->container = $this->containerTypes[$containerindex];
 
 			foreach (explode(' ', $entity->identifier) as $identifier) {
 				// Each entry in array $tag['key'] points to a different target. If
@@ -201,6 +200,8 @@ class Indexer_Extractor extends Indexer {
 				$this->entityGateway->save($entity);
 			}
 
+			$this->entities->detach($entity);
+			unset($entity);
 			$this->entities->next();
 		}
 	}
