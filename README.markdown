@@ -3,23 +3,16 @@ TEIShredder Overview
 
 What is it?
 --------------
-TEIShredder is a set of PHP classes for indexing TEI XML documents and retrieving specific information later. The information extracted from the source document is saved in a relational database, i.e. it is a form of XML shredding – hence the name.
+TEIShredder is a set of PHP classes for indexing TEI XML documents and retrieving information on the text structure (physical and logical), contained, elments, named entites etc. The information extracted from the source document is saved in a relational database, i.e. it is a form of XML shredding – hence the name.
 
-TEIShredder is based on code that was written for a scholarly project called “Sandrart.net” ([www.sandrart.net](http://www.sandrart.net), cooperation project between Goethe-Universität Frankfurt am Main, Germany, and the Kunsthistorisches Institut, Florence, Italy, funded by the Deutsche Forschungsgemeinschaft [DFG]), but was modified to make it a stand-alone project/library.
+TEIShredder is based on code that was written for a scholarly project called “Sandrart.net” ([www.sandrart.net](http://www.sandrart.net), a cooperation project between Goethe-Universität Frankfurt am Main, Germany, and the Kunsthistorisches Institut, Florence, Italy, funded by the Deutsche Forschungsgemeinschaft [DFG]), but was modified to make it a stand-alone project/library. Meanwhile, the project’s original code has been dropped in favor of TEIShredder.
 
 System requirements
 -----------------
 
-* PHP 5.3
+* PHP 5.3 with the standard extensions enabled
 * Relational database; tested with MySQL and SQLite, but as it uses PHP’s PDO extension, other supported databases may be usable. CREATE-Statements for these two databases are in files “create-mysql.sql” and “create-sqlite.sql” respectively
 
-Documentation
--------------
-There is no end-user documentation yet, but the code is fully documented with PHPDoc-style doc comments.
-
-State of the project
----------------------
-TEIShredder can be already useful, but as it is currently undergoing huge changes (including API and database schema), it is not yet recommended using it for other purposes than just testing.
 
 Using it
 ===========
@@ -32,7 +25,7 @@ For a first quick test, open a shell on a Unix-oid system (Mac OS X, Linux, BSD,
 
 …, which means: “Take the contents of ‘create-sqlite.sql’ in this directory, remove &lt;prefix&gt; from the tables’ names and create an empty SQLite database called ‘test.sqlite’ in this directory which contains these tables”.
 
-Then, you can run “test.php”, which takes an input XML file from the “_TESTS” directory, indexes it and saves the result in that database. (If you are more familiar with MySQL and/or don’t have an sqlite3 executable at hand, you could of course also use MySQL by changing the PDO constructor in “test.php”.) Then, it displays information on the data that has been collected, for instance the number and titles of the volumes in the TEI document, occurrences of sections, named entities etc.
+Then, you can run “test.php”, which takes an input XML file from the “test” directory, indexes it and saves the result in that database. (If you are more familiar with MySQL and/or don’t have an sqlite3 executable at hand, you could of course also use MySQL by changing the PDO constructor in “test.php”.) Then, it displays information on the data that has been collected, for instance the number and titles of the volumes in the TEI document, occurrences of sections, named entities etc.
 
 If you like, you can now inspect the database’s contents. For instance, you can view the elements that were indexed by executing ...
 
@@ -41,7 +34,7 @@ If you like, you can now inspect the database’s contents. For instance, you ca
 ... at the shell.
 
 TEI != TEI
-----------
+------------
 TEI can be used in many different ways. In my eyes, this is one of the very appealing features of TEI, but on the other hand, it makes developing generic tools much harder or impossible. TEIShredder is, to some extent, a generic tool insofar as it just processes TEI – but on the other hand, it has certain expectations of the TEI. Therefore, most likely, TEIShredder will not be able to process your unmodified TEI document, but it might be necessary to pre-process the document (for instance, using XSL-T or [CBXMLTransformer](https://github.com/BlueM/CBXMLTransformer)) to match these expectations.
 
 Conventions / expectations
