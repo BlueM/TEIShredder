@@ -56,10 +56,8 @@ class NamedEntityGateway extends AbstractGateway {
 	public function find($identifier) {
 		$table = $this->tableName();
 
-		$stm = $this->db->prepare(
-			'SELECT xmlid, page, domain, identifier, contextstart, notation, contextend, container, chunk, notationhash '.
-			"FROM $table WHERE xmlid = ?"
-		);
+		// Use SELECT * FROM to make it easier for subclasses to add columns, if needed
+		$stm = $this->db->prepare("SELECT * FROM $table WHERE xmlid = ?");
 		$stm->execute(array($identifier));
 		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createNamedEntity());
 		if (false === $obj = $stm->fetch()) {
@@ -74,10 +72,8 @@ class NamedEntityGateway extends AbstractGateway {
 	 */
 	public function findAll() {
 		$table = $this->tableName();
-		$stm = $this->db->query(
-			'SELECT xmlid, page, domain, identifier, contextstart, notation, contextend, container, chunk, notationhash '.
-			"FROM $table ORDER BY chunk"
-		);
+		// Use SELECT * FROM to make it easier for subclasses to add columns, if needed
+		$stm = $this->db->query("SELECT * FROM $table ORDER BY chunk");
 		$entity = $this->factory->createNamedEntity();
 		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($entity));
 		return $stm->fetchAll();
