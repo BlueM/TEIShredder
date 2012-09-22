@@ -151,10 +151,7 @@ class Indexer_Extractor extends Indexer {
 		// Create a new element
 		$this->newElement();
 
-		if (in_array($this->r->localName, $this->containertags)) {
-			// Container tags
-			$this->registerNewContainer();
-		} elseif ($this->r->localName == 'rs') {
+		if ($this->r->localName == 'rs') {
 			// Named entity
 			$entity = $this->setup->factory->createNamedEntity($this->setup);
 			$entity->xmlid = $this->r->getAttribute('xml:id');
@@ -166,6 +163,9 @@ class Indexer_Extractor extends Indexer {
 
 			$this->entityStack[] = $entity->xmlid;
 			$this->containers[$containerindex] .= '<:'.$entity->xmlid.'>';
+		} elseif (in_array($this->r->localName, $this->containertags)) {
+			// Container tags
+			$this->registerNewContainer();
 		}
 
 	}
@@ -183,12 +183,9 @@ class Indexer_Extractor extends Indexer {
 			$entity = $this->entities->current();
 			$containerindex = $this->entities->getInfo();
 
-			// Limit the amount of context
-			@list($before, $notation, $after) = $this->extractText($entity->xmlid, $containerindex);
-
-			$entity->contextstart = $before;
-			$entity->notation = $notation;
-			$entity->contextend = $after;
+			// Get the text context.
+			list($entity->contextstart, $entity->notation, $entity->contextend)
+					= $this->extractText($entity->xmlid, $containerindex);
 
 			foreach (explode(' ', $entity->identifier) as $identifier) {
 				// Each entry in array $tag['key'] points to a different target. If
@@ -208,8 +205,9 @@ class Indexer_Extractor extends Indexer {
 
 	/**
 	 * Extracts the entity's notation and surrounding context from the text
-	 * @param $xmlid
-	 * @param $containerindex
+	 * @param string $xmlid Value of @xml:id attribute of element whose
+	 *                      context is to be returned.
+	 * @param int $containerindex Internal container counter/index
 	 * @return array
 	 */
 	protected function extractText($xmlid, $containerindex) {
@@ -235,14 +233,7 @@ class Indexer_Extractor extends Indexer {
 			)
 		);
 
-		$parts = explode('###', $context);
-
-		if (!$parts[1]) {
-			// If there's not textual content, provide at least an indicator
-			$parts[1] = '[…]';
-		}
-
-		return $parts;
+		return explode('###', $context);
 	}
 
 	/**
