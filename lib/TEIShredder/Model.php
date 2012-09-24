@@ -55,10 +55,11 @@ abstract class Model {
 	 * @throws UnexpectedValueException
 	 */
 	public function __get($name) {
-		if (in_array($name, array_keys($this->toArray()))) {
-			return $this->$name;
+		if ('_' === substr($name, 0, 1) or
+		    !in_array($name, array_keys(get_object_vars($this)))) {
+			throw new UnexpectedValueException("Invalid property “".$name."”");
 		}
-		throw new UnexpectedValueException("Invalid property name “".$name."”");
+		return $this->$name;
 	}
 
 	/**
@@ -68,11 +69,9 @@ abstract class Model {
 	 * @throws UnexpectedValueException
 	 */
 	public function __set($name, $value) {
-		if ('_' === substr($name, 0, 1)) {
-			throw new UnexpectedValueException("Property “".$name."” can not be set.");
-		}
-		if (!in_array($name, array_keys($this->toArray()))) {
-			throw new UnexpectedValueException("Invalid property name “".$name."”.");
+		if ('_' === substr($name, 0, 1) or
+		    !in_array($name, array_keys(get_object_vars($this)))) {
+			throw new UnexpectedValueException("Invalid property “".$name."”");
 		}
 		$this->$name = $value;
 	}
@@ -94,7 +93,7 @@ abstract class Model {
 	 * Returns an array representation of the object.
 	 * @return array
 	 */
-	protected function toArray() {
+	public function toArray() {
 		$array = array();
 		foreach ($this as $property=>$value) {
 			if (strncmp('_', $property, 1)) {
