@@ -192,7 +192,6 @@ class Indexer_Extractor extends Indexer {
 
 			$this->entities->detach($entity);
 			unset($entity);
-			$this->entities->next();
 		}
 	}
 
