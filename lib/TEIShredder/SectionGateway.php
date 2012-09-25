@@ -54,7 +54,7 @@ class SectionGateway extends AbstractGateway {
 	 */
 	public function findByIdentifier($identifier) {
 		$table = $this->tableName();
-		$stm = $this->db->query("SELECT * FROM $table WHERE id = ?");
+		$stm = $this->db->prepare("SELECT * FROM $table WHERE id = ?");
 		$stm->execute(array($identifier));
 		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createSection());
 		if (false === $obj = $stm->fetch()) {
