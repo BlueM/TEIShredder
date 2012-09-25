@@ -52,10 +52,10 @@ class VolumeGateway extends AbstractGateway {
 	 * @return Volume
 	 * @throws InvalidArgumentException
 	 */
-	public function find($identifier) {
+	public function findByIdentifier($identifier) {
 		$table = $this->tableName();
 		$stm = $this->db->prepare(
-			"SELECT number, title, pagenumber FROM $table WHERE number = ?"
+			"SELECT * FROM $table WHERE number = ?"
 		);
 		$stm->execute(array($identifier));
 		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createVolume());
@@ -69,7 +69,7 @@ class VolumeGateway extends AbstractGateway {
 	 * Returns all objects
 	 * @return Volume[]
 	 */
-	public function findAll() {
+	public function find() {
 		$table = $this->tableName();
 		$stm = $this->db->query(
 			"SELECT number, title, pagenumber FROM $table ORDER BY number"
@@ -78,6 +78,5 @@ class VolumeGateway extends AbstractGateway {
 		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($page));
 		return $stm->fetchAll();
 	}
-
 
 }

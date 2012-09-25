@@ -142,7 +142,7 @@ _XML_;
 		$chunker->process();
 
 		$vg = $this->setup->factory->createVolumeGateway();
-		$volumes = $vg->findAll($this->setup);
+		$volumes = $vg->find();
 
 		$this->assertEquals(1, $volumes[0]->number);
 		$this->assertEquals(2, $volumes[1]->number);

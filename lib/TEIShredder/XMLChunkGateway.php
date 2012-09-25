@@ -47,17 +47,50 @@ class XMLChunkGateway extends AbstractGateway {
 	}
 
 	/**
-	 * Returns all chunks that are on a given page.
+	 * Returns all non-empty chunks that are on the given page.
+	 * @param int $id Chunk ID
+	 * @throws InvalidArgumentException
+	 * @return XMLChunk
+	 */
+	public function findByIdentifier($id) {
+		$table = $this->tableName();
+		$stm = $this->db->prepare(
+			"SELECT * FROM $table WHERE id = ?"
+		);
+		$stm->execute(array($id));
+		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createXMLChunk());
+		if (false === $obj = $stm->fetch()) {
+			throw new InvalidArgumentException('Invalid chunk number');
+		}
+		return $obj;
+	}
+
+	/**
+	 * Returns all non-empty chunks that are on the given page.
 	 * @param int $page Page number
 	 * @return XMLChunk[]
 	 */
 	public function findByPageNumber($page) {
 		$table = $this->tableName();
 		$stm = $this->db->prepare(
-			"SELECT id, page, milestone, prestack, xml, poststack, section, plaintext ".
-		    "FROM $table WHERE xml != '' AND page = ? ORDER BY id"
+			"SELECT * FROM $table WHERE xml != '' AND page = ? ORDER BY id"
 		);
 		$stm->execute(array($page));
+		$chunk = $this->factory->createXMLChunk();
+		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($chunk));
+		return $stm->fetchAll();
+	}
+
+	/**
+	 * Returns all non-empty chunks that are on the given page.
+	 * @return XMLChunk[]
+	 */
+	public function find() {
+		$table = $this->tableName();
+		$stm = $this->db->prepare(
+			"SELECT * FROM $table ORDER BY id"
+		);
+		$stm->execute();
 		$chunk = $this->factory->createXMLChunk();
 		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($chunk));
 		return $stm->fetchAll();

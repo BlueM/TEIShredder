@@ -15,9 +15,14 @@ require_once __DIR__.'/../bootstrap.php';
 class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 
 	/**
-	 * @var VolumeGateway
+	 * @var Setup
 	 */
 	var $setup;
+
+	/**
+	 * @var VolumeGateway
+	 */
+	var $obj;
 
 	/**
 	 * Sets up the fixture
@@ -32,7 +37,7 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function flushTheData() {
 		$this->obj->flush();
-		$objs = $this->obj->findAll();
+		$objs = $this->obj->find();
 		$this->assertTrue(0 == count($objs));
 	}
 
@@ -48,8 +53,9 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 		$volume->pagenumber = 123;
 		$this->obj->save($volume);
 
-		$obj = $this->obj->find(3);
-		$this->assertInstanceOf('\TEIShredder\Volume', $obj);
+		$objs = $this->obj->find();
+		$this->assertInternalType('array', $objs);
+		$this->assertInstanceOf('\TEIShredder\Volume', $objs[0]);
 	}
 
 	/**
@@ -57,7 +63,7 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function tryingToFindAVolumeByAnUnknownVolumeNumberThrowsAnException() {
-		$this->obj->find(9999999);
+		$this->obj->findByIdentifier(9999999);
 	}
 
 	/**
@@ -74,7 +80,7 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 		$volume->pagenumber = 17;
 		$this->obj->save($volume);
 
-		$obj = $this->obj->find(17);
+		$obj = $this->obj->findByIdentifier(17);
 		$this->assertInstanceOf('\TEIShredder\Volume', $obj);
 		$this->assertEquals("Volume 17", $volume->title);
 	}
@@ -92,7 +98,7 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase {
 		$volume->pagenumber = 20;
 		$this->obj->save($volume);
 
-		$objs = $this->obj->findAll();
+		$objs = $this->obj->find();
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(1 == count($objs));
 		foreach ($objs as $obj) {

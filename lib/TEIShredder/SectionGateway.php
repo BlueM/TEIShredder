@@ -47,16 +47,14 @@ class SectionGateway extends AbstractGateway {
 	}
 
 	/**
-	 * Returns an object by an identifier (which depends on the object domain)
+	 * Returns a section by its identifier (the sectionID)
 	 * @param mixed $identifier Section ID
-	 * @return Model
+	 * @return Section
 	 * @throws InvalidArgumentException
 	 */
-	public function find($identifier) {
+	public function findByIdentifier($identifier) {
 		$table = $this->tableName();
-		$stm = $this->db->query(
-			"SELECT id, volume, title, page, level, element, xmlid FROM $table WHERE id = ?"
-		);
+		$stm = $this->db->query("SELECT * FROM $table WHERE id = ?");
 		$stm->execute(array($identifier));
 		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createSection());
 		if (false === $obj = $stm->fetch()) {
@@ -67,35 +65,23 @@ class SectionGateway extends AbstractGateway {
 
 	/**
 	 * Returns all sections, ordered by their ID
+	 * @param int $volume [optional] If given, only sections from the volume
+	 *                               with this number are returned.
+	 * @param bool $title [optional] Return only sections that have a title? Default: yes.
 	 * @return Section[]
 	 */
-	public function findAll() {
+	public function find($volume = null, $title = true) {
 		$table = $this->tableName();
-		$stm = $this->db->query(
-			'SELECT id, volume, title, page, level, element, xmlid '.
-			"FROM $table WHERE level > 0 ORDER BY id"
-		);
-		$stm->execute();
+		$where = 'level > 0';
+		if ((int)$volume) {
+			$where .= ' AND volume = '.$this->db->quote($volume);
+		}
+		if ($title) {
+			$where .= " AND title != ''";
+		}
+		$stm = $this->db->query("SELECT * FROM $table WHERE $where ORDER BY id");
 		$section = $this->factory->createSection();
 		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($section));
 		return $stm->fetchAll();
 	}
-
-	/**
-	 * Returns all sections in a given volume, ordered by their ID
-	 * @param int $volume Volume number
-	 * @return Section[]
-	 */
-	public function findAllInVolume($volume) {
-		$table = $this->tableName();
-		$stm = $this->db->prepare(
-			'SELECT id, volume, title, page, level, element, xmlid '.
-			"FROM $table WHERE level > 0 AND volume = ? ORDER BY id"
-		);
-		$section = $this->factory->createSection();
-		$stm->execute(array($volume));
-		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($section));
-		return $stm->fetchAll();
-	}
-
 }

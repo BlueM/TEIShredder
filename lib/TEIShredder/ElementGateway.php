@@ -52,7 +52,7 @@ class ElementGateway extends AbstractGateway {
 	 * @return Element
 	 * @throws InvalidArgumentException
 	 */
-	public function find($identifier) {
+	public function findByIdentifier($identifier) {
 		$table = $this->tableName();
 		$stm = $this->db->prepare(
 			"SELECT * FROM $table WHERE xmlid = ?"
@@ -63,6 +63,30 @@ class ElementGateway extends AbstractGateway {
 			throw new InvalidArgumentException('No such element');
 		}
 		return $obj;
+	}
+
+	/**
+	 * Returns elements matching the given properties
+	 * @param array $criteria [optional] One or more pairs of instance variable
+	 *                        name=>value pairs, which will be AND-ed. If empty,
+	 *                        all Elements will be returned.
+	 * @return Element[]
+	 * @throws InvalidArgumentException
+	 */
+	public function find(array $criteria = array()) {
+		$element = $this->factory->createElement();
+		$properties = array_keys($element->toArray());
+		$where = 1;
+		foreach ($criteria as $criterion=>$value) {
+			if (!in_array($criterion, $properties)) {
+				throw new InvalidArgumentException('Invalid property '.$criterion);
+			}
+			$where .= " AND $criterion = ".$this->db->quote($value);
+		}
+		$table = $this->tableName();
+		$stm = $this->db->query("SELECT * FROM $table WHERE $where");
+		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($element));
+		return $stm->fetchAll();
 	}
 
 }

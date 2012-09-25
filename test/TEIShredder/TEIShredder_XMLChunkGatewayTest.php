@@ -46,10 +46,51 @@ class XMLChunkGatewayTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
+	 */
+	function findAnXmlChunkByItsId() {
+		$this->obj->flush();
+
+		$chunk = new XMLChunk();
+		$chunk->id = 123;
+		$chunk->page = 3;
+		$chunk->section = 4;
+		$chunk->xml = '<foot/>';
+		$this->obj->save($chunk);
+
+		$chunk = $this->obj->findByIdentifier(123);
+		$this->assertInstanceOf('\TEIShredder\XMLChunk', $chunk);
+		$this->assertEquals(123, $chunk->id);
+	}
+
+	/**
+	 * @test
+	 * @expectedException InvalidArgumentException
+	 * @expectedExceptionMessage Invalid chunk number
+	 */
+	function tryingToFindAnXmlChunkByAnInvalidIdThrowsAnException() {
+		$this->obj->findByIdentifier(99999999);
+	}
+
+	/**
+	 * @test
 	 * @todo Add assertion
 	 */
 	function flushTheData() {
+		$chunk = new XMLChunk();
+		$chunk->page = 3;
+		$chunk->section = 4;
+		$chunk->xml = '<foot/>';
+		$this->obj->save($chunk);
+
+		$chunks = $this->obj->find();
+		$this->assertInternalType('array', $chunks);
+		$this->assertSame(1, count($chunks));
+
 		$this->obj->flush();
+
+		$chunks = $this->obj->find();
+		$this->assertInternalType('array', $chunks);
+		$this->assertSame(0, count($chunks));
 	}
 
 

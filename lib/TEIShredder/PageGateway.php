@@ -47,33 +47,60 @@ class PageGateway extends AbstractGateway {
 	}
 
 	/**
-	 * Returns a page object by its page number
-	 * @param mixed $number
+	 * Returns the page object with the given pagenumber.
+	 * @param int $number
+	 * @throws InvalidArgumentException
 	 * @return Page
-	 * @throws InvalidArgumentException;
 	 */
-	public function find($number) {
+	public function findByIdentifier($number) {
 		$table = $this->tableName();
-		$stm = $this->db->prepare(
-			"SELECT number, xmlid, volume, plaintext, n, rend FROM $table WHERE number = ?"
-		);
+		$stm = $this->db->prepare("SELECT * FROM $table WHERE number = ?");
 		$stm->execute(array($number));
 		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createPage());
-		if (false === $obj = $stm->fetch()) {
-			throw new InvalidArgumentException('No such element');
+		if (false === $page = $stm->fetch()) {
+			throw new InvalidArgumentException('Invalid page number');
 		}
-		return $obj;
+		return $page;
 	}
 
 	/**
-	 * Returns all objects
+	 * Returns page objects
+	 * @param array $numbers [optional] Indexed array of page numbers
 	 * @return Page[]
 	 */
-	public function findAll() {
+	public function findMultiple(array $numbers) {
 		$table = $this->tableName();
-		$stm = $this->db->query(
-			"SELECT number, xmlid, n, rend, volume, plaintext FROM $table ORDER BY number"
-		);
+		$where = 1;
+		if (count($numbers)) {
+			$numbers = array_map('intval', $numbers);
+			$where .= " AND number IN(".join(', ', $numbers).")";
+		}
+		$stm = $this->db->query("SELECT * FROM $table WHERE $where ORDER BY number");
+		$page = $this->factory->createPage();
+		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($page));
+		return $stm->fetchAll();
+	}
+
+	/**
+	 * Returns all page objects in the given volume
+	 * @param array $criteria [optional] One or more pairs of instance variable
+	 *                        name=>value pairs, which will be AND-ed. If empty,
+	 *                        all Elements will be returned.
+	 * @return Page[]
+	 * @throws InvalidArgumentException
+	 */
+	public function find(array $criteria = array()) {
+		$entity = $this->factory->createPage();
+		$properties = array_keys($entity->toArray());
+		$where = 1;
+		foreach ($criteria as $criterion=>$value) {
+			if (!in_array($criterion, $properties)) {
+				throw new InvalidArgumentException('Invalid property '.$criterion);
+			}
+			$where .= " AND $criterion = ".$this->db->quote($value);
+		}
+		$table = $this->tableName();
+		$stm = $this->db->query("SELECT * FROM $table WHERE $where ORDER BY number");
 		$page = $this->factory->createPage();
 		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($page));
 		return $stm->fetchAll();

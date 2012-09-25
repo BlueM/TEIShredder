@@ -32,7 +32,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	 */
 	function flushTheData() {
 		$this->obj->flush();
-		$objs = $this->obj->findAll();
+		$objs = $this->obj->find();
 		$this->assertTrue(0 == count($objs));
 	}
 
@@ -51,7 +51,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 		$section->element = 'div';
 		$this->obj->save($section);
 
-		$obj = $this->obj->find(5);
+		$obj = $this->obj->findByIdentifier(5);
 		$this->assertInstanceOf('\TEIShredder\Section', $obj);
 	}
 
@@ -60,7 +60,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException InvalidArgumentException
 	 */
 	function tryingToFetchASectionGatewayByAnUnknownSectionGatewaynumberThrowsAnException() {
-		$this->obj->find(9999999);
+		$this->obj->findByIdentifier(9999999);
 	}
 
 	/**
@@ -80,7 +80,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 		$section->element = 'div';
 		$this->obj->save($section);
 
-		$obj = $this->obj->find(17);
+		$obj = $this->obj->findByIdentifier(17);
 		$this->assertInstanceOf('\TEIShredder\Section', $obj);
 		$this->assertEquals("Chapter 17", $section->title);
 	}
@@ -110,7 +110,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 		$section->element = 'div';
 		$this->obj->save($section);
 
-		$objs = $this->obj->findAll();
+		$objs = $this->obj->find();
 		$this->assertInternalType('array', $objs);
 		$this->assertSame(2, count($objs));
 		foreach ($objs as $obj) {
@@ -143,7 +143,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 		$section->element = 'div';
 		$this->obj->save($section);
 
-		$objs = $this->obj->findAllInVolume(2);
+		$objs = $this->obj->find(2);
 		$this->assertInternalType('array', $objs);
 		$this->assertSame(1, count($objs));
 		$this->assertInstanceOf('\TEIShredder\Section', $objs[0]);

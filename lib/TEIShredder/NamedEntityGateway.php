@@ -48,33 +48,24 @@ class NamedEntityGateway extends AbstractGateway {
 
 	/**
 	 * Returns a named entity by its xml:id attribute value
-	 * @param mixed $identifier @xml:id value in the underlying TEI document
-	 * @return NamedEntity
-	 * @throws InvalidArgumentException
-	 * @todo xml:id not suitable (multi-links!)
-	 */
-	public function find($identifier) {
-		$table = $this->tableName();
-
-		// Use SELECT * FROM to make it easier for subclasses to add columns, if needed
-		$stm = $this->db->prepare("SELECT * FROM $table WHERE xmlid = ?");
-		$stm->execute(array($identifier));
-		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createNamedEntity());
-		if (false === $obj = $stm->fetch()) {
-			throw new InvalidArgumentException('Invalid xml:id value');
-		}
-		return $obj;
-	}
-
-	/**
-	 * Returns all objects
+	 * @param array $criteria [optional] One or more pairs of instance variable
+	 *                        name=>value pairs, which will be AND-ed. If empty,
+	 *                        all Elements will be returned.
 	 * @return NamedEntity[]
+	 * @throws InvalidArgumentException
 	 */
-	public function findAll() {
-		$table = $this->tableName();
-		// Use SELECT * FROM to make it easier for subclasses to add columns, if needed
-		$stm = $this->db->query("SELECT * FROM $table ORDER BY chunk");
+	public function find(array $criteria = array()) {
 		$entity = $this->factory->createNamedEntity();
+		$properties = array_keys($entity->toArray());
+		$where = 1;
+		foreach ($criteria as $criterion=>$value) {
+			if (!in_array($criterion, $properties)) {
+				throw new InvalidArgumentException('Invalid property '.$criterion);
+			}
+			$where .= " AND $criterion = ".$this->db->quote($value);
+		}
+		$table = $this->tableName();
+		$stm = $this->db->query("SELECT * FROM $table WHERE $where");
 		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($entity));
 		return $stm->fetchAll();
 	}
