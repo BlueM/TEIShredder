@@ -80,13 +80,6 @@ class Indexer_Extractor extends Indexer {
 	protected $containers = array();
 
 	/**
-	 * Indexed array that contains the container name/description,
-	 * such as the tag name or another arbitrary name.
-	 * @var array
-	 */
-	protected $containerTypes = array();
-
-	/**
 	 * @var NamedEntityGateway
 	 */
 	protected $entityGateway;
@@ -270,11 +263,6 @@ class Indexer_Extractor extends Indexer {
 		static $index = 0;
 		$this->containerStack[] = ++$index;
 		$this->containers[$index] = '';
-		if (in_array('figure', $this->elementStack)) {
-			$this->containerTypes[$index] = 'figure';
-		} else {
-			$this->containerTypes[$index] = $this->r->localName;
-		}
 	}
 
 	/**
