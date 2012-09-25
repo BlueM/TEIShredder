@@ -64,6 +64,17 @@ class PageGateway extends AbstractGateway {
 	}
 
 	/**
+	 * Returns the last page object, i.e. the one with the highest page number
+	 * @return Page
+	 */
+	public function findLastPage() {
+		$table = $this->tableName();
+		$stm = $this->db->query("SELECT * FROM $table ORDER BY number DESC LIMIT 1");
+		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createPage());
+		return $stm->fetch();
+	}
+
+	/**
 	 * Returns page objects
 	 * @param array $numbers [optional] Indexed array of page numbers
 	 * @return Page[]
