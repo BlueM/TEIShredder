@@ -1,0 +1,8 @@
+<phpunit
+	stopOnIncomplete="false">
+	<logging>
+	  <log type="coverage-html" target="/private/tmp/phpunit-coverage" charset="UTF-8" yui="true" highlight="false" />
+	  <log type="tap" target="/tmp/phpunit-logfile.tap"/>
+	  <log type="testdox-text" target="/tmp/phpunit-testdox.txt"/>
+	</logging>
+</phpunit>

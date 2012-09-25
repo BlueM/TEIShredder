@@ -114,17 +114,30 @@ class NamedEntityGatewayTest extends \PHPUnit_Framework_TestCase {
 		$ent->notation = 'Entity 2';
 		$this->obj->save($ent);
 
-		$objs = $this->obj->find(array('domain'=>'person'));
+		$objs = $this->obj->find();
+		$this->assertInternalType('array', $objs);
+		$this->assertTrue(2 == count($objs));
+
+		$objs = $this->obj->find('domain = person');
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(1 == count($objs));
 
-		$objs = $this->obj->find(array('domain'=>'artwork'));
+		$objs = $this->obj->find('domain == artwork');
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(0 == count($objs));
 
-		$objs = $this->obj->find(array('identifier'=>44));
+		$objs = $this->obj->find('identifier != 19');
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(2 == count($objs));
+
+		$objs = $this->obj->find('identifier != 19');
+		$this->assertInternalType('array', $objs);
+		$this->assertTrue(2 == count($objs));
+
+		$objs = $this->obj->find('page >= 22', ' chunk<>66');
+		$this->assertInternalType('array', $objs);
+		$this->assertTrue(1 == count($objs));
+		$this->assertSame('Entity 1', $objs[0]->notation);
 	}
 
 	/**
@@ -133,7 +146,7 @@ class NamedEntityGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedExceptionMessage Invalid property
 	 */
 	function tryingToFindANamedEntityByAnInvalidPropertyThrowsAnException() {
-		$this->obj->find(array('invalid'=>1));
+		$this->obj->find('invalid = 1');
 	}
 
 }

@@ -82,28 +82,20 @@ class PageGateway extends AbstractGateway {
 	}
 
 	/**
-	 * Returns all page objects in the given volume
-	 * @param array $criteria [optional] One or more pairs of instance variable
-	 *                        name=>value pairs, which will be AND-ed. If empty,
-	 *                        all Elements will be returned.
+	 * Returns Page objects matching the given filters.
+	 *
+	 * Any number of strings can be passed as arguments, each of which
+	 * has to be in the form of "property operator value", where the
+	 * property can be any of the returned instances' instance variables,
+	 * the operator can be one of < > <> >= <= != = == ~  The value must
+	 * not be quoted and if it should be an empty string, it should
+	 * simply be left out (e.g. "title !=").
 	 * @return Page[]
-	 * @throws InvalidArgumentException
 	 */
-	public function find(array $criteria = array()) {
-		$entity = $this->factory->createPage();
-		$properties = array_keys($entity->toArray());
-		$where = 1;
-		foreach ($criteria as $criterion=>$value) {
-			if (!in_array($criterion, $properties)) {
-				throw new InvalidArgumentException('Invalid property '.$criterion);
-			}
-			$where .= " AND $criterion = ".$this->db->quote($value);
-		}
-		$table = $this->tableName();
-		$stm = $this->db->query("SELECT * FROM $table WHERE $where ORDER BY number");
+	public function find() {
 		$page = $this->factory->createPage();
-		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($page));
-		return $stm->fetchAll();
+		$properties = array_keys($page->toArray());
+		return parent::performFind(get_class($page), $properties, 'number', func_get_args());
 	}
 
 }

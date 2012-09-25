@@ -47,7 +47,7 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException LogicException
 	 */
-	function makeSureAElementRequiresAnXmlid() {
+	function makeSureAnElementRequiresAnXmlid() {
 		$element = new Element($this->setup);
 		$element->element = 'rs';
 		$element->page = 57;
@@ -59,7 +59,7 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException LogicException
 	 */
-	function makeSureAElementRequiresAPage() {
+	function makeSureAnElementRequiresAPage() {
 		$element = new Element($this->setup);
 		$element->xmlid = 'element-01';
 		$element->element = 'rs';
@@ -71,7 +71,7 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException LogicException
 	 */
-	function makeSureAElementRequiresAChunk() {
+	function makeSureAnElementRequiresAChunk() {
 		$element = new Element($this->setup);
 		$element->xmlid = 'element-01';
 		$element->element = 'rs';
@@ -83,7 +83,7 @@ class ElementTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException LogicException
 	 */
-	function makeSureAElementRequiresAnElement() {
+	function makeSureAnElementRequiresAnElement() {
 		$element = new Element($this->setup);
 		$element->xmlid = 'element-01';
 		$element->chunk = 123;

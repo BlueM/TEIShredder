@@ -66,17 +66,20 @@ class VolumeGateway extends AbstractGateway {
 	}
 
 	/**
-	 * Returns all objects
+	 * Returns Volume objects matching the given filters.
+	 *
+	 * Any number of strings can be passed as arguments, each of which
+	 * has to be in the form of "property operator value", where the
+	 * property can be any of the returned instances' instance variables,
+	 * the operator can be one of < > <> >= <= != = == ~  The value must
+	 * not be quoted and if it should be an empty string, it should
+	 * simply be left out (e.g. "title !=").
 	 * @return Volume[]
 	 */
 	public function find() {
-		$table = $this->tableName();
-		$stm = $this->db->query(
-			"SELECT number, title, pagenumber FROM $table ORDER BY number"
-		);
-		$page = $this->factory->createVolume();
-		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($page));
-		return $stm->fetchAll();
+		$volume = $this->factory->createVolume();
+		$properties = array_keys($volume->toArray());
+		return parent::performFind(get_class($volume), $properties, 'number', func_get_args());
 	}
 
 }

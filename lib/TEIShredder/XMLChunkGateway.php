@@ -82,18 +82,20 @@ class XMLChunkGateway extends AbstractGateway {
 	}
 
 	/**
-	 * Returns all non-empty chunks that are on the given page.
+	 * Returns XMLChunk objects matching the given filters.
+	 *
+	 * Any number of strings can be passed as arguments, each of which
+	 * has to be in the form of "property operator value", where the
+	 * property can be any of the returned instances' instance variables,
+	 * the operator can be one of < > <> >= <= != = == ~  The value must
+	 * not be quoted and if it should be an empty string, it should
+	 * simply be left out (e.g. "title !=").
 	 * @return XMLChunk[]
 	 */
 	public function find() {
-		$table = $this->tableName();
-		$stm = $this->db->prepare(
-			"SELECT * FROM $table ORDER BY id"
-		);
-		$stm->execute();
 		$chunk = $this->factory->createXMLChunk();
-		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($chunk));
-		return $stm->fetchAll();
+		$properties = array_keys($chunk->toArray());
+		return parent::performFind(get_class($chunk), $properties, 'id', func_get_args());
 	}
 
 }

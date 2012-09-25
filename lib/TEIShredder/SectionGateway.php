@@ -64,24 +64,21 @@ class SectionGateway extends AbstractGateway {
 	}
 
 	/**
-	 * Returns all sections, ordered by their ID
-	 * @param int $volume [optional] If given, only sections from the volume
-	 *                               with this number are returned.
-	 * @param bool $title [optional] Return only sections that have a title? Default: yes.
+	 * Returns Section objects matching the given filters.
+	 *
+ 	 * Any number of strings can be passed as arguments, each of which
+	 * has to be in the form of "property operator value", where the
+	 * property can be any of the returned instances' instance variables,
+	 * the operator can be one of < > <> >= <= != = == ~  The value must
+	 * not be quoted and if it should be an empty string, it should
+	 * simply be left out (e.g. "title !=").
 	 * @return Section[]
+	 * @throws InvalidArgumentException
 	 */
-	public function find($volume = null, $title = true) {
-		$table = $this->tableName();
-		$where = 'level > 0';
-		if ((int)$volume) {
-			$where .= ' AND volume = '.$this->db->quote($volume);
-		}
-		if ($title) {
-			$where .= " AND title != ''";
-		}
-		$stm = $this->db->query("SELECT * FROM $table WHERE $where ORDER BY id");
+	public function find() {
 		$section = $this->factory->createSection();
-		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($section));
-		return $stm->fetchAll();
+		$properties = array_keys($section->toArray());
+		return parent::performFind(get_class($section), $properties, 'id', func_get_args());
 	}
+
 }

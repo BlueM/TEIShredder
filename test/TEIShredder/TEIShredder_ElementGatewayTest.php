@@ -82,7 +82,7 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase {
 		$element->chunk = 234;
 		$this->obj->save($element);
 
-		$objs = $this->obj->find(array('element'=>'div', 'page'=>23));
+		$objs = $this->obj->find('element = div', 'page = 23');
 		$this->assertInternalType('array', $objs);
 		$this->assertSame(1, count($objs));
 		$this->assertInstanceOf('\TEIShredder\Element', $objs[0]);
@@ -95,7 +95,7 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedExceptionMessage Invalid property
 	 */
 	function tryingToFindAnElementByAnInvalidPropertyThrowsAnException() {
-		$this->obj->find(array('invalid'=>1));
+		$this->obj->find('invalid = 1');
 	}
 
 	/**

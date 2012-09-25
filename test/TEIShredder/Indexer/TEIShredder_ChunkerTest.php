@@ -42,7 +42,7 @@ class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	function testCreatingAChunker() {
+	function createAChunker() {
 
 		$chunker = new Indexer_Chunker(
 			$this->setup,
@@ -55,9 +55,9 @@ class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * @depends testCreatingAChunker
+	 * @depends createAChunker
 	 */
-	function testRunningAChunker(Indexer_Chunker $chunker) {
+	function runTheChunker(Indexer_Chunker $chunker) {
 		$chunker->process();
 	}
 

@@ -66,27 +66,20 @@ class ElementGateway extends AbstractGateway {
 	}
 
 	/**
-	 * Returns elements matching the given properties
-	 * @param array $criteria [optional] One or more pairs of instance variable
-	 *                        name=>value pairs, which will be AND-ed. If empty,
-	 *                        all Elements will be returned.
+	 * Returns Element objects matching the given filters.
+	 *
+	 * Any number of strings can be passed as arguments, each of which
+	 * has to be in the form of "property operator value", where the
+	 * property can be any of the returned instances' instance variables,
+	 * the operator can be one of < > <> >= <= != = == ~  The value must
+	 * not be quoted and if it should be an empty string, it should
+	 * simply be left out (e.g. "title !=").
 	 * @return Element[]
-	 * @throws InvalidArgumentException
 	 */
-	public function find(array $criteria = array()) {
+	public function find() {
 		$element = $this->factory->createElement();
 		$properties = array_keys($element->toArray());
-		$where = 1;
-		foreach ($criteria as $criterion=>$value) {
-			if (!in_array($criterion, $properties)) {
-				throw new InvalidArgumentException('Invalid property '.$criterion);
-			}
-			$where .= " AND $criterion = ".$this->db->quote($value);
-		}
-		$table = $this->tableName();
-		$stm = $this->db->query("SELECT * FROM $table WHERE $where");
-		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($element));
-		return $stm->fetchAll();
+		return parent::performFind(get_class($element), $properties, 'chunk', func_get_args());
 	}
 
 }

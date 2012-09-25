@@ -1,0 +1,140 @@
+TEIShredder\Indexer_Chunker
+ [x] Create a chunker
+ [x] Run the chunker
+ [x] Make sure a chunker throws an exception if there are several titles for a volume
+ [x] Run a chunker with textbeforepb set to off
+
+TEIShredder\Indexer_Extractor
+ [x] Create an extractor
+ [x] Run the extractor
+
+TEIShredder\AbstractGateway
+ [x] Trying to find objects with an unparseable filter string throws an exception
+ [x] Trying to find objects with a filter string that uses an invalid property throws an exception
+
+TEIShredder\DefaultFactory
+ [x] Create a page
+ [x] Create page gateway
+ [x] Create a volume
+ [x] Create volume gateway
+ [x] Create a named entity
+ [x] Create named entity gateway
+
+TEIShredder\ElementGateway
+ [x] Save a new element
+ [x] Trying to fetch an element by an unknown xmlid throws an exception
+ [x] Find an element by its xmlid
+ [x] Find an element by element name and page
+ [x] Trying to find an element by an invalid property throws an exception
+ [x] Flush the data
+
+TEIShredder\Element
+ [x] Create a new element
+ [x] Make sure an element requires an xmlid
+ [x] Make sure an element requires a page
+ [x] Make sure an element requires a chunk
+ [x] Make sure an element requires an element
+ [x] Get the persistable data of an object with all required properties
+
+TEIShredder\Model
+ [x] Create an object
+ [x] Setting a settable property works
+ [x] Trying to get an invalid property throws an exception
+ [x] Trying to set an invalid property throws an exception
+ [x] Trying to set an unsettable property throws an exception
+ [x] Getting the persistable data works
+ [x] Type casting to string
+
+TEIShredder\NamedEntityGateway
+ [x] Flush the data
+ [x] Save a named entity
+ [x] Find all named entities
+ [x] Find entities by search criteria
+ [x] Trying to find a named entity by an invalid property throws an exception
+
+TEIShredder\NamedEntity
+ [x] Create a new named entity
+ [x] Get the persistable data for an entity
+ [x] Make sure a named entity requires a page number
+ [x] Make sure a named entity requires a domain
+ [x] Make sure a named entity requires a key
+ [x] Make sure a named entity requires a notation
+
+TEIShredder\PageGateway
+ [x] Flush the data
+ [x] Save a new page
+ [x] Trying to fetch a page gateway by an unknown pagenumber throws an exception
+ [x] Find a page by its number
+ [x] Find all pages
+ [x] Find pages matching given criteria
+ [x] Find multiple pages
+ [x] Trying to find a page by an invalid property throws an exception
+
+TEIShredder\Page
+ [x] Create a new page
+ [x] Make sure a page requires a number
+ [x] Make sure a page requires a volume
+ [x] Get the persistable data of an object with all required properties
+
+TEIShredder\SectionGateway
+ [x] Flush the data
+ [x] Save a section
+ [x] Trying to fetch a section gateway by an unknown section gatewaynumber throws an exception
+ [x] Find a section by its id
+ [x] Find all sections
+ [x] Find all section that match certain criteria
+
+TEIShredder\Section
+ [x] Create a new section
+ [x] Get the persistable data of an object with all required properties
+ [x] Make sure a section requires an id
+ [x] Make sure a section requires a volume
+ [x] Make sure a section requires a page
+ [x] Make sure a section requires an element
+ [x] Make sure a section requires a level
+
+TEIShredder\Setup
+ [x] Creating an object with default callbacks works
+ [x] Trying to create an object with an invalid plaintext callback throws an exception
+ [x] Creating an object with a custom plaintext callbacks works
+ [x] Trying to create an object with an invalid title extraction callback throws an exception
+ [x] Creating an object with a custom title extraction callbacks works
+ [x] Creating an object with a different factory works
+ [x] Trying to get an invalid class member throws an exception
+ [x] Trying to set an invalid class member throws an exception
+ [x] Trying to set an unsettable class member throws an exception
+ [x] Trying to set the chunktags to a non array throws an exception
+ [x] Trying to set the chunktags to an array works
+
+TEIShredder\VolumeGateway
+ [x] Flush the data
+ [x] Save a volume
+ [x] Trying to find a volume by an unknown volume number throws an exception
+ [x] Find a volume by its number
+ [x] Find all volumes
+
+TEIShredder\Volume
+ [x] Create a new volume
+ [x] Trying to get persistable data for an object with incomplete data throws an exception
+ [x] Getting the persistable data for an object with complete data succeeds
+
+TEIShredder\XMLChunkGateway
+ [x] Save an x m l chunk
+ [x] Find an xml chunk by its id
+ [x] Trying to find an xml chunk by an invalid id throws an exception
+ [x] Flush the data
+
+TEIShredder\XMLChunk
+ [x] Create a new chunk
+ [x] Get a chunks wellformed x m l
+ [x] Trying to get persistable data for an object with incomplete data throws an exception
+ [x] Getting the persistable data for an object with complete data succeeds
+
+TEIShredder\XMLReader
+ [x] Get the opening tag for an empty node without attributes
+ [x] Get the opening tag for an empty node with attributes and namespace
+ [x] Get the opening tag for a non empty node without attributes
+ [x] Get the opening tag for a non empty node with attributes and namespace
+ [x] Check escaping of special chars in attribute values
+ [x] Trying to get the opening tag for a closing tag throws an exception
+

@@ -101,7 +101,7 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase {
 			$this->obj->save($page);
 		}
 
-		$objs = $this->obj->find(array('volume'=>2));
+		$objs = $this->obj->find('volume = 2');
 		$this->assertInternalType('array', $objs);
 		$this->assertTrue(1 == count($objs));
 		$this->assertInstanceOf('\TEIShredder\Page', $objs[0]);
@@ -134,7 +134,7 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedExceptionMessage Invalid property
 	 */
 	function tryingToFindAPageByAnInvalidPropertyThrowsAnException() {
-		$this->obj->find(array('invalid'=>1));
+		$this->obj->find('invalid = 1');
 	}
 }
 

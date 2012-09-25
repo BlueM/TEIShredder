@@ -35,7 +35,7 @@ class Indexer_ExtractorTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	function testCreatingAnExtractor() {
+	function createAnExtractor() {
 		$extractor = new Indexer_Extractor(
 			$this->setup,
 			$this->xmlreader,
@@ -47,9 +47,9 @@ class Indexer_ExtractorTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * @depends testCreatingAnExtractor
+	 * @depends createAnExtractor
 	 */
-	function testRunningAnExtractor(Indexer_Extractor $extractor) {
+	function runTheExtractor(Indexer_Extractor $extractor) {
 		$extractor->process();
 	}
 

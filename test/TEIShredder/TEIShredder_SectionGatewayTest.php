@@ -36,6 +36,40 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue(0 == count($objs));
 	}
 
+//
+//	/**
+//	 * @test
+//	 */
+//	function filterData() {
+//
+//		$where = $this->obj->find();
+//		$this->assertEquals(1, $where);
+//
+//		$where = $this->obj->find(array('id < 299'));
+//		$this->assertEquals("1 AND id < '299'", $where);
+//
+//		$where = $this->obj->find(array('id > 301'));
+//		$this->assertEquals("1 AND id > '301'", $where);
+//
+//		$where = $this->obj->find(array('title != '));
+//		$this->assertEquals("1 AND title <> ''", $where);
+//
+//		$where = $this->obj->find(array('id<>5'));
+//		$this->assertEquals("1 AND id <> '5'", $where);
+//
+//		$where = $this->obj->find(array('title=abc'));
+//		$this->assertEquals("1 AND title = 'abc'", $where);
+//
+//		$where = $this->obj->find(array('title==abc'));
+//		$this->assertEquals("1 AND title = 'abc'", $where);
+//
+//		$where = $this->obj->find(array('title ~ foo'));
+//		$this->assertEquals("1 AND title LIKE 'foo'", $where);
+//
+//		$where = $this->obj->find(array('title ~ %foo%'));
+//		$this->assertEquals("1 AND title LIKE '%foo%'", $where);
+//	}
+
 	/**
 	 * @test
 	 */
@@ -121,11 +155,11 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	function findAllSectionsInAVolume() {
+	function findAllSectionThatMatchCertainCriteria() {
 
 		$this->obj->flush();
 
-		$section = new Section;
+		$section = new Section();
 		$section->id = 17;
 		$section->volume = 1;
 		$section->title = "Chapter 17";
@@ -134,7 +168,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 		$section->element = 'div';
 		$this->obj->save($section);
 
-		$section = new Section;
+		$section = new Section();
 		$section->id = 23;
 		$section->volume = 2;
 		$section->title = "Chapter 23";
@@ -143,11 +177,22 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase {
 		$section->element = 'div';
 		$this->obj->save($section);
 
-		$objs = $this->obj->find(2);
+		$objs = $this->obj->find('id = 23');
 		$this->assertInternalType('array', $objs);
 		$this->assertSame(1, count($objs));
-		$this->assertInstanceOf('\TEIShredder\Section', $objs[0]);
-		$this->assertSame("Chapter 23", $objs[0]->title);
+		$this->assertEquals(2, $objs[0]->volume);
+
+		$objs = $this->obj->find('title = Chapter');
+		$this->assertInternalType('array', $objs);
+		$this->assertSame(0, count($objs));
+
+		$objs = $this->obj->find('title~ Chapter%');
+		$this->assertInternalType('array', $objs);
+		$this->assertSame(2, count($objs));
+
+		$objs = $this->obj->find('page >= 17');
+		$this->assertInternalType('array', $objs);
+		$this->assertSame(2, count($objs));
 	}
 
 }
