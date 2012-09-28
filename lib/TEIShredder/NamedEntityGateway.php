@@ -63,4 +63,37 @@ class NamedEntityGateway extends AbstractGateway {
 		return parent::performFind(get_class($entity), $properties, '', func_get_args());
 	}
 
+	/**
+	 * Returns all distinct notations for the object identified
+	 * by the argument(s).
+	 * @param $domain
+	 * @param $identifier
+	 * @return array Indexed array of indexed arrays, each with the full
+	 *               notation in index 0, the number of occurrences in
+	 *               index 1 and the notation hash in index 2.
+	 */
+	public function findDistinctNotations($domain, $identifier) {
+		$table = $this->tableName();
+		$stm = $this->db->prepare(
+			"SELECT * FROM $table WHERE domain = ? AND identifier = ?"
+		);
+		$stm->execute(array($domain, $identifier));
+
+		$notations = $count = array();
+		foreach ($stm->fetchAll(PDO::FETCH_ASSOC) as $row) {
+			$key = mb_convert_case(trim($row['notation']), MB_CASE_LOWER);
+			if (empty($notations[$key])) {
+				$notations[$key] = array(
+					$row['notation'],
+					0,
+					$row['notationhash']
+				);
+			}
+			$notations[$key][1] ++;
+		}
+
+		ksort($notations);
+		return array_values($notations);
+	}
+
 }
