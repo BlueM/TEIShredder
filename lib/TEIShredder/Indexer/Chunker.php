@@ -201,7 +201,9 @@ class Indexer_Chunker extends Indexer {
 			$this->processTitlePart();
 		}
 
-		$this->xml .= $this->r->nodeOpenString();
+		$open = $this->r->nodeOpenString();
+		$this->xml .= $open;
+
 		if (in_array($this->r->localName, $this->setup->blocktags)) {
 			$this->xml .= "\n";
 		}
@@ -210,7 +212,12 @@ class Indexer_Chunker extends Indexer {
 			return;
 		}
 
-		array_push($this->prestack, $this->r->nodeOpenString(true));
+		if ('TEI' == $this->r->localName) {
+			// Skip the enclosing <TEI>...</TEI> tags
+			return;
+		}
+
+		array_push($this->prestack, $open);
 		array_unshift($this->poststack, '</'.$this->r->localName.'>');
 	}
 

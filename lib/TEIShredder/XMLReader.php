@@ -40,11 +40,10 @@ class XMLReader extends \XMLReader {
 
 	/**
 	 * Returns the full open tag for the current element
-	 * @param bool $skipxmlid [optional] Should @xml:id attributes be suppressed?
 	 * @return string Opening tag including attributes
 	 * @throws RuntimeException
 	 */
-	public function nodeOpenString($skipxmlid = false) {
+	public function nodeOpenString() {
 		if (XMLREADER::ELEMENT != $this->nodeType) {
 			throw new RuntimeException('This node is not an opening element.');
 		}
@@ -53,9 +52,6 @@ class XMLReader extends \XMLReader {
 			$this->moveToFirstAttribute();
 			do {
 				$attr = ($this->prefix ? $this->prefix.':' : '').$this->localName;
-				if ($skipxmlid and 'xml:id' == $skipxmlid) {
-					continue;
-				}
 				$str .= ' '.$attr.'="'.htmlspecialchars($this->value).'"';
 			} while ($this->moveToNextAttribute());
 			$this->moveToElement();
