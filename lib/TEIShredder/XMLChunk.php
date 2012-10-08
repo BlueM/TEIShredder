@@ -116,10 +116,17 @@ class XMLChunk extends Model {
 	/**
 	 * Returns the chunk's content source as well-formed XML, i.e.: with
 	 * pre-stack and post-stack tags added, with Unix-style line endings.
+	 * @param bool $noxmlid [optional] If true (default: false), @xml:id attributes
+	 *                                 are removed from pre-stack tags.
 	 * @return string
 	 */
-	public function getWellFormedXML() {
-		return str_replace(array("\r\n", "\n"), "\n", $this->prestack.$this->xml.$this->poststack);
+	public function getWellFormedXML($noxmlid = false) {
+		if ($noxmlid) {
+			$prestack = preg_replace('#\s+xml:id=".*?"#', '', $this->prestack);
+		} else {
+			$prestack = $this->prestack;
+		}
+		return str_replace(array("\r\n", "\n"), "\n", $prestack.$this->xml.$this->poststack);
 	}
 
 }
