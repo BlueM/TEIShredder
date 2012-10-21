@@ -109,8 +109,8 @@ class Indexer_Chunker extends Indexer {
 	protected $milestone = null;
 
 	/**
-	 * Text structure level. Only named sections (those with a <head> are
-	 * counted, as those without sometimes are only present to comply with TEI. @todo comment?
+	 * Text structure level. Note: Only named sections (those with
+	 * a <head> element) are counted.
 	 * @var int
 	 */
 	protected $level = 0;
@@ -121,8 +121,25 @@ class Indexer_Chunker extends Indexer {
 	 */
 	protected $pageObj;
 
-	#todo
-	protected $gateways = array();
+	/**
+	 * @var VolumeGateway
+	 */
+	protected $volumeGateway;
+
+	/**
+	 * @var SectionGateway
+	 */
+	protected $sectionGateway;
+
+	/**
+	 * @var PageGateway
+	 */
+	protected $pageGateway;
+
+	/**
+	 * @var XMLChunkGateway
+	 */
+	protected $xmlChunkGateway;
 
 	/**
 	 * Constructor.
@@ -133,10 +150,10 @@ class Indexer_Chunker extends Indexer {
 	 */
 	public function __construct(Setup $setup, XMLReader $xmlreader, $xml) {
 		parent::__construct($setup, $xmlreader, $xml);
-		$this->gateways['volume'] = $setup->factory->createVolumeGateway();
-		$this->gateways['section'] = $setup->factory->createSectionGateway();
-		$this->gateways['page'] = $setup->factory->createPageGateway();
-		$this->gateways['xmlchunk'] = $setup->factory->createXMLChunkGateway();
+		$this->volumeGateway = $setup->factory->createVolumeGateway();
+		$this->sectionGateway = $setup->factory->createSectionGateway();
+		$this->pageGateway = $setup->factory->createPageGateway();
+		$this->xmlChunkGateway = $setup->factory->createXMLChunkGateway();
 	}
 
 	/**
@@ -228,7 +245,7 @@ class Indexer_Chunker extends Indexer {
 
 		if ($this->pageObj) {
 			// Finish previous page
-			$this->gateways['page']->save($this->pageObj);
+			$this->pageGateway->save($this->pageObj);
 		}
 
 		$this->page ++;
@@ -265,7 +282,7 @@ class Indexer_Chunker extends Indexer {
 	protected function save() {
 		if ($this->pageObj) {
 			// Finish previous page
-			$this->gateways['page']->save($this->pageObj);
+			$this->pageGateway->save($this->pageObj);
 		}
 	}
 
@@ -329,7 +346,7 @@ class Indexer_Chunker extends Indexer {
 		$section->level = $this->level;
 		$section->element = $this->r->localName;
 		$section->xmlid = $this->r->getAttribute('xml:id');
-		$this->gateways['section']->save($section);
+		$this->sectionGateway->save($section);
 	}
 
 	/**
@@ -371,7 +388,7 @@ class Indexer_Chunker extends Indexer {
 		$chunk->xml = trim($this->xml);
 		$chunk->plaintext = $plaintext;
 		$chunk->poststack = join(' ', $this->poststack);
-		$this->gateways['xmlchunk']->save($chunk);
+		$this->xmlChunkGateway->save($chunk);
 
 		// Dispose of the chunk
 		unset($this->chunks[$this->currentChunk]);
@@ -383,10 +400,10 @@ class Indexer_Chunker extends Indexer {
 	 * or to perform initialization steps.
 	 */
 	protected function preProcessAction() {
-		$this->gateways['volume']->flush($this->setup);
-		$this->gateways['section']->flush($this->setup);
-		$this->gateways['page']->flush($this->setup);
-		$this->gateways['xmlchunk']->flush($this->setup);
+		$this->volumeGateway->flush($this->setup);
+		$this->sectionGateway->flush($this->setup);
+		$this->pageGateway->flush($this->setup);
+		$this->xmlChunkGateway->flush($this->setup);
 	}
 
 	/**
@@ -415,6 +432,6 @@ class Indexer_Chunker extends Indexer {
 		$volume->title = $title;
 		$volume->pagenumber = $this->data['currTextStart'];
 
-		$this->gateways['volume']->save($volume);
+		$this->volumeGateway->save($volume);
 	}
 }
