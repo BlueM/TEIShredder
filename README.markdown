@@ -3,7 +3,7 @@ TEIShredder Overview
 
 What is it?
 --------------
-TEIShredder is a set of PHP classes for indexing TEI XML documents and retrieving information on the text structure (physical and logical), contained, elments, named entites etc. The information extracted from the source document is saved in a relational database, i.e. it is a form of XML shredding – hence the name.
+TEIShredder is a set of PHP classes for indexing TEI XML documents and retrieving information on the text structure (physical and logical), contained elements, named entites etc. The information extracted from the source document is saved in a relational database, i.e. it is a form of XML shredding – hence the name.
 
 TEIShredder is based on code that was written for a scholarly project called “Sandrart.net” ([www.sandrart.net](http://www.sandrart.net), a cooperation project between Goethe-Universität Frankfurt am Main, Germany, and the Kunsthistorisches Institut, Florence, Italy, funded by the Deutsche Forschungsgemeinschaft [DFG]), but was modified to make it a stand-alone project/library. Meanwhile, the project’s original code has been dropped in favor of TEIShredder.
 
