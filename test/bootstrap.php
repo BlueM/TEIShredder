@@ -11,6 +11,8 @@ require_once __DIR__.'/../autoload.php';
  */
 function prepare_default_data() {
 
+    mb_internal_encoding('utf8');
+
 	$pdo = new PDO('sqlite::memory:');
 	$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
