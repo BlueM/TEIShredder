@@ -55,6 +55,8 @@ TEIShredder\NamedEntityGateway
 TEIShredder\NamedEntity
  [x] Create a new named entity
  [x] Get the persistable data for an entity
+ [x] The context start is truncated when it exceeds a certain length
+ [x] The context end is truncated when it exceeds a certain length
  [x] Make sure a named entity requires a page number
  [x] Make sure a named entity requires a domain
  [x] Make sure a named entity requires a key
