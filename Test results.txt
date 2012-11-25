@@ -51,6 +51,7 @@ TEIShredder\NamedEntityGateway
  [x] Find all named entities
  [x] Find entities by search criteria
  [x] Trying to find a named entity by an invalid property throws an exception
+ [x] Get all distinct notations
 
 TEIShredder\NamedEntity
  [x] Create a new named entity
