@@ -31,55 +31,62 @@ use \PDO;
 
 /**
  * Gateway for volume objects
- * @package TEIShredder
- * @author Carsten Bluem <carsten@bluem.net>
+ *
+ * @package   TEIShredder
+ * @author    Carsten Bluem <carsten@bluem.net>
  * @copyright 2012 Carsten Bluem <carsten@bluem.net>
- * @link https://github.com/BlueM/TEIShredder
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link      https://github.com/BlueM/TEIShredder
+ * @license   http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class VolumeGateway extends AbstractGateway {
+class VolumeGateway extends AbstractGateway
+{
 
     /**
      * {@inheritdoc}
      */
-	protected function tableName() {
-		return $this->prefix.'volume';
-	}
+    protected function tableName()
+    {
+        return $this->prefix.'volume';
+    }
 
-	/**
-	 * Returns an object by the volume number
-	 * @param mixed $identifier Volume number
-	 * @return Volume
-	 * @throws InvalidArgumentException
-	 */
-	public function findByIdentifier($identifier) {
-		$table = $this->tableName();
-		$stm = $this->db->prepare(
-			"SELECT * FROM $table WHERE number = ?"
-		);
-		$stm->execute(array($identifier));
-		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createVolume());
-		if (false === $obj = $stm->fetch()) {
-			throw new InvalidArgumentException('Invalid volume number');
-		}
-		return $obj;
-	}
+    /**
+     * Returns an object by the volume number
+     *
+     * @param mixed $identifier Volume number
+     *
+     * @return Volume
+     * @throws InvalidArgumentException
+     */
+    public function findByIdentifier($identifier)
+    {
+        $table = $this->tableName();
+        $stm   = $this->db->prepare(
+            "SELECT * FROM $table WHERE number = ?"
+        );
+        $stm->execute(array($identifier));
+        $stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createVolume());
+        if (false === $obj = $stm->fetch()) {
+            throw new InvalidArgumentException('Invalid volume number');
+        }
+        return $obj;
+    }
 
-	/**
-	 * Returns Volume objects matching the given filters.
-	 *
-	 * Any number of strings can be passed as arguments, each of which
-	 * has to be in the form of "property operator value", where the
-	 * property can be any of the returned instances' instance variables,
-	 * the operator can be one of < > <> >= <= != = == ~  The value must
-	 * not be quoted and if it should be an empty string, it should
-	 * simply be left out (e.g. "title !=").
-	 * @return Volume[]
-	 */
-	public function find() {
-		$volume = $this->factory->createVolume();
-		$properties = array_keys($volume->toArray());
-		return parent::performFind(get_class($volume), $properties, 'number', func_get_args());
-	}
-
+    /**
+     * Returns Volume objects matching the given filters.
+     *
+     * Any number of strings can be passed as arguments, each of which
+     * has to be in the form of "property operator value", where the
+     * property can be any of the returned instances' instance variables,
+     * the operator can be one of < > <> >= <= != = == ~  The value must
+     * not be quoted and if it should be an empty string, it should
+     * simply be left out (e.g. "title !=").
+     *
+     * @return Volume[]
+     */
+    public function find()
+    {
+        $volume     = $this->factory->createVolume();
+        $properties = array_keys($volume->toArray());
+        return parent::performFind(get_class($volume), $properties, 'number', func_get_args());
+    }
 }

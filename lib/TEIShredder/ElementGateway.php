@@ -31,55 +31,63 @@ use \PDO;
 
 /**
  * Gateway for Element objects
- * @package TEIShredder
- * @author Carsten Bluem <carsten@bluem.net>
+ *
+ * @package   TEIShredder
+ * @author    Carsten Bluem <carsten@bluem.net>
  * @copyright 2012 Carsten Bluem <carsten@bluem.net>
- * @link https://github.com/BlueM/TEIShredder
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link      https://github.com/BlueM/TEIShredder
+ * @license   http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class ElementGateway extends AbstractGateway {
+class ElementGateway extends AbstractGateway
+{
 
     /**
      * {@inheritdoc}
      */
-	protected function tableName() {
-		return $this->prefix.'element';
-	}
+    protected function tableName()
+    {
+        return $this->prefix.'element';
+    }
 
-	/**
-	 * Returns an element by its unique xml:id
-	 * @param mixed $identifier xml:id attribute value
-	 * @return Element
-	 * @throws InvalidArgumentException
-	 */
-	public function findByIdentifier($identifier) {
-		$table = $this->tableName();
-		$stm = $this->db->prepare(
-			"SELECT * FROM $table WHERE xmlid = ?"
-		);
-		$stm->execute(array($identifier));
-		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createElement());
-		if (false === $obj = $stm->fetch()) {
-			throw new InvalidArgumentException('No such element');
-		}
-		return $obj;
-	}
+    /**
+     * Returns an element by its unique xml:id
+     *
+     * @param mixed $identifier xml:id attribute value
+     *
+     * @return Element
+     * @throws InvalidArgumentException
+     */
+    public function findByIdentifier($identifier)
+    {
+        $table = $this->tableName();
+        $stm   = $this->db->prepare(
+            "SELECT * FROM $table WHERE xmlid = ?"
+        );
+        $stm->execute(array($identifier));
+        $stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createElement());
+        if (false === $obj = $stm->fetch()) {
+            throw new InvalidArgumentException('No such element');
+        }
+        return $obj;
+    }
 
-	/**
-	 * Returns Element objects matching the given filters.
-	 *
-	 * Any number of strings can be passed as arguments, each of which
-	 * has to be in the form of "property operator value", where the
-	 * property can be any of the returned instances' instance variables,
-	 * the operator can be one of < > <> >= <= != = == ~  The value must
-	 * not be quoted and if it should be an empty string, it should
-	 * simply be left out (e.g. "title !=").
-	 * @return Element[]
-	 */
-	public function find() {
-		$element = $this->factory->createElement();
-		$properties = array_keys($element->toArray());
-		return parent::performFind(get_class($element), $properties, 'chunk', func_get_args());
-	}
+    /**
+     * Returns Element objects matching the given filters.
+     *
+     * Any number of strings can be passed as arguments, each of which
+     * has to be in the form of "property operator value", where the
+     * property can be any of the returned instances' instance variables,
+     * the operator can be one of < > <> >= <= != = == ~  The value must
+     * not be quoted and if it should be an empty string, it should
+     * simply be left out (e.g. "title !=").
+     *
+     * @return Element[]
+     */
+    public function find()
+    {
+        $element    = $this->factory->createElement();
+        $properties = array_keys($element->toArray());
+        return parent::performFind(get_class($element), $properties, 'chunk', func_get_args());
+    }
 
 }

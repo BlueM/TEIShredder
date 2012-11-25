@@ -26,282 +26,311 @@
 
 namespace TEIShredder;
 
-use \PDO;
-use \InvalidArgumentException;
 use \RuntimeException;
 use \SplObjectStorage;
 
 /**
  * Class for extracting some tags from a TEI Lite document and for
  * transferring them to a RDBMS.
- * @package TEIShredder
- * @author Carsten Bluem <carsten@bluem.net>
+ *
+ * @package   TEIShredder
+ * @author    Carsten Bluem <carsten@bluem.net>
  * @copyright 2012 Carsten Bluem <carsten@bluem.net>
- * @link https://github.com/BlueM/TEIShredder
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link      https://github.com/BlueM/TEIShredder
+ * @license   http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class Indexer_Extractor extends Indexer {
+class Indexer_Extractor extends Indexer
+{
 
-	/**
-	 * Array of elements that are regarded as distinct text containers
-	 * @var string[] Indexed array of element names
-	 */
-	public $containertags = array('l', 'p', 'head', 'note', 'docImprint',
-	                              'byLine', 'titlePart', 'byline', 'item');
+    /**
+     * Array of elements that are regarded as distinct text containers
+     *
+     * @var string[] Indexed array of element names
+     */
+    public $containertags = array(
+        'l',
+        'p',
+        'head',
+        'note',
+        'docImprint',
+        'byLine',
+        'titlePart',
+        'byline',
+        'item'
+    );
 
-	/**
-	 * @var SplObjectStorage
-	 */
-	protected $entities;
+    /**
+     * @var SplObjectStorage
+     */
+    protected $entities;
 
-	/**
-	 * Stack of currently "open" entity tags
-	 * @var array Indexed array of xml:id values
-	 */
-	protected $entityStack = array();
+    /**
+     * Stack of currently "open" entity tags
+     *
+     * @var array Indexed array of xml:id values
+     */
+    protected $entityStack = array();
 
-	/**
-	 * Stack of counter numbers of currently "open" container tags
-	 * @var array Indexed array of index/counter numbers
-	 */
-	protected $containerStack = array();
+    /**
+     * Stack of counter numbers of currently "open" container tags
+     *
+     * @var array Indexed array of index/counter numbers
+     */
+    protected $containerStack = array();
 
-	/**
-	 * Indexed array of elements that are currently open. Will contain
-	 * something like array('text', 'body', 'div', 'p')
-	 * @var string
-	 */
-	protected $elementStack = array();
+    /**
+     * Indexed array of elements that are currently open. Will contain
+     * something like array('text', 'body', 'div', 'p')
+     *
+     * @var string
+     */
+    protected $elementStack = array();
 
-	/**
-	 * Array that contains the text chunks in which the notations occur
-	 * @var array Indexed array
-	 */
-	protected $containers = array();
+    /**
+     * Array that contains the text chunks in which the notations occur
+     *
+     * @var array Indexed array
+     */
+    protected $containers = array();
 
-	/**
-	 * @var NamedEntityGateway
-	 */
-	protected $entityGateway;
+    /**
+     * @var NamedEntityGateway
+     */
+    protected $entityGateway;
 
-	/**
-	 * @var ElementGateway
-	 */
-	protected $elementGateway;
+    /**
+     * @var ElementGateway
+     */
+    protected $elementGateway;
 
-	/**
-	 * Constructor.
-	 * @param Setup $setup
-	 * @param XMLReader $xmlreader
-	 * @param string $xml Input XML
-	 * @param XMLReader $xmlreader
-	 */
-	public function __construct(Setup $setup, XMLReader $xmlreader, $xml) {
-		parent::__construct($setup, $xmlreader, $xml);
-		$this->entityGateway = $setup->factory->createNamedEntityGateway();
-		$this->elementGateway = $setup->factory->createElementGateway();
-		$this->entities = new SplObjectStorage;
-	}
+    /**
+     * Constructor.
+     *
+     * @param Setup     $setup
+     * @param XMLReader $xmlreader
+     * @param string    $xml Input XML
+     * @param XMLReader $xmlreader
+     */
+    public function __construct(Setup $setup, XMLReader $xmlreader, $xml)
+    {
+        parent::__construct($setup, $xmlreader, $xml);
+        $this->entityGateway  = $setup->factory->createNamedEntityGateway();
+        $this->elementGateway = $setup->factory->createElementGateway();
+        $this->entities       = new SplObjectStorage;
+    }
 
-	/**
-	 * Method that's called when the stream reaches an opening or empty tag.
-	 * @return mixed
-	 * @throws RuntimeException
-	 */
-	protected function nodeOpen() {
+    /**
+     * Method that's called when the stream reaches an opening or empty tag.
+     *
+     * @return mixed
+     * @throws RuntimeException
+     */
+    protected function nodeOpen()
+    {
 
-		// Keep track of the chunk number
-		if (in_array($this->r->localName, $this->setup->chunktags) or
-			in_array($this->r->localName, $this->setup->nostacktags)) {
-			$this->currentChunk ++;
-		}
+        // Keep track of the chunk number
+        if (in_array($this->r->localName, $this->setup->chunktags) or
+            in_array($this->r->localName, $this->setup->nostacktags)
+        ) {
+            $this->currentChunk++;
+        }
 
-		// New page: increase page number, save element and return
-		if ('pb' == $this->r->localName) {
-			$this->page ++;
-			$this->newElement();
-			return;
-		}
+        // New page: increase page number, save element and return
+        if ('pb' == $this->r->localName) {
+            $this->page++;
+            $this->newElement();
+            return;
+        }
 
-		$containerindex = (int)end($this->containerStack);
+        $containerindex = (int)end($this->containerStack);
 
-		// In case of <lb/> or <milestone/>, add space to the enclosing
-		// container (if any), but don't do anything else, i.e.: return.
-		if ('lb' == $this->r->localName or
-		    'milestone' == $this->r->localName) {
-			if (empty($this->containers[$containerindex])) {
-				$this->containers[$containerindex] = '';
-			}
-			$this->containers[$containerindex] .= ' ';
-			return;
-		}
+        // In case of <lb/> or <milestone/>, add space to the enclosing
+        // container (if any), but don't do anything else, i.e.: return.
+        if ('lb' == $this->r->localName or
+            'milestone' == $this->r->localName
+        ) {
+            if (empty($this->containers[$containerindex])) {
+                $this->containers[$containerindex] = '';
+            }
+            $this->containers[$containerindex] .= ' ';
+            return;
+        }
 
-		// Update the elements stack, unless it's an empty element
-		if (!$this->r->isEmptyElement) {
-			$this->elementStack[] = $this->r->localName;
-		}
+        // Update the elements stack, unless it's an empty element
+        if (!$this->r->isEmptyElement) {
+            $this->elementStack[] = $this->r->localName;
+        }
 
-		// Create a new element
-		$this->newElement();
+        // Create a new element
+        $this->newElement();
 
-		if ($this->r->localName == 'rs') {
-			// Named entity
-			$entity = $this->setup->factory->createNamedEntity($this->setup);
-			$entity->xmlid = $this->r->getAttribute('xml:id');
-			$entity->page = $this->page;
-			$entity->chunk = $this->currentChunk;
-			$entity->domain = $this->r->getAttribute('type');
-			$entity->identifier = $this->r->getAttribute('key'); // Reminder: could be multiple
-			$this->entities->attach($entity, $containerindex);
+        if ($this->r->localName == 'rs') {
+            // Named entity
+            $entity             = $this->setup->factory->createNamedEntity($this->setup);
+            $entity->xmlid      = $this->r->getAttribute('xml:id');
+            $entity->page       = $this->page;
+            $entity->chunk      = $this->currentChunk;
+            $entity->domain     = $this->r->getAttribute('type');
+            $entity->identifier = $this->r->getAttribute('key'); // Reminder: could be multiple
+            $this->entities->attach($entity, $containerindex);
 
-			$this->entityStack[] = $entity->xmlid;
-			$this->containers[$containerindex] .= '<:'.$entity->xmlid.'>';
-		} elseif (in_array($this->r->localName, $this->containertags)) {
-			// Container tags
-			$this->registerNewContainer();
-		}
+            $this->entityStack[] = $entity->xmlid;
+            $this->containers[$containerindex] .= '<:'.$entity->xmlid.'>';
+        } elseif (in_array($this->r->localName, $this->containertags)) {
+            // Container tags
+            $this->registerNewContainer();
+        }
 
-	}
+    }
 
-	/**
-	 * Completes all the named entities' data accumulated before (plus some
-	 * additional data, such as some context string) to the database.
-	 */
-	protected function save() {
+    /**
+     * Completes all the named entities' data accumulated before (plus some
+     * additional data, such as some context string) to the database.
+     */
+    protected function save()
+    {
 
-		$this->entities->rewind();
+        $this->entities->rewind();
 
-		while ($this->entities->valid()) {
+        while ($this->entities->valid()) {
 
-			$entity = $this->entities->current();
-			$containerindex = $this->entities->getInfo();
+            $entity         = $this->entities->current();
+            $containerindex = $this->entities->getInfo();
 
-			// Get the text context.
-			list($entity->contextstart, $entity->notation, $entity->contextend)
-					= $this->extractText($entity->xmlid, $containerindex);
+            // Get the text context.
+            list($entity->contextstart, $entity->notation, $entity->contextend)
+                = $this->extractText($entity->xmlid, $containerindex);
 
-			foreach (explode(' ', $entity->identifier) as $identifier) {
-				// Each entry in array $tag['key'] points to a different target. If
-				// there are multiple entries, we have to add multiple records to
-				// support links with multiple targets. Note: save() below will
-				// always insert a new record, therefore it doesn't matter that
-				// we pass the same object several times.
-				$entity->identifier = $identifier;
-				$this->entityGateway->save($entity);
-			}
+            foreach (explode(' ', $entity->identifier) as $identifier) {
+                // Each entry in array $tag['key'] points to a different target. If
+                // there are multiple entries, we have to add multiple records to
+                // support links with multiple targets. Note: save() below will
+                // always insert a new record, therefore it doesn't matter that
+                // we pass the same object several times.
+                $entity->identifier = $identifier;
+                $this->entityGateway->save($entity);
+            }
 
-			$this->entities->detach($entity);
-			unset($entity);
-		}
-	}
+            $this->entities->detach($entity);
+            unset($entity);
+        }
+    }
 
-	/**
-	 * Extracts the entity's notation and surrounding context from the text
-	 * @param string $xmlid Value of @xml:id attribute of element whose
-	 *                      context is to be returned.
-	 * @param int $containerindex Internal container counter/index
-	 * @return array
-	 */
-	protected function extractText($xmlid, $containerindex) {
+    /**
+     * Extracts the entity's notation and surrounding context from the text
+     *
+     * @param string $xmlid          Value of @xml:id attribute of element whose
+     *                               context is to be returned.
+     * @param int    $containerindex Internal container counter/index
+     *
+     * @return array
+     */
+    protected function extractText($xmlid, $containerindex)
+    {
 
-		// Insert marker for "own" notation, then remove other notations
-		$context = preg_replace(
-			'#</?:[^>]+>#',
-			'',
-			str_replace(
-				array('<:'.$xmlid.'>', '</:'.$xmlid.'>'),
-				'###',
-				$this->containers[$containerindex]
-			)
-		);
+        // Insert marker for "own" notation, then remove other notations
+        $context = preg_replace(
+            '#</?:[^>]+>#',
+            '',
+            str_replace(
+                array('<:'.$xmlid.'>', '</:'.$xmlid.'>'),
+                '###',
+                $this->containers[$containerindex]
+            )
+        );
 
-		// Convert the context to plaintext. Therefore, escape special chars
-		// in the plaintext, as the plaintext conversion code should expect XML.
-		$context = trim(
-			preg_replace(
-				'#\s+#u',
-				' ',
-				call_user_func($this->setup->plaintextCallback, htmlspecialchars($context))
-			)
-		);
+        // Convert the context to plaintext. Therefore, escape special chars
+        // in the plaintext, as the plaintext conversion code should expect XML.
+        $context = trim(
+            preg_replace(
+                '#\s+#u',
+                ' ',
+                call_user_func($this->setup->plaintextCallback, htmlspecialchars($context))
+            )
+        );
 
-		return explode('###', $context);
-	}
+        return explode('###', $context);
+    }
 
-	/**
-	 * Records occurrences of any elements that have an xml:id attribute.
-	 */
-	protected function newElement() {
+    /**
+     * Records occurrences of any elements that have an xml:id attribute.
+     */
+    protected function newElement()
+    {
 
-		if (null == $xmlid = $this->r->getAttribute('xml:id')) {
-			// No xml:id attribute >> Ignore
-			return;
-		}
+        if (null == $xmlid = $this->r->getAttribute('xml:id')) {
+            // No xml:id attribute >> Ignore
+            return;
+        }
 
-		$e = $this->setup->factory->createElement($this->setup);
-		$e->xmlid = $xmlid;
-		$e->element = $this->r->localName;
-		$e->page = $this->page;
-		$e->chunk = $this->currentChunk;
-		$this->elementGateway->save($e);
-	}
+        $e          = $this->setup->factory->createElement($this->setup);
+        $e->xmlid   = $xmlid;
+        $e->element = $this->r->localName;
+        $e->page    = $this->page;
+        $e->chunk   = $this->currentChunk;
+        $this->elementGateway->save($e);
+    }
 
-	/**
-	 * Setup method that will be called right before processing starts.
-	 */
-	protected function preProcessAction() {
-		$this->elementGateway->flush($this->setup);
-		$this->entityGateway->flush($this->setup);
-	}
+    /**
+     * Setup method that will be called right before processing starts.
+     */
+    protected function preProcessAction()
+    {
+        $this->elementGateway->flush($this->setup);
+        $this->entityGateway->flush($this->setup);
+    }
 
-	/**
-	 * Called when a new container tag is encountered (i.e.: an XML
-	 * element which is in $this->containertags)
-	 */
-	protected function registerNewContainer() {
-		static $index = 0;
-		$this->containerStack[] = ++$index;
-		$this->containers[$index] = '';
-	}
+    /**
+     * Called when a new container tag is encountered (i.e.: an XML
+     * element which is in $this->containertags)
+     */
+    protected function registerNewContainer()
+    {
+        static $index = 0;
+        $this->containerStack[]   = ++$index;
+        $this->containers[$index] = '';
+    }
 
-	/**
-	 * Method that's called when the input stream reaches a text
-	 * node or significant whitespace
-	 */
-	protected function nodeContent() {
+    /**
+     * Method that's called when the input stream reaches a text
+     * node or significant whitespace
+     */
+    protected function nodeContent()
+    {
 
-		if (empty($this->containerStack)) {
-			// Not inside a container -- ignore
-			return;
-		}
+        if (empty($this->containerStack)) {
+            // Not inside a container -- ignore
+            return;
+        }
 
-		if (in_array(end($this->elementStack), $this->setup->ignorabletags)) {
-			return;
-		}
+        if (in_array(end($this->elementStack), $this->setup->ignorabletags)) {
+            return;
+        }
 
-		$containerindex = end($this->containerStack);
-		$this->containers[$containerindex] .= $this->r->value;
-	}
+        $containerindex = end($this->containerStack);
+        $this->containers[$containerindex] .= $this->r->value;
+    }
 
-	/**
-	 * Method that's called when the input stream reaches a closing tag
-	 */
-	protected function nodeClose() {
+    /**
+     * Method that's called when the input stream reaches a closing tag
+     */
+    protected function nodeClose()
+    {
 
-		// Remove the closed element from the element stack
-		array_pop($this->elementStack);
+        // Remove the closed element from the element stack
+        array_pop($this->elementStack);
 
-		if (in_array($this->r->localName, $this->containertags)) {
-			array_pop($this->containerStack);
-		}
+        if (in_array($this->r->localName, $this->containertags)) {
+            array_pop($this->containerStack);
+        }
 
-		if ($this->r->localName == 'rs') {
-			// Closing entity tag
-			$entityindex = array_pop($this->entityStack);
-			$containerindex = end($this->containerStack);
-			$this->containers[$containerindex] .= '</:'.$entityindex.'>';
-		}
+        if ($this->r->localName == 'rs') {
+            // Closing entity tag
+            $entityindex    = array_pop($this->entityStack);
+            $containerindex = end($this->containerStack);
+            $this->containers[$containerindex] .= '</:'.$entityindex.'>';
+        }
 
-	}
+    }
 
 }

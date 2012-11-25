@@ -30,36 +30,40 @@ use \RuntimeException;
 
 /**
  * XMLReader subclass which adds a convenience method.
- * @package TEIShredder
- * @author Carsten Bluem <carsten@bluem.net>
+ *
+ * @package   TEIShredder
+ * @author    Carsten Bluem <carsten@bluem.net>
  * @copyright 2012 Carsten Bluem <carsten@bluem.net>
- * @link https://github.com/BlueM/TEIShredder
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link      https://github.com/BlueM/TEIShredder
+ * @license   http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class XMLReader extends \XMLReader {
+class XMLReader extends \XMLReader
+{
 
-	/**
-	 * Returns the full open tag for the current element
-	 * @return string Opening tag including attributes
-	 * @throws RuntimeException
-	 */
-	public function nodeOpenString() {
-		if (XMLREADER::ELEMENT != $this->nodeType) {
-			throw new RuntimeException('This node is not an opening element.');
-		}
-		$str = $this->prefix.$this->localName;
-		if ($this->hasAttributes) {
-			$this->moveToFirstAttribute();
-			do {
-				$attr = ($this->prefix ? $this->prefix.':' : '').$this->localName;
-				$str .= ' '.$attr.'="'.htmlspecialchars($this->value).'"';
-			} while ($this->moveToNextAttribute());
-			$this->moveToElement();
-		}
-		if ($this->isEmptyElement) {
-			$str .= '/';
-		}
-		return "<$str>";
-	}
+    /**
+     * Returns the full open tag for the current element
+     *
+     * @return string Opening tag including attributes
+     * @throws RuntimeException
+     */
+    public function nodeOpenString()
+    {
+        if (XMLREADER::ELEMENT != $this->nodeType) {
+            throw new RuntimeException('This node is not an opening element.');
+        }
+        $str = $this->prefix.$this->localName;
+        if ($this->hasAttributes) {
+            $this->moveToFirstAttribute();
+            do {
+                $attr = ($this->prefix ? $this->prefix.':' : '').$this->localName;
+                $str .= ' '.$attr.'="'.htmlspecialchars($this->value).'"';
+            } while ($this->moveToNextAttribute());
+            $this->moveToElement();
+        }
+        if ($this->isEmptyElement) {
+            $str .= '/';
+        }
+        return "<$str>";
+    }
 
 }

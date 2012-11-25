@@ -27,83 +27,93 @@
 namespace TEIShredder;
 
 use \LogicException;
-use \InvalidArgumentException;
-use \PDO;
 
 /**
  * Model class for sections in the underlying TEI document.
- * @package TEIShredder
- * @author Carsten Bluem <carsten@bluem.net>
+ *
+ * @package   TEIShredder
+ * @author    Carsten Bluem <carsten@bluem.net>
  * @copyright 2012 Carsten Bluem <carsten@bluem.net>
- * @link https://github.com/BlueM/TEIShredder
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
- * @property int $id
- * @property int $volume
+ * @link      https://github.com/BlueM/TEIShredder
+ * @license   http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @property int    $id
+ * @property int    $volume
  * @property string $title
- * @property int $page
- * @property int $level
+ * @property int    $page
+ * @property int    $level
  * @property string $element
  * @property string $xmlid
  */
-class Section extends Model {
+class Section extends Model
+{
 
-	/**
-	 * Section ID
-	 * @var int
-	 */
-	protected $id;
+    /**
+     * Section ID
+     *
+     * @var int
+     */
+    protected $id;
 
-	/**
-	 * Volume number
-	 * @var int
-	 * @todo Redundant: a section starts on a page, and the page knows the volume
-	 */
-	protected $volume;
+    /**
+     * Volume number
+     *
+     * @var int
+     * @todo Redundant: a section starts on a page, and the page knows the volume
+     */
+    protected $volume;
 
-	/**
-	 * Section's title
-	 * @var string
-	 */
-	protected $title;
+    /**
+     * Section's title
+     *
+     * @var string
+     */
+    protected $title;
 
-	/**
-	 * Number of the page on which this sections starts
-	 * @var int
-	 */
-	protected $page;
+    /**
+     * Number of the page on which this sections starts
+     *
+     * @var int
+     */
+    protected $page;
 
-	/**
-	 * Section's level (1-based) in the section hierarchy
-	 * @var int
-	 */
-	protected $level;
+    /**
+     * Section's level (1-based) in the section hierarchy
+     *
+     * @var int
+     */
+    protected $level;
 
-	/**
-	 * Section's element (tag) name
-	 * @var int
-	 */
-	protected $element;
+    /**
+     * Section's element (tag) name
+     *
+     * @var int
+     */
+    protected $element;
 
-	/**
-	 * Section's opening tag's @xml:id attribute value
-	 * @var string
-	 */
-	protected $xmlid;
+    /**
+     * Section's opening tag's
+     * @xml:id attribute value
+     * @var string
+     */
+    protected $xmlid;
 
-	/**
-	 * Returns data to be passed to a persistence layer.
-	 * @return array Associative array of property=>value pairs
-	 * @throws LogicException
-	 */
-	public function persistableData() {
-		// Basic integrity check
-		foreach (array('id', 'volume', 'page', 'level', 'element') as $property) {
-			if (is_null($this->$property) or
-			    '' === $this->$property) {
-				throw new LogicException("Integrity check failed: $property cannot be empty.");
-			}
-		}
-		return $this->toArray();
-	}
+    /**
+     * Returns data to be passed to a persistence layer.
+     *
+     * @return array Associative array of property=>value pairs
+     * @throws LogicException
+     */
+    public function persistableData()
+    {
+        // Basic integrity check
+        foreach (array('id', 'volume', 'page', 'level', 'element') as $property) {
+            if (is_null($this->$property) or
+                '' === $this->$property
+            ) {
+                throw new LogicException("Integrity check failed: $property cannot be empty.");
+            }
+        }
+        return $this->toArray();
+    }
 
 }

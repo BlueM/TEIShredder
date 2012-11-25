@@ -31,71 +31,81 @@ use \PDO;
 
 /**
  * Gateway for XML chunks
- * @package TEIShredder
- * @author Carsten Bluem <carsten@bluem.net>
+ *
+ * @package   TEIShredder
+ * @author    Carsten Bluem <carsten@bluem.net>
  * @copyright 2012 Carsten Bluem <carsten@bluem.net>
- * @link https://github.com/BlueM/TEIShredder
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link      https://github.com/BlueM/TEIShredder
+ * @license   http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class XMLChunkGateway extends AbstractGateway {
+class XMLChunkGateway extends AbstractGateway
+{
 
     /**
      * {@inheritdoc}
      */
-	protected function tableName() {
-		return $this->prefix.'xmlchunk';
-	}
+    protected function tableName()
+    {
+        return $this->prefix.'xmlchunk';
+    }
 
-	/**
-	 * Returns all non-empty chunks that are on the given page.
-	 * @param int $id Chunk ID
-	 * @throws InvalidArgumentException
-	 * @return XMLChunk
-	 */
-	public function findByIdentifier($id) {
-		$table = $this->tableName();
-		$stm = $this->db->prepare(
-			"SELECT * FROM $table WHERE id = ?"
-		);
-		$stm->execute(array($id));
-		$stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createXMLChunk());
-		if (false === $obj = $stm->fetch()) {
-			throw new InvalidArgumentException('Invalid chunk number');
-		}
-		return $obj;
-	}
+    /**
+     * Returns all non-empty chunks that are on the given page.
+     *
+     * @param int $id Chunk ID
+     *
+     * @throws InvalidArgumentException
+     * @return XMLChunk
+     */
+    public function findByIdentifier($id)
+    {
+        $table = $this->tableName();
+        $stm   = $this->db->prepare(
+            "SELECT * FROM $table WHERE id = ?"
+        );
+        $stm->execute(array($id));
+        $stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createXMLChunk());
+        if (false === $obj = $stm->fetch()) {
+            throw new InvalidArgumentException('Invalid chunk number');
+        }
+        return $obj;
+    }
 
-	/**
-	 * Returns all non-empty chunks that are on the given page.
-	 * @param int $page Page number
-	 * @return XMLChunk[]
-	 */
-	public function findByPageNumber($page) {
-		$table = $this->tableName();
-		$stm = $this->db->prepare(
-			"SELECT * FROM $table WHERE xml != '' AND page = ? ORDER BY id"
-		);
-		$stm->execute(array($page));
-		$chunk = $this->factory->createXMLChunk();
-		$stm->setFetchMode(PDO::FETCH_CLASS, get_class($chunk));
-		return $stm->fetchAll();
-	}
+    /**
+     * Returns all non-empty chunks that are on the given page.
+     *
+     * @param int $page Page number
+     *
+     * @return XMLChunk[]
+     */
+    public function findByPageNumber($page)
+    {
+        $table = $this->tableName();
+        $stm   = $this->db->prepare(
+            "SELECT * FROM $table WHERE xml != '' AND page = ? ORDER BY id"
+        );
+        $stm->execute(array($page));
+        $chunk = $this->factory->createXMLChunk();
+        $stm->setFetchMode(PDO::FETCH_CLASS, get_class($chunk));
+        return $stm->fetchAll();
+    }
 
-	/**
-	 * Returns XMLChunk objects matching the given filters.
-	 *
-	 * Any number of strings can be passed as arguments, each of which
-	 * has to be in the form of "property operator value", where the
-	 * property can be any of the returned instances' instance variables,
-	 * the operator can be one of < > <> >= <= != = == ~  The value must
-	 * not be quoted and if it should be an empty string, it should
-	 * simply be left out (e.g. "title !=").
-	 * @return XMLChunk[]
-	 */
-	public function find() {
-		$chunk = $this->factory->createXMLChunk();
-		$properties = array_keys($chunk->toArray());
-		return parent::performFind(get_class($chunk), $properties, 'id', func_get_args());
-	}
-
+    /**
+     * Returns XMLChunk objects matching the given filters.
+     *
+     * Any number of strings can be passed as arguments, each of which
+     * has to be in the form of "property operator value", where the
+     * property can be any of the returned instances' instance variables,
+     * the operator can be one of < > <> >= <= != = == ~  The value must
+     * not be quoted and if it should be an empty string, it should
+     * simply be left out (e.g. "title !=").
+     *
+     * @return XMLChunk[]
+     */
+    public function find()
+    {
+        $chunk      = $this->factory->createXMLChunk();
+        $properties = array_keys($chunk->toArray());
+        return parent::performFind(get_class($chunk), $properties, 'id', func_get_args());
+    }
 }

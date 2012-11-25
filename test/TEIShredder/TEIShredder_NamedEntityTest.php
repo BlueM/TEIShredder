@@ -9,10 +9,12 @@ require_once __DIR__.'/../bootstrap.php';
 
 /**
  * Test class for TEIShredder_NamedEntity.
- * @package TEIShredder
+ *
+ * @package    TEIShredder
  * @subpackage Tests
  */
-class NamedEntityTest extends \PHPUnit_Framework_TestCase {
+class NamedEntityTest extends \PHPUnit_Framework_TestCase
+{
 
     /**
      * @var Setup
@@ -45,32 +47,32 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-	 * @test
-	 */
+     * @test
+     */
     public function getThePersistableDataForAnEntity()
     {
-        $entity = new NamedEntity($this->setup);
-        $entity->xmlid = 'element-01';
-        $entity->page = 123;
-        $entity->domain = 'person';
-        $entity->identifier = 'http://d-nb.info/gnd/118582143';
+        $entity               = new NamedEntity($this->setup);
+        $entity->xmlid        = 'element-01';
+        $entity->page         = 123;
+        $entity->domain       = 'person';
+        $entity->identifier   = 'http://d-nb.info/gnd/118582143';
         $entity->contextstart = 'Painter ';
-        $entity->notation = 'Michelangelo';
-        $entity->contextend = ' lived in the renaissance';
-        $entity->chunk = 456;
+        $entity->notation     = 'Michelangelo';
+        $entity->contextend   = ' lived in the renaissance';
+        $entity->chunk        = 456;
         $entity->notationhash = 'd1f9cc6d';
-        $data = $entity->persistableData();
+        $data                 = $entity->persistableData();
         $this->assertInternalType('array', $data);
         $this->assertEquals(
             array(
-                'xmlid' => 'element-01',
-                'page' => 123,
-                'domain' => 'person',
-                'identifier' => 'http://d-nb.info/gnd/118582143',
+                'xmlid'        => 'element-01',
+                'page'         => 123,
+                'domain'       => 'person',
+                'identifier'   => 'http://d-nb.info/gnd/118582143',
                 'contextstart' => 'Painter ',
-                'notation' => 'Michelangelo',
-                'contextend' => ' lived in the renaissance',
-                'chunk' => 456,
+                'notation'     => 'Michelangelo',
+                'contextend'   => ' lived in the renaissance',
+                'chunk'        => 456,
                 'notationhash' => 'd1f9cc6d'
             ),
             $data
@@ -94,17 +96,17 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
      */
     public function theContextEndIsTruncatedWhenItExceedsACertainLength()
     {
-        $entity               = new NamedEntity($this->setup);
-        $in                   = str_repeat('abcdefgdefg ', 12);
+        $entity             = new NamedEntity($this->setup);
+        $in                 = str_repeat('abcdefgdefg ', 12);
         $entity->contextend = $in;
         $this->assertTrue(strlen($entity->contextend) < strlen($in));
         $this->assertSame('…', mb_substr($entity->contextend, -1));
     }
 
     /**
-	 * @test
-	 * @expectedException LogicException
-	 */
+     * @test
+     * @expectedException LogicException
+     */
     public function makeSureANamedEntityRequiresAPageNumber()
     {
         $entity             = new NamedEntity($this->setup);
@@ -115,14 +117,27 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-	 * @test
-	 * @expectedException LogicException
-	 */
-    function makeSureANamedEntityRequiresADomain()
+     * @test
+     * @expectedException LogicException
+     */
+    public function makeSureANamedEntityRequiresADomain()
     {
-        $entity = new NamedEntity($this->setup);
-        $entity->page = 123;
+        $entity             = new NamedEntity($this->setup);
+        $entity->page       = 123;
         $entity->identifier = 'http://d-nb.info/gnd/118582143';
+        $entity->notation   = 'Michelangelo';
+        $entity->persistableData();
+    }
+
+    /**
+     * @test
+     * @expectedException LogicException
+     */
+    public function makeSureANamedEntityRequiresAKey()
+    {
+        $entity           = new NamedEntity($this->setup);
+        $entity->page     = 123;
+        $entity->domain   = 'person';
         $entity->notation = 'Michelangelo';
         $entity->persistableData();
     }
@@ -131,27 +146,12 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase {
      * @test
      * @expectedException LogicException
      */
-    function makeSureANamedEntityRequiresAKey()
+    public function makeSureANamedEntityRequiresANotation()
     {
-        $entity = new NamedEntity($this->setup);
-        $entity->page = 123;
-        $entity->domain = 'person';
-        $entity->notation = 'Michelangelo';
-        $entity->persistableData();
-    }
-
-    /**
-     * @test
-     * @expectedException LogicException
-     */
-    function makeSureANamedEntityRequiresANotation()
-    {
-        $entity = new NamedEntity($this->setup);
-        $entity->page = 123;
-        $entity->domain = 'person';
+        $entity             = new NamedEntity($this->setup);
+        $entity->page       = 123;
+        $entity->domain     = 'person';
         $entity->identifier = 'http://d-nb.info/gnd/118582143';
         $entity->persistableData();
     }
-
 }
-

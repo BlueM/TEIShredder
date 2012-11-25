@@ -9,66 +9,73 @@ require_once __DIR__.'/../../bootstrap.php';
 
 /**
  * Test class for TEIShredder_Indexer_Chunker.
- * @package TEIShredder
+ *
+ * @package    TEIShredder
  * @subpackage Tests
  */
-class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase {
+class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase
+{
 
-	/**
-	 * @var Setup $setup
-	 */
-	var $setup;
+    /**
+     * @var Setup $setup
+     */
+    protected $setup;
 
-	/**
-	 * @var XMLReader $xmlreader
-	 */
-	var $xmlreader;
+    /**
+     * @var XMLReader $xmlreader
+     */
+    protected $xmlreader;
 
-	/**
-	 * Sets up the fixture
-	 */
-	function setUp() {
-		$this->setup = prepare_default_data();
-		$this->xmlreader = new XMLReader;
-	}
+    /**
+     * Sets up the fixture
+     */
+    public function setUp()
+    {
+        $this->setup     = prepare_default_data();
+        $this->xmlreader = new XMLReader;
+    }
 
-	/**
-	 * Removes the fixture
-	 */
-	function tearDown() {
-		unset($this->setup);
-	}
+    /**
+     * Removes the fixture
+     */
+    public function tearDown()
+    {
+        unset($this->setup);
+    }
 
-	/**
-	 * @test
-	 */
-	function createAChunker() {
+    /**
+     * @test
+     */
+    public function createAChunker()
+    {
 
-		$chunker = new Indexer_Chunker(
-			$this->setup,
-			$this->xmlreader,
-			file_get_contents(TESTDIR.'/Sample-1.xml')
-		);
-		$this->assertInstanceOf('\\'.__NAMESPACE__.'\\Indexer_Chunker', $chunker);
-		return $chunker;
-	}
+        $chunker = new Indexer_Chunker(
+            $this->setup,
+            $this->xmlreader,
+            file_get_contents(TESTDIR.'/Sample-1.xml')
+        );
+        $this->assertInstanceOf('\\'.__NAMESPACE__.'\\Indexer_Chunker', $chunker);
+        return $chunker;
+    }
 
-	/**
-	 * @test
-	 * @depends createAChunker
-	 */
-	function runTheChunker(Indexer_Chunker $chunker) {
-		$chunker->process();
-	}
+    /**
+     * @test
+     * @depends createAChunker
+     */
+    public function runTheChunker(Indexer_Chunker $chunker)
+    {
+        $chunker->process();
+    }
 
-	/**
-	 * @test
-	 * @expectedException RuntimeException
-	 * @expectedExceptionMessage Multiple <titlePart>
-	 */
-	function makeSureAChunkerThrowsAnExceptionIfThereAreSeveralTitlesForAVolume() {
+    /**
+     * @test
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage Multiple <titlePart>
+     */
+    public function makeSureAChunkerThrowsAnExceptionIfThereAreSeveralTitlesForAVolume()
+    {
 
-		$xml = <<<_XML_
+        $xml = <<<_XML_
 <TEI xmlns="http://www.tei-c.org/ns/1.0">
   <teiHeader>
     <fileDesc>
@@ -89,21 +96,22 @@ class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase {
 </TEI>
 _XML_;
 
-		$chunker = new Indexer_Chunker(
-			$this->setup,
-			$this->xmlreader,
-			$xml
-		);
+        $chunker = new Indexer_Chunker(
+            $this->setup,
+            $this->xmlreader,
+            $xml
+        );
 
-		$chunker->process();
-	}
+        $chunker->process();
+    }
 
-	/**
-	 * @test
-	 */
-	function runAChunkerWithTextbeforepbSetToOff() {
+    /**
+     * @test
+     */
+    public function runAChunkerWithTextbeforepbSetToOff()
+    {
 
-		$xml = <<<_XML_
+        $xml = <<<_XML_
 <TEI xmlns="http://www.tei-c.org/ns/1.0">
   <teiHeader>
     <fileDesc>
@@ -133,19 +141,19 @@ _XML_;
 </TEI>
 _XML_;
 
-		$chunker = new Indexer_Chunker(
-			$this->setup,
-			$this->xmlreader,
-			$xml
-		);
-		$chunker->textBeforePb = false;
-		$chunker->process();
+        $chunker               = new Indexer_Chunker(
+            $this->setup,
+            $this->xmlreader,
+            $xml
+        );
+        $chunker->textBeforePb = false;
+        $chunker->process();
 
-		$vg = $this->setup->factory->createVolumeGateway();
-		$volumes = $vg->find();
+        $vg      = $this->setup->factory->createVolumeGateway();
+        $volumes = $vg->find();
 
-		$this->assertEquals(1, $volumes[0]->number);
-		$this->assertEquals(2, $volumes[1]->number);
-	}
+        $this->assertEquals(1, $volumes[0]->number);
+        $this->assertEquals(2, $volumes[1]->number);
+    }
 }
 

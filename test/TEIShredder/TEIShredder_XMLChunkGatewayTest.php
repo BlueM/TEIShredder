@@ -9,90 +9,94 @@ require_once __DIR__.'/../bootstrap.php';
 
 /**
  * Test class for TEIShredder_XMLChunkGateway
- * @package TEIShredder
+ *
+ * @package    TEIShredder
  * @subpackage Tests
  */
-class XMLChunkGatewayTest extends \PHPUnit_Framework_TestCase {
+class XMLChunkGatewayTest extends \PHPUnit_Framework_TestCase
+{
 
-	/**
-	 * @var XMLChunkGateway
-	 */
-	var $obj;
+    /**
+     * @var XMLChunkGateway
+     */
+    protected $obj;
 
-	/**
-	 * Sets up the fixture
-	 */
-	function setUp() {
-		$setup = prepare_default_data();
-		$this->obj = new XMLChunkGateway($setup->database, $setup->factory, $setup->prefix);
-	}
+    /**
+     * Sets up the fixture
+     */
+    public function setUp()
+    {
+        $setup     = prepare_default_data();
+        $this->obj = new XMLChunkGateway($setup->database, $setup->factory, $setup->prefix);
+    }
 
-	/**
-	 * @test
-	 */
-	function saveAnXMLChunk() {
-		$this->obj->flush();
+    /**
+     * @test
+     */
+    public function saveAnXMLChunk()
+    {
+        $this->obj->flush();
 
-		$chunk = new XMLChunk();
-		$chunk->page = 3;
-		$chunk->section = 4;
-		$chunk->xml = '<foot/>';
-		$this->obj->save($chunk);
+        $chunk          = new XMLChunk();
+        $chunk->page    = 3;
+        $chunk->section = 4;
+        $chunk->xml     = '<foot/>';
+        $this->obj->save($chunk);
 
-		$chunks = $this->obj->findByPageNumber(3);
-		$this->assertInternalType('array', $chunks);
-		$this->assertInstanceOf('\TEIShredder\XMLChunk', $chunks[0]);
-	}
+        $chunks = $this->obj->findByPageNumber(3);
+        $this->assertInternalType('array', $chunks);
+        $this->assertInstanceOf('\TEIShredder\XMLChunk', $chunks[0]);
+    }
 
-	/**
-	 * @test
-	 */
-	function findAnXmlChunkByItsId() {
-		$this->obj->flush();
+    /**
+     * @test
+     */
+    public function findAnXmlChunkByItsId()
+    {
+        $this->obj->flush();
 
-		$chunk = new XMLChunk();
-		$chunk->id = 123;
-		$chunk->page = 3;
-		$chunk->section = 4;
-		$chunk->xml = '<foot/>';
-		$this->obj->save($chunk);
+        $chunk          = new XMLChunk();
+        $chunk->id      = 123;
+        $chunk->page    = 3;
+        $chunk->section = 4;
+        $chunk->xml     = '<foot/>';
+        $this->obj->save($chunk);
 
-		$chunk = $this->obj->findByIdentifier(123);
-		$this->assertInstanceOf('\TEIShredder\XMLChunk', $chunk);
-		$this->assertEquals(123, $chunk->id);
-	}
+        $chunk = $this->obj->findByIdentifier(123);
+        $this->assertInstanceOf('\TEIShredder\XMLChunk', $chunk);
+        $this->assertEquals(123, $chunk->id);
+    }
 
-	/**
-	 * @test
-	 * @expectedException InvalidArgumentException
-	 * @expectedExceptionMessage Invalid chunk number
-	 */
-	function tryingToFindAnXmlChunkByAnInvalidIdThrowsAnException() {
-		$this->obj->findByIdentifier(99999999);
-	}
+    /**
+     * @test
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Invalid chunk number
+     */
+    public function tryingToFindAnXmlChunkByAnInvalidIdThrowsAnException()
+    {
+        $this->obj->findByIdentifier(99999999);
+    }
 
-	/**
-	 * @test
-	 * @todo Add assertion
-	 */
-	function flushTheData() {
-		$chunk = new XMLChunk();
-		$chunk->page = 3;
-		$chunk->section = 4;
-		$chunk->xml = '<foot/>';
-		$this->obj->save($chunk);
+    /**
+     * @test
+     * @todo Add assertion
+     */
+    public function flushTheData()
+    {
+        $chunk          = new XMLChunk();
+        $chunk->page    = 3;
+        $chunk->section = 4;
+        $chunk->xml     = '<foot/>';
+        $this->obj->save($chunk);
 
-		$chunks = $this->obj->find();
-		$this->assertInternalType('array', $chunks);
-		$this->assertSame(1, count($chunks));
+        $chunks = $this->obj->find();
+        $this->assertInternalType('array', $chunks);
+        $this->assertSame(1, count($chunks));
 
-		$this->obj->flush();
+        $this->obj->flush();
 
-		$chunks = $this->obj->find();
-		$this->assertInternalType('array', $chunks);
-		$this->assertSame(0, count($chunks));
-	}
-
-
+        $chunks = $this->obj->find();
+        $this->assertInternalType('array', $chunks);
+        $this->assertSame(0, count($chunks));
+    }
 }
-
