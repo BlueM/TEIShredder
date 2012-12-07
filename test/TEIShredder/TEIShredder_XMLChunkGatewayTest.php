@@ -33,7 +33,7 @@ class XMLChunkGatewayTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function saveAnXMLChunk()
+    public function saveAnXmlChunk()
     {
         $this->obj->flush();
 
