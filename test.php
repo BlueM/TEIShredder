@@ -5,6 +5,8 @@ require __DIR__.'/autoload.php';
 
 $path = __DIR__.'/test/Sample-1.xml';
 
+mb_internal_encoding('utf8');
+
 $xml = file_get_contents($path);
 
 // Init the database connection
@@ -19,11 +21,11 @@ $setup = new \TEIShredder\Setup($db);
 $xmlreader = new \TEIShredder\XMLReader;
 
 // Create XML chunks and track the document structure
-$chunker = new \TEIShredder\Indexer_Chunker($setup, $xmlreader, $xml);
+$chunker = new \TEIShredder\Indexer\Chunker($setup, $xmlreader, $xml);
 $chunker->process();
 
 // Locate named entities and index occurrences of elements
-$extractor = new \TEIShredder\Indexer_Extractor($setup, $xmlreader, $xml);
+$extractor = new \TEIShredder\Indexer\Extractor($setup, $xmlreader, $xml);
 $extractor->process();
 
 
