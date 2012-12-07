@@ -1,7 +1,5 @@
 .DS_Store
 .idea
-_INTERNAL
 test.sqlite
 _TESTS.app
-*.uml
 phpunit-conf.xml
