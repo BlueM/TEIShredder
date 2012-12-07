@@ -26,7 +26,10 @@ class ElementTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->setup = prepare_default_data();
+        $pdoMock = $this->getMockBuilder('PDO')
+            ->setConstructorArgs(array('sqlite::memory:'))
+            ->getMock();
+        $this->setup   = new \TEIShredder\Setup($pdoMock);
     }
 
     /**

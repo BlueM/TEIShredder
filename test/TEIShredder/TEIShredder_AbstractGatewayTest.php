@@ -32,8 +32,13 @@ class AbstractGatewayTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $setup             = prepare_default_data();
-        $this->obj         = $this->getMockForAbstractClass(
+
+        $pdoMock = $this->getMockBuilder('PDO')
+            ->setConstructorArgs(array('sqlite::memory:'))
+            ->getMock();
+        $setup = new \TEIShredder\Setup($pdoMock);
+
+        $this->obj = $this->getMockForAbstractClass(
             '\TEIShredder\AbstractGateway',
             array($setup->database, $setup->factory, $setup->prefix)
         );
