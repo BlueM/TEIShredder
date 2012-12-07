@@ -1,23 +1,26 @@
 <?php
 
-namespace TEIShredder;
+namespace TEIShredder\Indexer;
 
 use \TEIShredder;
 use \RuntimeException;
+use TEIShredder\XMLReader;
 
 require_once __DIR__.'/../../bootstrap.php';
 
 /**
- * Test class for TEIShredder_Indexer_Chunker.
+ * Unit tests for TEIShredder\Indexer\Chunker.
  *
  * @package    TEIShredder
  * @subpackage Tests
+ * @covers \TEIShredder\Indexer\Base
+ * @covers \TEIShredder\Indexer\Chunker
  */
-class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase
+class ChunkerTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Setup $setup
+     * @var \TEIShredder\Setup $setup
      */
     protected $setup;
 
@@ -31,7 +34,21 @@ class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->setup     = prepare_default_data();
+        $pdoStmMock = $this->getMockBuilder('PDOStatement')
+            ->getMock();
+
+        $pdoMock = $this->getMockBuilder('PDO')
+            ->setConstructorArgs(array('sqlite::memory:'))
+            ->getMock();
+        $pdoMock->expects($this->any())
+            ->method('prepare')
+            ->will($this->returnValue($pdoStmMock));
+        $pdoMock->expects($this->any())
+            ->method('query')
+            ->will($this->returnValue($pdoStmMock));
+
+        $this->setup = new \TEIShredder\Setup($pdoMock);
+
         $this->xmlreader = new XMLReader;
     }
 
@@ -48,22 +65,48 @@ class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase
      */
     public function createAChunker()
     {
+        $xml = '<TEI xmlns="http://www.tei-c.org/ns/1.0">'.
+               '<teiHeader>'.
+               '<fileDesc>'.
+               '<titleStmt><title>...</title></titleStmt>'.
+               '<publicationStmt><p>...</p></publicationStmt>'.
+               '<sourceDesc><p>...</p></sourceDesc>'.
+               '</fileDesc>'.
+               '</teiHeader>'.
+               '<text>'.
+               '<front><titlePart>Title 2</titlePart></front>'.
+               '<body><p>...</p></body>'.
+               '</text>'.
+               '</TEI>';
 
-        $chunker = new Indexer_Chunker(
-            $this->setup,
-            $this->xmlreader,
-            file_get_contents(TESTDIR.'/Sample-1.xml')
-        );
-        $this->assertInstanceOf('\\'.__NAMESPACE__.'\\Indexer_Chunker', $chunker);
-        return $chunker;
+        $chunker = new Chunker($this->setup, $this->xmlreader, $xml);
+        $this->assertInstanceOf('\\'.__NAMESPACE__.'\\Chunker', $chunker);
     }
 
     /**
      * @test
-     * @depends createAChunker
      */
-    public function runTheChunker(Indexer_Chunker $chunker)
+    public function runTheChunker()
     {
+        $xml = '<TEI xmlns="http://www.tei-c.org/ns/1.0">'.
+            '<teiHeader>'.
+            '<fileDesc>'.
+            '<titleStmt><title>...</title></titleStmt>'.
+            '<publicationStmt><p>...</p></publicationStmt>'.
+            '<sourceDesc><p>...</p></sourceDesc>'.
+            '</fileDesc>'.
+            '</teiHeader>'.
+            '<text>'.
+            '<front>'.
+            '<titlePage><docTitle><titlePart>Title 2</titlePart></docTitle></titlePage>'.
+            '</front>'.
+            '<body>'.
+            '<pb n="1" />'.
+            '<milestone unit="column" n="left" />'.
+            '<div><head>Divhead</head><p>...</p></div></body>'.
+            '</text>'.
+            '</TEI>';
+        $chunker = new Chunker($this->setup, $this->xmlreader, $xml);
         $chunker->process();
     }
 
@@ -74,7 +117,6 @@ class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase
      */
     public function makeSureAChunkerThrowsAnExceptionIfThereAreSeveralTitlesForAVolume()
     {
-
         $xml = <<<_XML_
 <TEI xmlns="http://www.tei-c.org/ns/1.0">
   <teiHeader>
@@ -96,7 +138,7 @@ class Indexer_ChunkerTest extends \PHPUnit_Framework_TestCase
 </TEI>
 _XML_;
 
-        $chunker = new Indexer_Chunker(
+        $chunker = new Chunker(
             $this->setup,
             $this->xmlreader,
             $xml
@@ -110,7 +152,6 @@ _XML_;
      */
     public function runAChunkerWithTextbeforepbSetToOff()
     {
-
         $xml = <<<_XML_
 <TEI xmlns="http://www.tei-c.org/ns/1.0">
   <teiHeader>
@@ -141,19 +182,25 @@ _XML_;
 </TEI>
 _XML_;
 
-        $chunker               = new Indexer_Chunker(
+        $chunker = new Chunker(
             $this->setup,
             $this->xmlreader,
             $xml
         );
         $chunker->textBeforePb = false;
+
+        // Create a volume gateway mock
+        $volumeGatewayMock = $this->getMockBuilder('\TEIShredder\VolumeGateway')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $volumeGatewayMock->expects($this->exactly(2))
+            ->method('save')
+            ->with($this->isInstanceOf('\TEIShredder\Volume'));
+        $reflm = new \ReflectionProperty($chunker, 'volumeGateway');
+        $reflm->setAccessible(true);
+        $reflm->setValue($chunker, $volumeGatewayMock);
+
         $chunker->process();
-
-        $vg      = $this->setup->factory->createVolumeGateway();
-        $volumes = $vg->find();
-
-        $this->assertEquals(1, $volumes[0]->number);
-        $this->assertEquals(2, $volumes[1]->number);
     }
 }
 

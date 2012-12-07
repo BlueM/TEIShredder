@@ -24,9 +24,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace TEIShredder;
+namespace TEIShredder\Indexer;
 
 use \RuntimeException;
+use TEIShredder\XMLReader;
+use TEIShredder\Setup;
 
 /**
  * Class for splitting a TEI document in well-formed XML chunks.
@@ -40,7 +42,7 @@ use \RuntimeException;
  * @link      https://github.com/BlueM/TEIShredder
  * @license   http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class Indexer_Chunker extends Indexer
+class Chunker extends Base
 {
 
     /**
@@ -131,27 +133,27 @@ class Indexer_Chunker extends Indexer
     /**
      * The current page object
      *
-     * @var Page
+     * @var \TEIShredder\Page
      */
     protected $pageObj;
 
     /**
-     * @var VolumeGateway
+     * @var \TEIShredder\VolumeGateway
      */
     protected $volumeGateway;
 
     /**
-     * @var SectionGateway
+     * @var \TEIShredder\SectionGateway
      */
     protected $sectionGateway;
 
     /**
-     * @var PageGateway
+     * @var \TEIShredder\PageGateway
      */
     protected $pageGateway;
 
     /**
-     * @var XMLChunkGateway
+     * @var \TEIShredder\XMLChunkGateway
      */
     protected $xmlChunkGateway;
 
@@ -444,7 +446,6 @@ class Indexer_Chunker extends Indexer
      */
     protected function processTitlePart()
     {
-
         $title = call_user_func(
             $this->setup->plaintextCallback,
             $this->r->readOuterXML()
@@ -452,7 +453,9 @@ class Indexer_Chunker extends Indexer
 
         // Check for uniqueness
         if (!empty($this->data['volTitles'][$this->data['currentVolume']])) {
-            throw new RuntimeException('Multiple <titlePart>...</titlePart>s for volume '.$this->data['currentVolume'].":\n");
+            throw new RuntimeException(
+                'Multiple <titlePart> elements for volume '.$this->data['currentVolume'].":\n"
+            );
         }
 
         $this->data['volTitles'][$this->data['currentVolume']] = true;
