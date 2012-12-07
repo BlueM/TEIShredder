@@ -24,10 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace TEIShredder;
+namespace TEIShredder\Indexer;
 
 use \RuntimeException;
 use \SplObjectStorage;
+use TEIShredder\Setup;
+use TEIShredder\XMLReader;
 
 /**
  * Class for extracting some tags from a TEI Lite document and for
@@ -39,7 +41,7 @@ use \SplObjectStorage;
  * @link      https://github.com/BlueM/TEIShredder
  * @license   http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-class Indexer_Extractor extends Indexer
+class Extractor extends Base
 {
 
     /**
@@ -94,12 +96,12 @@ class Indexer_Extractor extends Indexer
     protected $containers = array();
 
     /**
-     * @var NamedEntityGateway
+     * @var \TEIShredder\NamedEntityGateway
      */
     protected $entityGateway;
 
     /**
-     * @var ElementGateway
+     * @var \TEIShredder\ElementGateway
      */
     protected $elementGateway;
 
