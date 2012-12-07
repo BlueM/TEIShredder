@@ -24,7 +24,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace TEIShredder;
+namespace TEIShredder\Indexer;
+
+use TEIShredder\XMLReader;
+use TEIShredder\Setup;
 
 /**
  * Abstract base class for processing a TEI document by stream-reading it
@@ -35,7 +38,7 @@ namespace TEIShredder;
  * @link      https://github.com/BlueM/TEIShredder
  * @license   http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-abstract class Indexer
+abstract class Base
 {
 
     /**
@@ -101,9 +104,7 @@ abstract class Indexer
      */
     public function __construct(Setup $setup, XMLReader $xmlreader, $xml)
     {
-
         $this->setup = $setup;
-
         $this->r = $xmlreader;
         $this->r->xml($xml);
     }
@@ -115,7 +116,6 @@ abstract class Indexer
      */
     public function process()
     {
-
         $this->preProcessAction();
 
         while ($this->r->read()) {
@@ -136,12 +136,11 @@ abstract class Indexer
         $this->save();
     }
 
-    // @codeCoverageIgnoreStart
-
     /**
      * Saves all the text data accumulated.
      *
      * May not be needed by subclasses. Empty default implementation.
+     * @codeCoverageIgnore
      */
     protected function save()
     {
@@ -152,12 +151,10 @@ abstract class Indexer
      * Will be called right before processing starts.
      *
      * May not be needed by subclasses. Empty default implementation.
+     * @codeCoverageIgnore
      */
     protected function preProcessAction()
     {
 
     }
-
-    // @codeCoverageIgnoreEnd
-
 }
