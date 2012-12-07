@@ -1,12 +1,13 @@
-TEIShredder\Indexer_Chunker
+TEIShredder\Indexer\Chunker
  [x] Create a chunker
  [x] Run the chunker
  [x] Make sure a chunker throws an exception if there are several titles for a volume
  [x] Run a chunker with textbeforepb set to off
 
-TEIShredder\Indexer_Extractor
+TEIShredder\Indexer\Extractor
  [x] Create an extractor
- [x] Run the extractor
+ [x] Make sure that the number of element and entities is as expected
+ [x] Make sure that an entity object is as expected
 
 TEIShredder\AbstractGateway
  [x] Trying to find objects with an unparseable filter string throws an exception
@@ -122,7 +123,7 @@ TEIShredder\Volume
  [x] Getting the persistable data for an object with complete data succeeds
 
 TEIShredder\XMLChunkGateway
- [x] Save an x m l chunk
+ [x] Save an xml chunk
  [x] Find an xml chunk by its id
  [x] Trying to find an xml chunk by an invalid id throws an exception
  [x] Flush the data
