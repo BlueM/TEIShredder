@@ -84,11 +84,14 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase
      */
     public function theContextStartIsTruncatedWhenItExceedsACertainLength()
     {
+        $oldEncoding = mb_internal_encoding();
+        mb_internal_encoding('utf8');
         $entity               = new NamedEntity($this->setup);
         $in                   = str_repeat('abcdefgdefg ', 12);
         $entity->contextstart = $in;
         $this->assertTrue(strlen($entity->contextstart) < strlen($in));
         $this->assertSame('…', mb_substr($entity->contextstart, 0, 1));
+        mb_internal_encoding($oldEncoding);
     }
 
     /**
@@ -96,11 +99,14 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase
      */
     public function theContextEndIsTruncatedWhenItExceedsACertainLength()
     {
+        $oldEncoding = mb_internal_encoding();
+        mb_internal_encoding('utf8');
         $entity             = new NamedEntity($this->setup);
         $in                 = str_repeat('abcdefgdefg ', 12);
         $entity->contextend = $in;
         $this->assertTrue(strlen($entity->contextend) < strlen($in));
         $this->assertSame('…', mb_substr($entity->contextend, -1));
+        mb_internal_encoding($oldEncoding);
     }
 
     /**
