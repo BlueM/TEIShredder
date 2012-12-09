@@ -46,6 +46,20 @@ interface FactoryInterface
     public function createNamedEntity();
 
     /**
+     * Instantiates and returns a new PlaintextConverter object
+     *
+     * @return PlaintextConverter
+     */
+    public function createPlaintextConverter();
+
+    /**
+     * Instantiates and returns a new TitleExtractor object
+     *
+     * @return TitleExtractor
+     */
+    public function createTitleExtractor();
+
+    /**
      * Creates and returns a gateway for NamedEntity objects
      *
      * @return NamedEntityGateway
@@ -121,6 +135,4 @@ interface FactoryInterface
      * @return XMLChunkGateway
      */
     public function createXMLChunkGateway();
-
 }
-

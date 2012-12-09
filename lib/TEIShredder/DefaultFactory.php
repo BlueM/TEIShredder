@@ -26,10 +26,14 @@
 
 namespace TEIShredder;
 
-use \PDO;
+use PDO;
 
 /**
  * Default factory for creating objects.
+ *
+ * This class provides objects for default behaviour. Custom behaviour can be achieved
+ * by subclassing this class or writing a new class which implements FactoryInterface
+ * and which is passed to the Setup class' constructor.
  *
  * @package   TEIShredder
  * @author    Carsten Bluem <carsten@bluem.net>
@@ -63,7 +67,23 @@ class DefaultFactory implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     */
+    public function createPlaintextConverter()
+    {
+        return new PlaintextConverter;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function createTitleExtractor()
+    {
+        return new TitleExtractor($this->createPlaintextConverter());
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function createNamedEntity()
     {
@@ -71,7 +91,7 @@ class DefaultFactory implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createNamedEntityGateway()
     {
@@ -79,7 +99,7 @@ class DefaultFactory implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createVolume()
     {
@@ -87,7 +107,7 @@ class DefaultFactory implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createVolumeGateway()
     {
@@ -95,7 +115,7 @@ class DefaultFactory implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createSection()
     {
@@ -103,7 +123,7 @@ class DefaultFactory implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createSectionGateway()
     {
@@ -111,7 +131,7 @@ class DefaultFactory implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createPage()
     {
@@ -119,7 +139,7 @@ class DefaultFactory implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createPageGateway()
     {
@@ -127,7 +147,7 @@ class DefaultFactory implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createElement()
     {
@@ -135,7 +155,7 @@ class DefaultFactory implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createElementGateway()
     {
@@ -143,7 +163,7 @@ class DefaultFactory implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createXMLChunk()
     {
@@ -151,11 +171,10 @@ class DefaultFactory implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createXMLChunkGateway()
     {
         return new XMLChunkGateway($this->db, $this, $this->prefix);
     }
-
 }
