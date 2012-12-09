@@ -26,7 +26,7 @@
 
 namespace TEIShredder;
 
-use \LogicException;
+use LogicException;
 
 /**
  * Model class for sections in the underlying TEI document.
@@ -58,7 +58,6 @@ class Section extends Model
      * Volume number
      *
      * @var int
-     * @todo Redundant: a section starts on a page, and the page knows the volume
      */
     protected $volume;
 
@@ -91,8 +90,7 @@ class Section extends Model
     protected $element;
 
     /**
-     * Section's opening tag's
-     * @xml:id attribute value
+     * Section's opening tag's @xml:id attribute value
      * @var string
      */
     protected $xmlid;
@@ -107,7 +105,7 @@ class Section extends Model
     {
         // Basic integrity check
         foreach (array('id', 'volume', 'page', 'level', 'element') as $property) {
-            if (is_null($this->$property) or
+            if (is_null($this->$property) ||
                 '' === $this->$property
             ) {
                 throw new LogicException("Integrity check failed: $property cannot be empty.");
@@ -115,5 +113,4 @@ class Section extends Model
         }
         return $this->toArray();
     }
-
 }

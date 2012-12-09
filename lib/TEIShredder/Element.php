@@ -26,12 +26,11 @@
 
 namespace TEIShredder;
 
-use \LogicException;
+use LogicException;
 
 /**
  * Model class for any XML element in the underlying TEI document that is
- * addressable (i.e.: that has an
- * @xml:id attribute).
+ * addressable (i.e.: that has an @xml:id attribute).
  * @package   TEIShredder
  * @author    Carsten Bluem <carsten@bluem.net>
  * @copyright 2012 Carsten Bluem <carsten@bluem.net>
@@ -62,7 +61,6 @@ class Element extends Model
      * Page number
      *
      * @var string
-     * @todo Redundant: element is assigned to a section, and sections know their page
      */
     protected $page;
 
@@ -84,7 +82,7 @@ class Element extends Model
     {
         // Basic integrity check
         foreach (array('xmlid', 'element', 'page', 'chunk') as $property) {
-            if (is_null($this->$property) or
+            if (is_null($this->$property) ||
                 '' === $this->$property
             ) {
                 throw new LogicException("Integrity check failed: $property cannot be empty.");
@@ -92,5 +90,4 @@ class Element extends Model
         }
         return $this->toArray();
     }
-
 }

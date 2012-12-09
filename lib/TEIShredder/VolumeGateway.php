@@ -26,8 +26,8 @@
 
 namespace TEIShredder;
 
-use \InvalidArgumentException;
-use \PDO;
+use InvalidArgumentException;
+use PDO;
 
 /**
  * Gateway for volume objects
@@ -42,7 +42,7 @@ class VolumeGateway extends AbstractGateway
 {
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function tableName()
     {

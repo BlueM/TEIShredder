@@ -26,7 +26,7 @@
 
 namespace TEIShredder;
 
-use \UnexpectedValueException;
+use UnexpectedValueException;
 
 /**
  * Simple base class for TEIShredder model classes.
@@ -116,5 +116,4 @@ abstract class Model
         }
         return $array;
     }
-
 }

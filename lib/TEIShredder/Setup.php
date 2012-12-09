@@ -26,14 +26,13 @@
 
 namespace TEIShredder;
 
-use \PDO;
-use \Closure;
-use \InvalidArgumentException;
-use \SimpleXMLElement;
-use \UnexpectedValueException;
+use PDO;
+use Closure;
+use InvalidArgumentException;
+use UnexpectedValueException;
 
 /**
- * Service locator and configuration class.
+ * Configuration/dependency injection class.
  *
  * @package   TEIShredder
  * @author    Carsten Bluem <carsten@bluem.net>
@@ -60,22 +59,6 @@ class Setup
      * @var string
      */
     protected $prefix = '';
-
-    /**
-     * Callback function/method/Closure for extracting the
-     * title from a given piece of TEI.
-     *
-     * @var string|array|Closure
-     * @todo This is only used by the chunker. Move out of here.
-     */
-    protected $titleCallback;
-
-    /**
-     * Callback function/method/Closure for converting to plaintext
-     *
-     * @var string|array|Closure
-     */
-    protected $plaintextCallback;
 
     /**
      * Array of element types / tag names that mark the beginning of
@@ -148,24 +131,11 @@ class Setup
      * @param PDO                       $db
      * @param FactoryInterface|null     $factory  [optional]
      * @param string                    $prefix
-     * @param string|array|Closure      $ptcallb  [optional] Callback for converting to
-     *                                            plaintext. If none given, defaults to strip_tags() plus
-     *                                            converting &gt; and &lt; and &amp; to < and > and &
-     * @param string|array|Closure      $ttlcallb [optional] Callback for extracting the title
-     *                                            from part of a TEI document. If none given, defaults
-     *                                            to extracting the first <head> child of the section and
-     *                                            converting it to plaintext using the plaintext callback.
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct(
-        PDO $db,
-        FactoryInterface $factory = null,
-        $prefix = '',
-        $ptcallb = null,
-        $ttlcallb = null
-    ) {
-
+    public function __construct(PDO $db, FactoryInterface $factory = null, $prefix = '')
+    {
         $this->database = $db;
 
         if ($factory) {
@@ -175,51 +145,18 @@ class Setup
         }
 
         $this->prefix = $prefix;
-
-        if ($ptcallb) {
-            if (!is_callable($ptcallb)) {
-                throw new InvalidArgumentException('Plaintext conversion callback is invalid');
-            }
-            $this->plaintextCallback = $ptcallb;
-        } else {
-            $this->plaintextCallback = function ($str) {
-                return str_replace(
-                    array('&lt;', '&gt;', '&amp;'),
-                    array('<', '>', '&'),
-                    strip_tags($str)
-                );
-            };
-        }
-
-        if ($ttlcallb) {
-            // Custom title extraction callback
-            if (!is_callable($ttlcallb)) {
-                throw new InvalidArgumentException('Title extraction callback is invalid');
-            }
-            $this->titleCallback = $ttlcallb;
-        } else {
-            // Default title extraction callback
-            $ptcallb             = $this->plaintextCallback;
-            $this->titleCallback = function ($xml) use ($ptcallb) {
-                $sx   = new SimpleXMLElement($xml);
-                $head = isset($sx->head[0]) ? $sx->head[0]->asXml() : '';
-                return call_user_func($ptcallb, $head);
-            };
-        }
     }
 
     /**
      * Magic method for setting protected object properties.
      *
      * @param string $name  Property name
-     * @param mixed  $value Value to be assigned
+     * @param array  $value Value to be assigned
      *
      * @throws \UnexpectedValueException
-     * @throws \InvalidArgumentException
      */
-    public function __set($name, $value)
+    public function __set($name, array $value)
     {
-
         switch ($name) {
             case 'chunktags':
             case 'nostacktags':
@@ -227,9 +164,6 @@ class Setup
             case 'ignorabletags':
             case 'structureleveltags':
             case 'blocktags':
-                if (!is_array($value)) {
-                    throw new InvalidArgumentException("$name must be an array");
-                }
                 $this->$name = $value;
                 break;
             default:
@@ -252,6 +186,4 @@ class Setup
         }
         throw new UnexpectedValueException("Unexpected member name “".$name."”");
     }
-
 }
-

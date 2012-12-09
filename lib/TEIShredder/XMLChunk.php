@@ -26,7 +26,7 @@
 
 namespace TEIShredder;
 
-use \LogicException;
+use LogicException;
 
 /**
  * Class for retrieving well-formed XML fragments from the source TEI document.
@@ -116,7 +116,7 @@ class XMLChunk extends Model
     {
         // Basic integrity check
         foreach (array('page', 'section') as $property) {
-            if (is_null($this->$property) or
+            if (is_null($this->$property) ||
                 '' === $this->$property
             ) {
                 throw new LogicException("Integrity check failed: $property cannot be empty.");
@@ -129,8 +129,8 @@ class XMLChunk extends Model
      * Returns the chunk's content source as well-formed XML, i.e.: with
      * pre-stack and post-stack tags added, with Unix-style line endings.
      *
-     * @param bool $noxmlid            [optional] If true (default: false), @xml:id attributes
-     *                                 are removed from pre-stack tags.
+     * @param bool $noxmlid [optional] If true (default: false), @xml:id attributes
+     *                      are removed from pre-stack tags.
      *
      * @return string
      */

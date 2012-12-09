@@ -26,8 +26,8 @@
 
 namespace TEIShredder;
 
-use \InvalidArgumentException;
-use \PDO;
+use InvalidArgumentException;
+use PDO;
 
 /**
  * Gateway class for page objects
@@ -42,7 +42,7 @@ class PageGateway extends AbstractGateway
 {
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function tableName()
     {
@@ -121,5 +121,4 @@ class PageGateway extends AbstractGateway
         $properties = array_keys($page->toArray());
         return parent::performFind(get_class($page), $properties, 'number', func_get_args());
     }
-
 }

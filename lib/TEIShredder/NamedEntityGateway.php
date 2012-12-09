@@ -26,8 +26,7 @@
 
 namespace TEIShredder;
 
-use \InvalidArgumentException;
-use \PDO;
+use PDO;
 
 /**
  * Gateway for volume objects
@@ -42,7 +41,7 @@ class NamedEntityGateway extends AbstractGateway
 {
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function tableName()
     {
@@ -103,5 +102,4 @@ class NamedEntityGateway extends AbstractGateway
         ksort($notations);
         return array_values($notations);
     }
-
 }

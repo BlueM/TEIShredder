@@ -26,7 +26,7 @@
 
 namespace TEIShredder;
 
-use \LogicException;
+use LogicException;
 
 /**
  * Model class for volumes
@@ -81,5 +81,4 @@ class Volume extends Model
         }
         return $this->toArray();
     }
-
 }

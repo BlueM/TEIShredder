@@ -26,7 +26,7 @@
 
 namespace TEIShredder;
 
-use \RuntimeException;
+use RuntimeException;
 
 /**
  * XMLReader subclass which adds a convenience method.
@@ -65,5 +65,4 @@ class XMLReader extends \XMLReader
         }
         return "<$str>";
     }
-
 }

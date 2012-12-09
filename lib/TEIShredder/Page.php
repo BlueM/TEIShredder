@@ -26,7 +26,7 @@
 
 namespace TEIShredder;
 
-use \LogicException;
+use LogicException;
 
 /**
  * Model class for physical pages in the underlying TEI document.
@@ -48,29 +48,25 @@ class Page extends Model
 
     /**
      * Page number. (Numerical unique number, not the "label"
-     * that might have been encoded into
-     * @n)
+     * that might have been encoded into @n)
      * @var int
      */
     protected $number;
 
     /**
-     * Value of <pb />'s
-     * @xml:id attribute value
+     * Value of <pb />'s @xml:id attribute value
      * @var string
      */
     protected $xmlid;
 
     /**
-     * Value of <pb />'s
-     * @n attribute value
+     * Value of <pb />'s @n attribute value
      * @var string
      */
     protected $n;
 
     /**
-     * Value of <pb />'s
-     * @rend attribute value
+     * Value of <pb />'s @rend attribute value
      * @var int
      */
     protected $rend;
@@ -86,7 +82,6 @@ class Page extends Model
      * Plaintext
      *
      * @var int
-     * @todo Redundancy: Chunks also contain the plaintext.
      */
     protected $plaintext;
 
@@ -99,7 +94,6 @@ class Page extends Model
      */
     public function persistableData()
     {
-
         // Basic integrity check
         foreach (array('number', 'volume') as $property) {
             if (0 >= intval($this->$property)) {
@@ -109,5 +103,4 @@ class Page extends Model
 
         return $this->toArray();
     }
-
 }

@@ -26,8 +26,8 @@
 
 namespace TEIShredder;
 
-use \InvalidArgumentException;
-use \PDO;
+use InvalidArgumentException;
+use PDO;
 
 /**
  * Gateway for Element objects
@@ -42,7 +42,7 @@ class ElementGateway extends AbstractGateway
 {
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function tableName()
     {
@@ -89,5 +89,4 @@ class ElementGateway extends AbstractGateway
         $properties = array_keys($element->toArray());
         return parent::performFind(get_class($element), $properties, 'chunk', func_get_args());
     }
-
 }

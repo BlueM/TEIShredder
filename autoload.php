@@ -15,5 +15,3 @@ spl_autoload_register(
         require __DIR__."/lib/$filename";
     }
 );
-
-

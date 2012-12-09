@@ -26,8 +26,8 @@
 
 namespace TEIShredder;
 
-use \InvalidArgumentException;
-use \PDO;
+use InvalidArgumentException;
+use PDO;
 
 /**
  * Gateway for XML chunks
@@ -42,7 +42,7 @@ class XMLChunkGateway extends AbstractGateway
 {
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function tableName()
     {

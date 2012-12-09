@@ -26,7 +26,7 @@
 
 namespace TEIShredder;
 
-use \LogicException;
+use LogicException;
 
 /**
  * Model class for named entities in the underlying TEI document.
@@ -50,7 +50,7 @@ class NamedEntity extends Model
 {
 
     /**
-     * @xml:id value
+     * Enclosing tag's @xml:id value
      * @var int
      */
     protected $xmlid;
@@ -59,7 +59,6 @@ class NamedEntity extends Model
      * Page number
      *
      * @var string
-     * @todo Redundant: element is assigned to a section, and sections knows their page
      */
     protected $page;
 
@@ -71,9 +70,8 @@ class NamedEntity extends Model
     protected $domain;
 
     /**
-     * Value of element's
-     * @key attribute in underlying document. Usually some kind
-     * of identifier (database record) or Semantic Web URI.
+     * Value of element's @key attribute in underlying document. Usually some
+     * kind of identifier (database record) or Semantic Web URI.
      * @var string
      */
     protected $identifier;
@@ -122,10 +120,9 @@ class NamedEntity extends Model
      */
     public function persistableData()
     {
-
         // Basic integrity check
         foreach (array('page', 'domain', 'identifier', 'notation') as $property) {
-            if (is_null($this->$property) or
+            if (is_null($this->$property) ||
                 '' === $this->$property
             ) {
                 $msg = sprintf(
@@ -165,7 +162,7 @@ class NamedEntity extends Model
         }
 
         if ('contextstart' == $name) {
-            if (mb_strlen($this->contextstart) >= $length and
+            if (mb_strlen($this->contextstart) >= $length &&
                 false !== $pos = strrpos($this->contextstart, ' ', -$length)
             ) {
                 // Limit length of the context start
@@ -175,7 +172,7 @@ class NamedEntity extends Model
         }
 
         if ('contextend' == $name) {
-            if (mb_strlen($this->contextend) >= $length and
+            if (mb_strlen($this->contextend) >= $length &&
                 false !== $pos = strpos($this->contextend, ' ', $length)
             ) {
                 // Limit length of the context end
@@ -183,5 +180,4 @@ class NamedEntity extends Model
             }
         }
     }
-
 }
