@@ -1,23 +1,21 @@
-TEIShredder\Indexer\Chunker
- [x] Create a chunker
- [x] Run the chunker
- [x] Make sure a chunker throws an exception if there are several titles for a volume
- [x] Run a chunker with textbeforepb set to off
-
-TEIShredder\Indexer\Extractor
- [x] Create an extractor
- [x] Make sure that the number of element and entities is as expected
- [x] Make sure that an entity object is as expected
-
 TEIShredder\AbstractGateway
  [x] Trying to find objects with an unparseable filter string throws an exception
  [x] Trying to find objects with a filter string that uses an invalid property throws an exception
+ [x] Perform a find with like operator an order by statement
 
 TEIShredder\DefaultFactory
+ [x] Create a plaintext converter
+ [x] Create a title extractor
  [x] Create a page
  [x] Create page gateway
  [x] Create a volume
  [x] Create volume gateway
+ [x] Create section gateway
+ [x] Create a section
+ [x] Create element gateway
+ [x] Create a element
+ [x] Create x m l chunk gateway
+ [x] Create a x m l chunk
  [x] Create a named entity
  [x] Create named entity gateway
 
@@ -36,6 +34,17 @@ TEIShredder\Element
  [x] Make sure an element requires a chunk
  [x] Make sure an element requires an element
  [x] Get the persistable data of an object with all required properties
+
+TEIShredder\Indexer\Chunker
+ [x] Create a chunker
+ [x] Run the chunker
+ [x] Make sure a chunker throws an exception if there are several titles for a volume
+ [x] Run a chunker with textbeforepb set to off
+
+TEIShredder\Indexer\Extractor
+ [x] Create an extractor
+ [x] Make sure that the number of element and entities is as expected
+ [x] Make sure that an entity object is as expected
 
 TEIShredder\Model
  [x] Create an object
@@ -66,6 +75,7 @@ TEIShredder\NamedEntity
 
 TEIShredder\PageGateway
  [x] Flush the data
+ [x] Find the last page
  [x] Save a new page
  [x] Trying to fetch a page gateway by an unknown pagenumber throws an exception
  [x] Find a page by its number
@@ -79,6 +89,9 @@ TEIShredder\Page
  [x] Make sure a page requires a number
  [x] Make sure a page requires a volume
  [x] Get the persistable data of an object with all required properties
+
+TEIShredder\PlaintextConverter
+ [x] Plaintext conversion works
 
 TEIShredder\SectionGateway
  [x] Flush the data
@@ -99,16 +112,16 @@ TEIShredder\Section
 
 TEIShredder\Setup
  [x] Creating an object with default callbacks works
- [x] Trying to create an object with an invalid plaintext callback throws an exception
  [x] Creating an object with a custom plaintext callbacks works
- [x] Trying to create an object with an invalid title extraction callback throws an exception
  [x] Creating an object with a custom title extraction callbacks works
  [x] Creating an object with a different factory works
  [x] Trying to get an invalid class member throws an exception
- [x] Trying to set an invalid class member throws an exception
  [x] Trying to set an unsettable class member throws an exception
- [x] Trying to set the chunktags to a non array throws an exception
  [x] Trying to set the chunktags to an array works
+
+TEIShredder\TitleExtractor
+ [x] Extract the title from tei
+ [x] Trying to extract the title from tei returns an empty string if there is no head element
 
 TEIShredder\VolumeGateway
  [x] Flush the data
@@ -131,6 +144,7 @@ TEIShredder\XMLChunkGateway
 TEIShredder\XMLChunk
  [x] Create a new chunk
  [x] Get a chunks wellformed x m l
+ [x] Get a chunks wellformed x m l with prestack xml ids removed
  [x] Trying to get persistable data for an object with incomplete data throws an exception
  [x] Getting the persistable data for an object with complete data succeeds
 
