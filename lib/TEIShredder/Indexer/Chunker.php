@@ -26,9 +26,9 @@
 
 namespace TEIShredder\Indexer;
 
-use \RuntimeException;
 use TEIShredder\XMLReader;
 use TEIShredder\Setup;
+use RuntimeException;
 
 /**
  * Class for splitting a TEI document in well-formed XML chunks.
@@ -131,6 +131,16 @@ class Chunker extends Base
     protected $level = 0;
 
     /**
+     * @var \TEIShredder\PlaintextConverter
+     */
+    protected $plaintextConverter;
+
+    /**
+     * @var \TEIShredder\TitleExtractor
+     */
+    protected $titleExtractor;
+
+    /**
      * The current page object
      *
      * @var \TEIShredder\Page
@@ -168,10 +178,12 @@ class Chunker extends Base
     public function __construct(Setup $setup, XMLReader $xmlreader, $xml)
     {
         parent::__construct($setup, $xmlreader, $xml);
-        $this->volumeGateway   = $setup->factory->createVolumeGateway();
-        $this->sectionGateway  = $setup->factory->createSectionGateway();
-        $this->pageGateway     = $setup->factory->createPageGateway();
-        $this->xmlChunkGateway = $setup->factory->createXMLChunkGateway();
+        $this->plaintextConverter = $setup->factory->createPlaintextConverter();
+        $this->titleExtractor     = $setup->factory->createTitleExtractor();
+        $this->volumeGateway      = $setup->factory->createVolumeGateway();
+        $this->sectionGateway     = $setup->factory->createSectionGateway();
+        $this->pageGateway        = $setup->factory->createPageGateway();
+        $this->xmlChunkGateway    = $setup->factory->createXMLChunkGateway();
     }
 
     /**
@@ -184,7 +196,7 @@ class Chunker extends Base
         $chunktag   = in_array($this->r->localName, $this->setup->chunktags);
         $nostacktag = in_array($this->r->localName, $this->setup->nostacktags);
 
-        if ($chunktag or
+        if ($chunktag ||
             $nostacktag
         ) {
 
@@ -335,7 +347,7 @@ class Chunker extends Base
             $this->level--;
         }
 
-        if ($this->currentChunk and
+        if ($this->currentChunk &&
             !$textorgroup
         ) {
             $this->xml .= '</'.$this->r->localName.'>';
@@ -354,7 +366,7 @@ class Chunker extends Base
     protected function newSection()
     {
 
-        if ('text' == $this->r->localName or
+        if ('text' == $this->r->localName ||
             'front' == $this->r->localName
         ) {
             // <text> must not contain <head>, hence there is no title
@@ -362,7 +374,7 @@ class Chunker extends Base
         } elseif ('titlePage' == $this->r->localName) {
             $title = $this->titlePageLabel;
         } else {
-            $title = call_user_func($this->setup->titleCallback, $this->r->readOuterXML());
+            $title = $this->titleExtractor->extractTitle($this->r->readOuterXML());
         }
 
         $section          = $this->setup->factory->createSection();
@@ -397,11 +409,10 @@ class Chunker extends Base
      */
     protected function finishChunk()
     {
-
         // <pb> and <milestone> have been interpreted, now we can remove them
         $this->xml = preg_replace('#<(?:pb|milestone)\b[^>]*>#', '', $this->xml);
 
-        $plaintext = call_user_func($this->setup->plaintextCallback, $this->xml);
+        $plaintext = $this->plaintextConverter->convert($this->xml);
 
         if ($this->pageObj) {
             $this->pageObj->plaintext .= ' '.trim($plaintext);
@@ -446,10 +457,7 @@ class Chunker extends Base
      */
     protected function processTitlePart()
     {
-        $title = call_user_func(
-            $this->setup->plaintextCallback,
-            $this->r->readOuterXML()
-        );
+        $title = $this->plaintextConverter->convert($this->r->readOuterXML());
 
         // Check for uniqueness
         if (!empty($this->data['volTitles'][$this->data['currentVolume']])) {

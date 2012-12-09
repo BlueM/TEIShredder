@@ -26,10 +26,10 @@
 
 namespace TEIShredder\Indexer;
 
-use \RuntimeException;
-use \SplObjectStorage;
 use TEIShredder\Setup;
 use TEIShredder\XMLReader;
+use RuntimeException;
+use SplObjectStorage;
 
 /**
  * Class for extracting some tags from a TEI Lite document and for
@@ -96,6 +96,11 @@ class Extractor extends Base
     protected $containers = array();
 
     /**
+     * @var \TEIShredder\PlaintextConverter
+     */
+    protected $plaintextConverter;
+
+    /**
      * @var \TEIShredder\NamedEntityGateway
      */
     protected $entityGateway;
@@ -116,6 +121,7 @@ class Extractor extends Base
     public function __construct(Setup $setup, XMLReader $xmlreader, $xml)
     {
         parent::__construct($setup, $xmlreader, $xml);
+        $this->plaintextConverter = $setup->factory->createPlaintextConverter();
         $this->entityGateway  = $setup->factory->createNamedEntityGateway();
         $this->elementGateway = $setup->factory->createElementGateway();
         $this->entities       = new SplObjectStorage;
@@ -129,9 +135,8 @@ class Extractor extends Base
      */
     protected function nodeOpen()
     {
-
         // Keep track of the chunk number
-        if (in_array($this->r->localName, $this->setup->chunktags) or
+        if (in_array($this->r->localName, $this->setup->chunktags) ||
             in_array($this->r->localName, $this->setup->nostacktags)
         ) {
             $this->currentChunk++;
@@ -148,7 +153,7 @@ class Extractor extends Base
 
         // In case of <lb/> or <milestone/>, add space to the enclosing
         // container (if any), but don't do anything else, i.e.: return.
-        if ('lb' == $this->r->localName or
+        if ('lb' == $this->r->localName ||
             'milestone' == $this->r->localName
         ) {
             if (empty($this->containers[$containerindex])) {
@@ -191,7 +196,6 @@ class Extractor extends Base
      */
     protected function save()
     {
-
         $this->entities->rewind();
 
         while ($this->entities->valid()) {
@@ -229,7 +233,6 @@ class Extractor extends Base
      */
     protected function extractText($xmlid, $containerindex)
     {
-
         // Insert marker for "own" notation, then remove other notations
         $context = preg_replace(
             '#</?:[^>]+>#',
@@ -247,7 +250,7 @@ class Extractor extends Base
             preg_replace(
                 '#\s+#u',
                 ' ',
-                call_user_func($this->setup->plaintextCallback, htmlspecialchars($context))
+                $this->plaintextConverter->convert(htmlspecialchars($context))
             )
         );
 
@@ -259,7 +262,6 @@ class Extractor extends Base
      */
     protected function newElement()
     {
-
         if (null == $xmlid = $this->r->getAttribute('xml:id')) {
             // No xml:id attribute >> Ignore
             return;
@@ -299,7 +301,6 @@ class Extractor extends Base
      */
     protected function nodeContent()
     {
-
         if (empty($this->containerStack)) {
             // Not inside a container -- ignore
             return;
@@ -318,7 +319,6 @@ class Extractor extends Base
      */
     protected function nodeClose()
     {
-
         // Remove the closed element from the element stack
         array_pop($this->elementStack);
 
@@ -332,7 +332,5 @@ class Extractor extends Base
             $containerindex = end($this->containerStack);
             $this->containers[$containerindex] .= '</:'.$entityindex.'>';
         }
-
     }
-
 }
