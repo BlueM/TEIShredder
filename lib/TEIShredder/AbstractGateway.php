@@ -26,8 +26,8 @@
 
 namespace TEIShredder;
 
-use \InvalidArgumentException;
-use \PDO;
+use InvalidArgumentException;
+use PDO;
 
 /**
  * Abstract base class for all gateway classes
@@ -115,7 +115,7 @@ abstract class AbstractGateway
      *                           each in the form of "property operator value", where
      *                           the property can be any of the returned instances'
      *                           instance variables, the operator can be one of < >
-     *                       <> >= <= != = == ~  The value can not be quoted
+     *                           <> >= <= != = == ~  The value can not be quoted
      *                           and if it should be an empty string, it should
      *                           simply be left out (e.g. "title !=").
      *
@@ -167,7 +167,7 @@ abstract class AbstractGateway
             }
 
             if ($operator == '~') {
-                $where .= " AND $property LIKE ".$this->db->quote(trim($value));
+                $where .= " AND $property LIKE ".$this->db->quote('%'.trim($value).'%');
             } else {
                 $where .= " AND $property $operator ".$this->db->quote(trim($value));
             }
