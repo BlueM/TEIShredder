@@ -2,16 +2,16 @@
 
 namespace TEIShredder;
 
-use \TEIShredder;
-use \LogicException;
+use LogicException;
 
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for TEIShredder_NamedEntity.
+ * Test class for TEIShredder\NamedEntity.
  *
  * @package    TEIShredder
  * @subpackage Tests
+ * @covers     TEIShredder\NamedEntity
  */
 class NamedEntityTest extends \PHPUnit_Framework_TestCase
 {
@@ -29,7 +29,7 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase
         $pdoMock = $this->getMockBuilder('PDO')
             ->setConstructorArgs(array('sqlite::memory:'))
             ->getMock();
-        $this->setup = new \TEIShredder\Setup($pdoMock);
+        $this->setup = new Setup($pdoMock);
     }
 
     /**
@@ -46,7 +46,7 @@ class NamedEntityTest extends \PHPUnit_Framework_TestCase
     public function createANewNamedEntity()
     {
         $entity = new NamedEntity($this->setup);
-        $this->assertInstanceOf('\TEIShredder\NamedEntity', $entity);
+        $this->assertInstanceOf('TEIShredder\NamedEntity', $entity);
     }
 
     /**

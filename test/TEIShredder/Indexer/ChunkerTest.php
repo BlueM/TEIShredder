@@ -2,9 +2,9 @@
 
 namespace TEIShredder\Indexer;
 
-use \TEIShredder;
-use \RuntimeException;
 use TEIShredder\XMLReader;
+use TEIShredder\Setup;
+use RuntimeException;
 
 require_once __DIR__.'/../../bootstrap.php';
 
@@ -13,8 +13,8 @@ require_once __DIR__.'/../../bootstrap.php';
  *
  * @package    TEIShredder
  * @subpackage Tests
- * @covers \TEIShredder\Indexer\Base
- * @covers \TEIShredder\Indexer\Chunker
+ * @covers     TEIShredder\Indexer\Base
+ * @covers     TEIShredder\Indexer\Chunker
  */
 class ChunkerTest extends \PHPUnit_Framework_TestCase
 {
@@ -47,7 +47,7 @@ class ChunkerTest extends \PHPUnit_Framework_TestCase
             ->method('query')
             ->will($this->returnValue($pdoStmMock));
 
-        $this->setup = new \TEIShredder\Setup($pdoMock);
+        $this->setup = new Setup($pdoMock);
 
         $this->xmlreader = new XMLReader;
     }
@@ -80,7 +80,7 @@ class ChunkerTest extends \PHPUnit_Framework_TestCase
                '</TEI>';
 
         $chunker = new Chunker($this->setup, $this->xmlreader, $xml);
-        $this->assertInstanceOf('\\'.__NAMESPACE__.'\\Chunker', $chunker);
+        $this->assertInstanceOf('TEIShredder\Indexer\Chunker', $chunker);
     }
 
     /**
@@ -190,12 +190,12 @@ _XML_;
         $chunker->textBeforePb = false;
 
         // Create a volume gateway mock
-        $volumeGatewayMock = $this->getMockBuilder('\TEIShredder\VolumeGateway')
+        $volumeGatewayMock = $this->getMockBuilder('TEIShredder\VolumeGateway')
             ->disableOriginalConstructor()
             ->getMock();
         $volumeGatewayMock->expects($this->exactly(2))
             ->method('save')
-            ->with($this->isInstanceOf('\TEIShredder\Volume'));
+            ->with($this->isInstanceOf('TEIShredder\Volume'));
         $reflm = new \ReflectionProperty($chunker, 'volumeGateway');
         $reflm->setAccessible(true);
         $reflm->setValue($chunker, $volumeGatewayMock);

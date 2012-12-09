@@ -2,16 +2,17 @@
 
 namespace TEIShredder;
 
-use \LogicException;
-use \PDO;
+use LogicException;
+use PDO;
 
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for TEIShredder_Page.
+ * Unit tests for TEIShredder\Page.
  *
  * @package    TEIShredder
  * @subpackage Tests
+ * @covers     TEIShredder\Page
  */
 class PageTest extends \PHPUnit_Framework_TestCase
 {
@@ -43,7 +44,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     public function createANewPage()
     {
         $page = new Page($this->setup);
-        $this->assertInstanceOf('\TEIShredder\Page', $page);
+        $this->assertInstanceOf('TEIShredder\Page', $page);
         return $page;
     }
 
@@ -80,4 +81,3 @@ class PageTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $page->persistableData());
     }
 }
-

@@ -2,8 +2,7 @@
 
 namespace TEIShredder;
 
-use \TEIShredder;
-use \InvalidArgumentException;
+use InvalidArgumentException;
 
 require_once __DIR__.'/../bootstrap.php';
 
@@ -12,6 +11,7 @@ require_once __DIR__.'/../bootstrap.php';
  *
  * @package    TEIShredder
  * @subpackage Tests
+ * @covers     TEIShredder\VolumeGateway
  */
 class VolumeGatewayTest extends \PHPUnit_Framework_TestCase
 {
@@ -60,7 +60,7 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase
 
         $objs = $this->obj->find();
         $this->assertInternalType('array', $objs);
-        $this->assertInstanceOf('\TEIShredder\Volume', $objs[0]);
+        $this->assertInstanceOf('TEIShredder\Volume', $objs[0]);
     }
 
     /**
@@ -77,7 +77,6 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase
      */
     public function findAVolumeByItsNumber()
     {
-
         $this->obj->flush();
 
         // First, create object
@@ -88,16 +87,15 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase
         $this->obj->save($volume);
 
         $obj = $this->obj->findByIdentifier(17);
-        $this->assertInstanceOf('\TEIShredder\Volume', $obj);
+        $this->assertInstanceOf('TEIShredder\Volume', $obj);
         $this->assertEquals("Volume 17", $volume->title);
     }
 
     /**
      * @test
      */
-    function findAllVolumes()
+    public function findAllVolumes()
     {
-
         $this->obj->flush();
 
         $volume             = new Volume;
@@ -110,7 +108,7 @@ class VolumeGatewayTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $objs);
         $this->assertTrue(1 == count($objs));
         foreach ($objs as $obj) {
-            $this->assertInstanceOf('\TEIShredder\Volume', $obj);
+            $this->assertInstanceOf('TEIShredder\Volume', $obj);
         }
     }
 }

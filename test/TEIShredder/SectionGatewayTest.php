@@ -2,16 +2,16 @@
 
 namespace TEIShredder;
 
-use \TEIShredder;
-use \InvalidArgumentException;
+use InvalidArgumentException;
 
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for TEIShredder_SectionGateway.
+ * Unit tests for TEIShredder\SectionGateway.
  *
  * @package    TEIShredder
  * @subpackage Tests
+ * @covers     TEIShredder\SectionGateway
  */
 class SectionGatewayTest extends \PHPUnit_Framework_TestCase
 {
@@ -57,7 +57,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase
         $this->obj->save($section);
 
         $obj = $this->obj->findByIdentifier(5);
-        $this->assertInstanceOf('\TEIShredder\Section', $obj);
+        $this->assertInstanceOf('TEIShredder\Section', $obj);
     }
 
     /**
@@ -88,7 +88,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase
         $this->obj->save($section);
 
         $obj = $this->obj->findByIdentifier(17);
-        $this->assertInstanceOf('\TEIShredder\Section', $obj);
+        $this->assertInstanceOf('TEIShredder\Section', $obj);
         $this->assertEquals("Chapter 17", $section->title);
     }
 
@@ -122,7 +122,7 @@ class SectionGatewayTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $objs);
         $this->assertSame(2, count($objs));
         foreach ($objs as $obj) {
-            $this->assertInstanceOf('\TEIShredder\Section', $obj);
+            $this->assertInstanceOf('TEIShredder\Section', $obj);
         }
     }
 

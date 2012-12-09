@@ -2,9 +2,9 @@
 
 namespace TEIShredder\Indexer;
 
-use \TEIShredder;
-use \TEIShredder\Setup;
+use TEIShredder\Setup;
 use TEIShredder\XMLReader;
+use TEIShredder\NamedEntity;
 use InvalidArgumentException;
 
 require_once __DIR__.'/../../bootstrap.php';
@@ -47,7 +47,7 @@ class ExtractorTest extends \PHPUnit_Framework_TestCase
             ->method('query')
             ->will($this->returnValue($pdoStmMock));
 
-        $this->setup = new \TEIShredder\Setup($pdoMock);
+        $this->setup = new Setup($pdoMock);
 
         $this->xmlreader = new XMLReader;
     }
@@ -80,7 +80,7 @@ class ExtractorTest extends \PHPUnit_Framework_TestCase
             '</TEI>';
 
         $extractor = new Extractor($this->setup, $this->xmlreader, $xml);
-        $this->assertInstanceOf('\\'.__NAMESPACE__.'\\Extractor', $extractor);
+        $this->assertInstanceOf('TEIShredder\Indexer\Extractor', $extractor);
     }
 
     /**
@@ -109,23 +109,23 @@ class ExtractorTest extends \PHPUnit_Framework_TestCase
         $extractor = new Extractor($this->setup, $this->xmlreader, $xml);
 
         // Create an entity gateway mock that expect save() to be called 2 times
-        $entityGatewayMock = $this->getMockBuilder('\TEIShredder\NamedEntityGateway')
+        $entityGatewayMock = $this->getMockBuilder('TEIShredder\NamedEntityGateway')
             ->disableOriginalConstructor()
             ->getMock();
         $entityGatewayMock->expects($this->exactly(2))
             ->method('save')
-            ->with($this->isInstanceOf('\TEIShredder\NamedEntity'));
+            ->with($this->isInstanceOf('TEIShredder\NamedEntity'));
         $reflm = new \ReflectionProperty($extractor, 'entityGateway');
         $reflm->setAccessible(true);
         $reflm->setValue($extractor, $entityGatewayMock);
 
         // Create an element gateway mock that expect save() to be called 3 times
-        $entityGatewayMock = $this->getMockBuilder('\TEIShredder\ElementGateway')
+        $entityGatewayMock = $this->getMockBuilder('TEIShredder\ElementGateway')
             ->disableOriginalConstructor()
             ->getMock();
         $entityGatewayMock->expects($this->exactly(3))
             ->method('save')
-            ->with($this->isInstanceOf('\TEIShredder\Element'));
+            ->with($this->isInstanceOf('TEIShredder\Element'));
         $reflm = new \ReflectionProperty($extractor, 'elementGateway');
         $reflm->setAccessible(true);
         $reflm->setValue($extractor, $entityGatewayMock);
@@ -163,14 +163,14 @@ class ExtractorTest extends \PHPUnit_Framework_TestCase
         $extractor = new Extractor($this->setup, $this->xmlreader, $xml);
 
         // Create an entity gateway mock that expect save() to be called 2 times
-        $entityGatewayMock = $this->getMockBuilder('\TEIShredder\NamedEntityGateway')
+        $entityGatewayMock = $this->getMockBuilder('TEIShredder\NamedEntityGateway')
             ->disableOriginalConstructor()
             ->getMock();
         $entityGatewayMock->expects($this->exactly(1))
             ->method('save')
             ->will($this->returnCallback(
                     function($argument) {
-                        if (! ($argument instanceof \TEIShredder\NamedEntity)) {
+                        if (! ($argument instanceof NamedEntity)) {
                             throw new InvalidArgumentException('Expected NamedEntity');
                         }
                         if (3 != $argument->page) {

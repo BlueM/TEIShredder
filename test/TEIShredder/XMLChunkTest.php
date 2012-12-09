@@ -2,15 +2,16 @@
 
 namespace TEIShredder;
 
-use \LogicException;
+use LogicException;
 
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for TEIShredder_XMLChunk.
+ * Unit tests for TEIShredder\XMLChunk.
  *
  * @package    TEIShredder
  * @subpackage Tests
+ * @covers     TEIShredder\XMLChunk
  */
 class XMLChunkTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,10 +26,10 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $pdoMock     = $this->getMockBuilder('PDO')
+        $pdoMock = $this->getMockBuilder('PDO')
             ->setConstructorArgs(array('sqlite::memory:'))
             ->getMock();
-        $this->setup = new \TEIShredder\Setup($pdoMock);
+        $this->setup = new Setup($pdoMock);
     }
 
     /**
@@ -46,7 +47,7 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase
     public function createANewChunk()
     {
         $chunk = new XMLChunk($this->setup);
-        $this->assertInstanceOf('\TEIShredder\XMLChunk', $chunk);
+        $this->assertInstanceOf('TEIShredder\XMLChunk', $chunk);
         return $chunk;
     }
 
@@ -62,6 +63,21 @@ class XMLChunkTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             $chunk->prestack.$chunk->xml.$chunk->poststack,
             $chunk->getWellFormedXML()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getAChunksWellformedXMLWithPrestackXmlIdsRemoved()
+    {
+        $chunk            = new XMLChunk($this->setup);
+        $chunk->prestack  = '<text xml:id="foo"><p xml:id="p" n="123">';
+        $chunk->xml       = 'Hello world</p>';
+        $chunk->poststack = '</text>';
+        $this->assertEquals(
+            '<text><p n="123">'.$chunk->xml.$chunk->poststack,
+            $chunk->getWellFormedXML(true)
         );
     }
 

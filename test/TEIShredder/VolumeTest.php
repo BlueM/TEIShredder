@@ -2,15 +2,16 @@
 
 namespace TEIShredder;
 
-use \LogicException;
+use LogicException;
 
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for TEIShredder_Volume.
+ * Unit tests for TEIShredder\Volume.
  *
  * @package    TEIShredder
  * @subpackage Tests
+ * @covers     TEIShredder\Volume
  */
 class VolumeTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,10 +26,10 @@ class VolumeTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $pdoMock     = $this->getMockBuilder('PDO')
+        $pdoMock = $this->getMockBuilder('PDO')
             ->setConstructorArgs(array('sqlite::memory:'))
             ->getMock();
-        $this->setup = new \TEIShredder\Setup($pdoMock);
+        $this->setup = new Setup($pdoMock);
     }
 
     /**
@@ -45,7 +46,7 @@ class VolumeTest extends \PHPUnit_Framework_TestCase
     public function createANewVolume()
     {
         $volume = new Volume($this->setup);
-        $this->assertInstanceOf('\TEIShredder\Volume', $volume);
+        $this->assertInstanceOf('TEIShredder\Volume', $volume);
         return $volume;
     }
 
@@ -53,7 +54,7 @@ class VolumeTest extends \PHPUnit_Framework_TestCase
      * @test
      * @expectedException LogicException
      */
-    function tryingToGetPersistableDataForAnObjectWithIncompleteDataThrowsAnException()
+    public function tryingToGetPersistableDataForAnObjectWithIncompleteDataThrowsAnException()
     {
         $volume = new Volume($this->setup);
         $volume->persistableData();
@@ -62,7 +63,7 @@ class VolumeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    function gettingThePersistableDataForAnObjectWithCompleteDataSucceeds()
+    public function gettingThePersistableDataForAnObjectWithCompleteDataSucceeds()
     {
         $volume             = new Volume($this->setup);
         $volume->title      = 'Foo';

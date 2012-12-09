@@ -2,16 +2,16 @@
 
 namespace TEIShredder;
 
-use \TEIShredder;
-use \InvalidArgumentException;
+use InvalidArgumentException;
 
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for TEIShredder_XMLChunkGateway
+ * Unit tests for TEIShredder\XMLChunkGateway
  *
  * @package    TEIShredder
  * @subpackage Tests
+ * @covers     TEIShredder\XMLChunkGateway
  */
 class XMLChunkGatewayTest extends \PHPUnit_Framework_TestCase
 {
@@ -45,7 +45,7 @@ class XMLChunkGatewayTest extends \PHPUnit_Framework_TestCase
 
         $chunks = $this->obj->findByPageNumber(3);
         $this->assertInternalType('array', $chunks);
-        $this->assertInstanceOf('\TEIShredder\XMLChunk', $chunks[0]);
+        $this->assertInstanceOf('TEIShredder\XMLChunk', $chunks[0]);
     }
 
     /**
@@ -63,7 +63,7 @@ class XMLChunkGatewayTest extends \PHPUnit_Framework_TestCase
         $this->obj->save($chunk);
 
         $chunk = $this->obj->findByIdentifier(123);
-        $this->assertInstanceOf('\TEIShredder\XMLChunk', $chunk);
+        $this->assertInstanceOf('TEIShredder\XMLChunk', $chunk);
         $this->assertEquals(123, $chunk->id);
     }
 
@@ -79,7 +79,6 @@ class XMLChunkGatewayTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @todo Add assertion
      */
     public function flushTheData()
     {

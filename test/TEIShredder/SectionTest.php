@@ -2,16 +2,16 @@
 
 namespace TEIShredder;
 
-use \TEIShredder;
-use \LogicException;
+use LogicException;
 
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for TEIShredder_Section.
+ * Unit tests for TEIShredder\Section.
  *
  * @package    TEIShredder
  * @subpackage Tests
+ * @covers     TEIShredder\Section
  */
 class SectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,10 +26,10 @@ class SectionTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $pdoMock     = $this->getMockBuilder('PDO')
+        $pdoMock = $this->getMockBuilder('PDO')
             ->setConstructorArgs(array('sqlite::memory:'))
             ->getMock();
-        $this->setup = new \TEIShredder\Setup($pdoMock);
+        $this->setup = new Setup($pdoMock);
     }
 
     /**
@@ -46,7 +46,7 @@ class SectionTest extends \PHPUnit_Framework_TestCase
     public function createANewSection()
     {
         $section = new Section($this->setup);
-        $this->assertInstanceOf('\TEIShredder\Section', $section);
+        $this->assertInstanceOf('TEIShredder\Section', $section);
         return $section;
     }
 

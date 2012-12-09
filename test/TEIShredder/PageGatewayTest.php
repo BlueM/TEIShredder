@@ -2,16 +2,16 @@
 
 namespace TEIShredder;
 
-use \TEIShredder;
-use \InvalidArgumentException;
+use InvalidArgumentException;
 
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for TEIShredder_PageGateway.
+ * Unit tests for TEIShredder\PageGateway.
  *
  * @package    TEIShredder
  * @subpackage Tests
+ * @covers     TEIShredder\PageGateway
  */
 class PageGatewayTest extends \PHPUnit_Framework_TestCase
 {
@@ -36,6 +36,37 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase
     public function flushTheData()
     {
         $this->obj->flush();
+    }
+
+    /**
+     * @test
+     */
+    public function findTheLastPage()
+    {
+        $pageMock = $this->getMock('TEIShredder\Page');
+
+        $pdoStatementMock = $this->getMockBuilder('PDOStatement')
+            ->getMock();
+        $pdoStatementMock->expects($this->once())
+            ->method('setFetchMode')
+            ->with($this->isType('int'), $this->isInstanceOf('TEIShredder\Page'));
+        $pdoStatementMock->expects($this->once())
+            ->method('fetch')
+            ->with()
+            ->will($this->returnValue($pageMock));
+
+        $pdoMock = $this->getMockBuilder('PDO')
+            ->setConstructorArgs(array('sqlite::memory:'))
+            ->getMock();
+        $pdoMock->expects($this->once())
+            ->method('query')
+            ->will($this->returnValue($pdoStatementMock));
+
+        $setup = new Setup($pdoMock);
+        $obj   = new PageGateway($setup->database, $setup->factory, $setup->prefix);
+
+        $actual = $obj->findLastPage();
+        $this->assertInstanceOf('TEIShredder\Page', $actual);
     }
 
     /**
@@ -74,7 +105,7 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase
         $this->obj->save($page);
 
         $obj = $this->obj->findByIdentifier(20);
-        $this->assertInstanceOf('\TEIShredder\Page', $obj);
+        $this->assertInstanceOf('TEIShredder\Page', $obj);
         $this->assertEquals(5, $page->volume);
     }
 
@@ -92,7 +123,7 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $objs);
         $this->assertTrue(0 < count($objs));
         foreach ($objs as $obj) {
-            $this->assertInstanceOf('\TEIShredder\Page', $obj);
+            $this->assertInstanceOf('TEIShredder\Page', $obj);
         }
     }
 
@@ -111,7 +142,7 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase
         $objs = $this->obj->find('volume = 2');
         $this->assertInternalType('array', $objs);
         $this->assertTrue(1 == count($objs));
-        $this->assertInstanceOf('\TEIShredder\Page', $objs[0]);
+        $this->assertInstanceOf('TEIShredder\Page', $objs[0]);
     }
 
     /**
@@ -130,8 +161,8 @@ class PageGatewayTest extends \PHPUnit_Framework_TestCase
         $objs = $this->obj->findMultiple(array(22, 23));
         $this->assertInternalType('array', $objs);
         $this->assertTrue(2 == count($objs));
-        $this->assertInstanceOf('\TEIShredder\Page', $objs[0]);
-        $this->assertInstanceOf('\TEIShredder\Page', $objs[0]);
+        $this->assertInstanceOf('TEIShredder\Page', $objs[0]);
+        $this->assertInstanceOf('TEIShredder\Page', $objs[0]);
         $this->assertEquals('Page 22', $objs[0]->n);
         $this->assertEquals('Page 23', $objs[1]->n);
     }

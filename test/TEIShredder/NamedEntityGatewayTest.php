@@ -2,17 +2,17 @@
 
 namespace TEIShredder;
 
-use \TEIShredder;
 use PDO;
-use \InvalidArgumentException;
+use InvalidArgumentException;
 
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for NamedEntityGateway
+ * Unit tests for TEIShredder\NamedEntityGateway.
  *
  * @package    TEIShredder
  * @subpackage Tests
+ * @cpvers     TEIShredder\NamedEntityGateway
  */
 class NamedEntityGatewayTest extends \PHPUnit_Framework_TestCase
 {
@@ -60,7 +60,7 @@ class NamedEntityGatewayTest extends \PHPUnit_Framework_TestCase
 
         $objs = $this->obj->find();
         $this->assertInternalType('array', $objs);
-        $this->assertInstanceOf('\TEIShredder\NamedEntity', $objs[0]);
+        $this->assertInstanceOf('TEIShredder\NamedEntity', $objs[0]);
     }
 
     /**
@@ -92,9 +92,9 @@ class NamedEntityGatewayTest extends \PHPUnit_Framework_TestCase
         $objs = $this->obj->find();
         $this->assertInternalType('array', $objs);
         $this->assertTrue(2 == count($objs));
-        $this->assertInstanceOf('\TEIShredder\NamedEntity', $objs[0]);
+        $this->assertInstanceOf('TEIShredder\NamedEntity', $objs[0]);
         $this->assertSame('Named Entity 1', $objs[0]->notation);
-        $this->assertInstanceOf('\TEIShredder\NamedEntity', $objs[1]);
+        $this->assertInstanceOf('TEIShredder\NamedEntity', $objs[1]);
         $this->assertSame('Named Entity 2', $objs[1]->notation);
     }
 

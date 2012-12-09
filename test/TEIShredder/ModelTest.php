@@ -2,8 +2,8 @@
 
 namespace TEIShredder;
 
-use \UnexpectedValueException;
-use \PDO;
+use UnexpectedValueException;
+use PDO;
 
 require_once __DIR__.'/../bootstrap.php';
 
@@ -28,10 +28,11 @@ class ConcreteModel extends Model
 }
 
 /**
- * Test class for TEIShredder_Model.
+ * Unit tests for TEIShredder\Model.
  *
  * @package    TEIShredder
  * @subpackage Tests
+ * @covers     TEIShredder\Model
  */
 class ModelTest extends \PHPUnit_Framework_TestCase
 {
@@ -63,7 +64,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
     public function createAnObject()
     {
         $obj = new ConcreteModel($this->setup);
-        $this->assertInstanceOf('\TEIShredder\ConcreteModel', $obj);
+        $this->assertInstanceOf('TEIShredder\ConcreteModel', $obj);
         return $obj;
     }
 

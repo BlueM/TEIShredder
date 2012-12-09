@@ -2,16 +2,16 @@
 
 namespace TEIShredder;
 
-use \TEIShredder;
-use \InvalidArgumentException;
+use InvalidArgumentException;
 
 require_once __DIR__.'/../bootstrap.php';
 
 /**
- * Test class for ElementGatewayTest
+ * Unit tests for TEIShredder\ElementGateway.
  *
  * @package    TEIShredder
  * @subpackage Tests
+ * @covers     TEIShredder\ElementGateway
  */
 class ElementGatewayTest extends \PHPUnit_Framework_TestCase
 {
@@ -57,7 +57,6 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase
      */
     public function findAnElementByItsXmlid()
     {
-
         $this->obj->flush();
 
         // First, create object
@@ -69,7 +68,7 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase
         $this->obj->save($element);
 
         $obj = $this->obj->findByIdentifier('pb-15');
-        $this->assertInstanceOf('\TEIShredder\Element', $obj);
+        $this->assertInstanceOf('TEIShredder\Element', $obj);
         $this->assertEquals('div', $element->element);
     }
 
@@ -78,7 +77,6 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase
      */
     public function findAnElementByElementNameAndPage()
     {
-
         $this->obj->flush();
 
         // First, create object
@@ -92,7 +90,7 @@ class ElementGatewayTest extends \PHPUnit_Framework_TestCase
         $objs = $this->obj->find('element = div', 'page = 23');
         $this->assertInternalType('array', $objs);
         $this->assertSame(1, count($objs));
-        $this->assertInstanceOf('\TEIShredder\Element', $objs[0]);
+        $this->assertInstanceOf('TEIShredder\Element', $objs[0]);
         $this->assertEquals("pb-15", $element->xmlid);
     }
 
