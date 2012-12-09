@@ -98,7 +98,7 @@
 			<div>
 				<head>Handling of &lt;sic&gt;, &lt;del&gt; etc.</head>
 				<p>Certain tags are exluded when extracting parts of the text. For instance, consider the following code:<lb /><rs type="person" key="http://d-nb.info/gnd/118613723" xml:id="rs07"><choice><sic>Shakspear</sic><corr>Shakespeare</corr></choice></rs>. Here, we have an obvious error in the text (marked using &lt;sic&gt;) and its correction. When indexing, TEIShredder will drop the &lt;sic&gt;...&lt;/sic&gt; part of the text. The same is true for elements &lt;del&gt; and &lt;orig&gt;.</p>
-				<p>If you don’t like this behaviour, you can modify the public class member TEIShredder_Indexer_Extractor::$ignorabletags.</p>
+				<p>If you don’t like this behaviour, you can modify the public class member TEIShredder\Indexer\Extractor::$ignorabletags.</p>
 
 			</div>
 
