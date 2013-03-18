@@ -37,7 +37,7 @@ If you like, you can now inspect the database’s contents. For instance, you ca
 
 TEI != TEI
 ------------
-TEI can be used in many different ways. In my eyes, this is one of the very appealing features of TEI, but on the other hand, it makes developing generic tools much harder or impossible. TEIShredder is, to some extent, a generic tool insofar as it just processes TEI – but on the other hand, it has certain expectations of the TEI. Therefore, most likely, TEIShredder will not be able to process your unmodified TEI document, but it might be necessary to pre-process the document (for instance, using XSL-T or [CBXMLTransformer](https://github.com/BlueM/CBXMLTransformer)) to match these expectations.
+TEI can be used in many different ways. In my eyes, this is one of the very appealing features of TEI, but on the other hand, it makes developing generic tools much harder or impossible. TEIShredder is, to some extent, a generic tool insofar as it just processes TEI – but on the other hand, it has certain expectations of the TEI. Therefore, most likely, TEIShredder will not be able to process your unmodified TEI document, but it might be necessary to pre-process the document (for instance, using XSL-T or [XMLTransformer](https://github.com/BlueM/XMLTransformer)) to match these expectations.
 
 Conventions / expectations
 --------------------------
