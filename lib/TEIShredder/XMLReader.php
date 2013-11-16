@@ -26,8 +26,6 @@
 
 namespace TEIShredder;
 
-use RuntimeException;
-
 /**
  * XMLReader subclass which adds a convenience method.
  *
@@ -41,15 +39,15 @@ class XMLReader extends \XMLReader
 {
 
     /**
-     * Returns the full open tag for the current element
+     * Returns the full opening tag for the current element
      *
      * @return string Opening tag including attributes
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
     public function nodeOpenString()
     {
-        if (XMLREADER::ELEMENT != $this->nodeType) {
-            throw new RuntimeException('This node is not an opening element.');
+        if (self::ELEMENT != $this->nodeType) {
+            throw new \RuntimeException('This node is not an opening element.');
         }
         $str = $this->prefix.$this->localName;
         if ($this->hasAttributes) {

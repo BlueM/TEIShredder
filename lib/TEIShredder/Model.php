@@ -26,8 +26,6 @@
 
 namespace TEIShredder;
 
-use UnexpectedValueException;
-
 /**
  * Simple base class for TEIShredder model classes.
  *
@@ -56,14 +54,14 @@ abstract class Model
      * @param $name
      *
      * @return mixed
-     * @throws UnexpectedValueException
+     * @throws \UnexpectedValueException
      */
     public function __get($name)
     {
         if ('_' === substr($name, 0, 1) or
             !in_array($name, array_keys(get_object_vars($this)))
         ) {
-            throw new UnexpectedValueException("Invalid property “".$name."”");
+            throw new \UnexpectedValueException("Invalid property “".$name."”");
         }
         return $this->$name;
     }
@@ -74,14 +72,14 @@ abstract class Model
      * @param string $name  Property name
      * @param mixed  $value Value to be assigned
      *
-     * @throws UnexpectedValueException
+     * @throws \UnexpectedValueException
      */
     public function __set($name, $value)
     {
         if ('_' === substr($name, 0, 1) or
             !in_array($name, array_keys(get_object_vars($this)))
         ) {
-            throw new UnexpectedValueException("Invalid property “".$name."”");
+            throw new \UnexpectedValueException("Invalid property “".$name."”");
         }
         $this->$name = $value;
     }

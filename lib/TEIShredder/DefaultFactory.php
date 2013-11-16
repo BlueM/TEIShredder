@@ -26,8 +26,6 @@
 
 namespace TEIShredder;
 
-use PDO;
-
 /**
  * Default factory for creating objects.
  *
@@ -45,7 +43,7 @@ class DefaultFactory implements FactoryInterface
 {
 
     /**
-     * @var PDO $db
+     * @var \PDO $db
      */
     protected $db;
 
@@ -57,10 +55,10 @@ class DefaultFactory implements FactoryInterface
     /**
      * Constructor.
      *
-     * @param PDO    $db
+     * @param \PDO    $db
      * @param string $prefix
      */
-    public function __construct(PDO $db, $prefix = '')
+    public function __construct(\PDO $db, $prefix = '')
     {
         $this->db     = $db;
         $this->prefix = $prefix;

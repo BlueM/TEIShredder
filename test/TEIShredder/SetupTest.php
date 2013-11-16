@@ -82,7 +82,7 @@ class SetupTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage Unexpected member name
+     * @expectedExceptionMessage Invalid property name
      */
     public function tryingToGetAnInvalidClassMemberThrowsAnException()
     {

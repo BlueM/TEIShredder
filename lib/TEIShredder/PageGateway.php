@@ -26,9 +26,6 @@
 
 namespace TEIShredder;
 
-use InvalidArgumentException;
-use PDO;
-
 /**
  * Gateway class for page objects
  *
@@ -54,7 +51,7 @@ class PageGateway extends AbstractGateway
      *
      * @param int $number
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      * @return Page
      */
     public function findByIdentifier($number)
@@ -62,9 +59,9 @@ class PageGateway extends AbstractGateway
         $table = $this->tableName();
         $stm   = $this->db->prepare("SELECT * FROM $table WHERE number = ?");
         $stm->execute(array($number));
-        $stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createPage());
+        $stm->setFetchMode(\PDO::FETCH_INTO, $this->factory->createPage());
         if (false === $page = $stm->fetch()) {
-            throw new InvalidArgumentException('Invalid page number');
+            throw new \InvalidArgumentException('Invalid page number');
         }
         return $page;
     }
@@ -72,13 +69,22 @@ class PageGateway extends AbstractGateway
     /**
      * Returns the last page object, i.e. the one with the highest page number
      *
+     * @param int $volume [optional] If given, the last page in that volume is returned
+     *
      * @return Page
      */
-    public function findLastPage()
+    public function findLastPage($volume = null)
     {
         $table = $this->tableName();
-        $stm   = $this->db->query("SELECT * FROM $table ORDER BY number DESC LIMIT 1");
-        $stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createPage());
+        if ($volume) {
+            $where = 'WHERE volume = ' . $this->db->quote($volume);
+        } else {
+            $where = '';
+        }
+        $stm = $this->db->query(
+            "SELECT * FROM $table $where ORDER BY number DESC LIMIT 1"
+        );
+        $stm->setFetchMode(\PDO::FETCH_INTO, $this->factory->createPage());
         return $stm->fetch();
     }
 
@@ -97,9 +103,11 @@ class PageGateway extends AbstractGateway
             $numbers = array_map('intval', $numbers);
             $where .= " AND number IN(".join(', ', $numbers).")";
         }
-        $stm  = $this->db->query("SELECT * FROM $table WHERE $where ORDER BY number");
+        $stm = $this->db->query(
+            "SELECT * FROM $table WHERE $where ORDER BY number"
+        );
         $page = $this->factory->createPage();
-        $stm->setFetchMode(PDO::FETCH_CLASS, get_class($page));
+        $stm->setFetchMode(\PDO::FETCH_CLASS, get_class($page));
         return $stm->fetchAll();
     }
 
@@ -119,6 +127,8 @@ class PageGateway extends AbstractGateway
     {
         $page       = $this->factory->createPage();
         $properties = array_keys($page->toArray());
-        return parent::performFind(get_class($page), $properties, 'number', func_get_args());
+        return parent::performFind(
+            get_class($page), $properties, 'number', func_get_args()
+        );
     }
 }

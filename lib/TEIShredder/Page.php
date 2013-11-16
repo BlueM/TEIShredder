@@ -26,8 +26,6 @@
 
 namespace TEIShredder;
 
-use LogicException;
-
 /**
  * Model class for physical pages in the underlying TEI document.
  *
@@ -90,14 +88,16 @@ class Page extends Model
      * processed by a persistence layer.
      *
      * @return array
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function persistableData()
     {
         // Basic integrity check
         foreach (array('number', 'volume') as $property) {
             if (0 >= intval($this->$property)) {
-                throw new LogicException("Integrity check failed: $property cannot be empty.");
+                throw new \LogicException(
+                    "Integrity check failed: $property cannot be empty."
+                );
             }
         }
 

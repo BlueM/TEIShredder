@@ -28,8 +28,6 @@ namespace TEIShredder\Indexer;
 
 use TEIShredder\Setup;
 use TEIShredder\XMLReader;
-use RuntimeException;
-use SplObjectStorage;
 
 /**
  * Class for extracting some tags from a TEI Lite document and for
@@ -50,19 +48,11 @@ class Extractor extends Base
      * @var string[] Indexed array of element names
      */
     public $containertags = array(
-        'l',
-        'p',
-        'head',
-        'note',
-        'docImprint',
-        'byLine',
-        'titlePart',
-        'byline',
-        'item'
+        'byline', 'docImprint', 'head', 'item', 'l', 'note', 'p', 'titlePart'
     );
 
     /**
-     * @var SplObjectStorage
+     * @var \SplObjectStorage
      */
     protected $entities;
 
@@ -124,19 +114,18 @@ class Extractor extends Base
         $this->plaintextConverter = $setup->factory->createPlaintextConverter();
         $this->entityGateway  = $setup->factory->createNamedEntityGateway();
         $this->elementGateway = $setup->factory->createElementGateway();
-        $this->entities       = new SplObjectStorage;
+        $this->entities       = new \SplObjectStorage;
     }
 
     /**
      * Method that's called when the stream reaches an opening or empty tag.
      *
      * @return mixed
-     * @throws RuntimeException
      */
     protected function nodeOpen()
     {
         // Keep track of the chunk number
-        if (in_array($this->r->localName, $this->setup->chunktags) ||
+        if (in_array($this->r->localName, $this->setup->chunktags) or
             in_array($this->r->localName, $this->setup->nostacktags)
         ) {
             $this->currentChunk++;
@@ -187,7 +176,6 @@ class Extractor extends Base
             // Container tags
             $this->registerNewContainer();
         }
-
     }
 
     /**
@@ -276,7 +264,7 @@ class Extractor extends Base
     }
 
     /**
-     * Setup method that will be called right before processing starts.
+     * {@inheritDoc}
      */
     protected function preProcessAction()
     {

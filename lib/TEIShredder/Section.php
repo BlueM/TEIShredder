@@ -26,8 +26,6 @@
 
 namespace TEIShredder;
 
-use LogicException;
-
 /**
  * Model class for sections in the underlying TEI document.
  *
@@ -99,16 +97,16 @@ class Section extends Model
      * Returns data to be passed to a persistence layer.
      *
      * @return array Associative array of property=>value pairs
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function persistableData()
     {
         // Basic integrity check
         foreach (array('id', 'volume', 'page', 'level', 'element') as $property) {
-            if (is_null($this->$property) ||
-                '' === $this->$property
-            ) {
-                throw new LogicException("Integrity check failed: $property cannot be empty.");
+            if (is_null($this->$property) or '' === $this->$property) {
+                throw new \LogicException(
+                    "Integrity check failed: $property cannot be empty."
+                );
             }
         }
         return $this->toArray();

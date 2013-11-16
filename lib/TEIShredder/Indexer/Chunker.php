@@ -28,7 +28,6 @@ namespace TEIShredder\Indexer;
 
 use TEIShredder\XMLReader;
 use TEIShredder\Setup;
-use RuntimeException;
 
 /**
  * Class for splitting a TEI document in well-formed XML chunks.
@@ -192,18 +191,15 @@ class Chunker extends Base
      */
     protected function nodeOpen()
     {
-
         $chunktag   = in_array($this->r->localName, $this->setup->chunktags);
         $nostacktag = in_array($this->r->localName, $this->setup->nostacktags);
 
-        if ($chunktag ||
-            $nostacktag
-        ) {
+        if ($chunktag or $nostacktag) {
 
             if ($this->currentChunk) {
-                // Finish data for previous chunk of XML. We can't simply do that when
-                // the tag ends, because we need to separately save the "A" in
-                // something like "<div>A<p>B</p>C</div>"
+                // Finish data for previous chunk of XML. We can't simply do
+                // that when the tag ends, because we need to separately save
+                // the "A" in something like "<div>A<p>B</p>C</div>"
                 $this->finishChunk();
                 $this->xml = '';
             }
@@ -213,8 +209,10 @@ class Chunker extends Base
             if ('pb' == $this->r->localName) {
                 $this->newPage();
             } elseif ('milestone' == $this->r->localName) {
-                $mlstn           = $this->r->getAttribute('unit').'-'.$this->r->getAttribute('n');
-                $this->milestone = trim($mlstn, '-');
+                $this->milestone = trim(
+                    $this->r->getAttribute('unit') . '-' . $this->r->getAttribute('n'),
+                    '-'
+                );
             } elseif ('group' == $this->r->localName) {
                 // A group of <text>s, i.e. drop the <text> we saw previously, as it
                 // was just the enclosure of some inner <text> inside the <group>.
@@ -275,7 +273,6 @@ class Chunker extends Base
      */
     protected function newPage()
     {
-
         if ($this->pageObj) {
             // Finish previous page
             $this->pageGateway->save($this->pageObj);
@@ -347,9 +344,7 @@ class Chunker extends Base
             $this->level--;
         }
 
-        if ($this->currentChunk &&
-            !$textorgroup
-        ) {
+        if ($this->currentChunk and !$textorgroup) {
             $this->xml .= '</'.$this->r->localName.'>';
             if (in_array($this->r->localName, $this->setup->blocktags)) {
                 $this->xml .= "\n";
@@ -365,10 +360,7 @@ class Chunker extends Base
      */
     protected function newSection()
     {
-
-        if ('text' == $this->r->localName ||
-            'front' == $this->r->localName
-        ) {
+        if ('text' == $this->r->localName or 'front' == $this->r->localName) {
             // <text> must not contain <head>, hence there is no title
             $title = '';
         } elseif ('titlePage' == $this->r->localName) {
@@ -435,9 +427,7 @@ class Chunker extends Base
     }
 
     /**
-     * Will be called right before processing starts. Can be used to
-     * check certain conditions (should throw an exception if it fails)
-     * or to perform initialization steps.
+     * {@inheritDoc}
      */
     protected function preProcessAction()
     {
@@ -453,7 +443,7 @@ class Chunker extends Base
      * This method expects each <text> to have one <titlePart>. If there is
      * more than one, subclasses may be used to filter the unwanted title(s).
      *
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
     protected function processTitlePart()
     {
@@ -461,8 +451,9 @@ class Chunker extends Base
 
         // Check for uniqueness
         if (!empty($this->data['volTitles'][$this->data['currentVolume']])) {
-            throw new RuntimeException(
-                'Multiple <titlePart> elements for volume '.$this->data['currentVolume'].":\n"
+            throw new \RuntimeException(
+                'Multiple <titlePart> elements for volume ' .
+                $this->data['currentVolume'] . ":\n"
             );
         }
 

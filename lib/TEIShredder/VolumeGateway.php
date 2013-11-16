@@ -26,9 +26,6 @@
 
 namespace TEIShredder;
 
-use InvalidArgumentException;
-use PDO;
-
 /**
  * Gateway for volume objects
  *
@@ -55,7 +52,7 @@ class VolumeGateway extends AbstractGateway
      * @param mixed $identifier Volume number
      *
      * @return Volume
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function findByIdentifier($identifier)
     {
@@ -64,9 +61,9 @@ class VolumeGateway extends AbstractGateway
             "SELECT * FROM $table WHERE number = ?"
         );
         $stm->execute(array($identifier));
-        $stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createVolume());
+        $stm->setFetchMode(\PDO::FETCH_INTO, $this->factory->createVolume());
         if (false === $obj = $stm->fetch()) {
-            throw new InvalidArgumentException('Invalid volume number');
+            throw new \InvalidArgumentException('Invalid volume number');
         }
         return $obj;
     }
@@ -87,6 +84,8 @@ class VolumeGateway extends AbstractGateway
     {
         $volume     = $this->factory->createVolume();
         $properties = array_keys($volume->toArray());
-        return parent::performFind(get_class($volume), $properties, 'number', func_get_args());
+        return parent::performFind(
+            get_class($volume), $properties, 'number', func_get_args()
+        );
     }
 }

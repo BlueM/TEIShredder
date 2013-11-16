@@ -26,8 +26,6 @@
 
 namespace TEIShredder;
 
-use LogicException;
-
 /**
  * Class for retrieving well-formed XML fragments from the source TEI document.
  *
@@ -110,16 +108,16 @@ class XMLChunk extends Model
      * processed by a persistence layer.
      *
      * @return array
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function persistableData()
     {
         // Basic integrity check
         foreach (array('page', 'section') as $property) {
-            if (is_null($this->$property) ||
-                '' === $this->$property
-            ) {
-                throw new LogicException("Integrity check failed: $property cannot be empty.");
+            if (is_null($this->$property) or '' === $this->$property) {
+                throw new \LogicException(
+                    "Integrity check failed: $property cannot be empty."
+                );
             }
         }
         return $this->toArray();
@@ -141,6 +139,10 @@ class XMLChunk extends Model
         } else {
             $prestack = $this->prestack;
         }
-        return str_replace(array("\r\n", "\n"), "\n", $prestack.$this->xml.$this->poststack);
+        return str_replace(
+            array("\r\n", "\n"),
+            "\n",
+            $prestack . $this->xml . $this->poststack
+        );
     }
 }

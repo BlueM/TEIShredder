@@ -26,9 +26,6 @@
 
 namespace TEIShredder;
 
-use InvalidArgumentException;
-use PDO;
-
 /**
  * Gateway for Element objects
  *
@@ -55,7 +52,7 @@ class ElementGateway extends AbstractGateway
      * @param mixed $identifier xml:id attribute value
      *
      * @return Element
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function findByIdentifier($identifier)
     {
@@ -64,9 +61,9 @@ class ElementGateway extends AbstractGateway
             "SELECT * FROM $table WHERE xmlid = ?"
         );
         $stm->execute(array($identifier));
-        $stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createElement());
+        $stm->setFetchMode(\PDO::FETCH_INTO, $this->factory->createElement());
         if (false === $obj = $stm->fetch()) {
-            throw new InvalidArgumentException('No such element');
+            throw new \InvalidArgumentException('No such element');
         }
         return $obj;
     }
@@ -87,6 +84,8 @@ class ElementGateway extends AbstractGateway
     {
         $element    = $this->factory->createElement();
         $properties = array_keys($element->toArray());
-        return parent::performFind(get_class($element), $properties, 'chunk', func_get_args());
+        return parent::performFind(
+            get_class($element), $properties, 'chunk', func_get_args()
+        );
     }
 }

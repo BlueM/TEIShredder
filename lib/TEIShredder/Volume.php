@@ -26,8 +26,6 @@
 
 namespace TEIShredder;
 
-use LogicException;
-
 /**
  * Model class for volumes
  *
@@ -69,14 +67,16 @@ class Volume extends Model
      * processed by a persistence layer.
      *
      * @return array
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function persistableData()
     {
         // Basic integrity check
         foreach (array('number', 'pagenumber') as $property) {
             if (0 >= intval($this->$property)) {
-                throw new LogicException("Integrity check failed: $property cannot be empty.");
+                throw new \LogicException(
+                    "Integrity check failed: $property cannot be empty."
+                );
             }
         }
         return $this->toArray();

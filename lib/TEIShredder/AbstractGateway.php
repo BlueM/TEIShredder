@@ -26,9 +26,6 @@
 
 namespace TEIShredder;
 
-use InvalidArgumentException;
-use PDO;
-
 /**
  * Abstract base class for all gateway classes
  *
@@ -42,7 +39,7 @@ abstract class AbstractGateway
 {
 
     /**
-     * @var PDO $db
+     * @var \PDO $db
      */
     protected $db;
 
@@ -66,11 +63,11 @@ abstract class AbstractGateway
     /**
      * Constructor.
      *
-     * @param PDO              $db
+     * @param \PDO             $db
      * @param FactoryInterface $factory
      * @param string           $prefix
      */
-    public function __construct(PDO $db, FactoryInterface $factory, $prefix = '')
+    public function __construct(\PDO $db, FactoryInterface $factory, $prefix = '')
     {
         $this->db      = $db;
         $this->factory = $factory;
@@ -129,33 +126,37 @@ abstract class AbstractGateway
         array $filters = array()
     ) {
 
-        $where         = 1;
+        $where         = array();
         $operators     = array('<>', '>=', '<=', '<', '>', '==', '=', '!=', '~');
         $operatormatch = join('|', array_map('preg_quote', $operators));
 
         foreach ($filters as $filter) {
 
             if (!preg_match(
-                "#^([a-z]+[a-z0-9_]*)\s*($operatormatch)\s*?(.*)$#i",
+                "#^([a-z]+[a-z0-9_]*)\\s*($operatormatch)\\s*?(.*)$#i",
                 ltrim("$filter "),
                 $matches
             )
             ) {
-                throw new InvalidArgumentException("Unable to parse filter “".$filter."”");
+                throw new \InvalidArgumentException(
+                    "Unable to parse filter “".$filter."”"
+                );
             }
 
             list(, $property, $operator, $value) = $matches;
 
             if (!in_array($property, $properties)) {
-                throw new InvalidArgumentException("Invalid property $property in “".$filter."”");
+                throw new \InvalidArgumentException(
+                    "Invalid property $property in “".$filter."”"
+                );
             }
 
             if (!in_array($operator, $operators)) {
-                // @codeCoverageIgnoreStart
                 // Theoretically, this can never happen, as there is no $operator
                 // when the RegExp fails. This condition is just a safety net.
-                throw new InvalidArgumentException("Invalid operator $operator in “".$filter."”");
-                // @codeCoverageIgnoreEnd
+                throw new \InvalidArgumentException(
+                    "Invalid operator $operator in “".$filter."”"
+                );
             }
 
             if ($operator == '!=') {

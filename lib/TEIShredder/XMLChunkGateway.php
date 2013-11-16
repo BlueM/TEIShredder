@@ -26,9 +26,6 @@
 
 namespace TEIShredder;
 
-use InvalidArgumentException;
-use PDO;
-
 /**
  * Gateway for XML chunks
  *
@@ -54,7 +51,7 @@ class XMLChunkGateway extends AbstractGateway
      *
      * @param int $id Chunk ID
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      * @return XMLChunk
      */
     public function findByIdentifier($id)
@@ -64,9 +61,9 @@ class XMLChunkGateway extends AbstractGateway
             "SELECT * FROM $table WHERE id = ?"
         );
         $stm->execute(array($id));
-        $stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createXMLChunk());
+        $stm->setFetchMode(\PDO::FETCH_INTO, $this->factory->createXMLChunk());
         if (false === $obj = $stm->fetch()) {
-            throw new InvalidArgumentException('Invalid chunk number');
+            throw new \InvalidArgumentException('Invalid chunk number');
         }
         return $obj;
     }
@@ -86,7 +83,7 @@ class XMLChunkGateway extends AbstractGateway
         );
         $stm->execute(array($page));
         $chunk = $this->factory->createXMLChunk();
-        $stm->setFetchMode(PDO::FETCH_CLASS, get_class($chunk));
+        $stm->setFetchMode(\PDO::FETCH_CLASS, get_class($chunk));
         return $stm->fetchAll();
     }
 
@@ -106,6 +103,8 @@ class XMLChunkGateway extends AbstractGateway
     {
         $chunk      = $this->factory->createXMLChunk();
         $properties = array_keys($chunk->toArray());
-        return parent::performFind(get_class($chunk), $properties, 'id', func_get_args());
+        return parent::performFind(
+            get_class($chunk), $properties, 'id', func_get_args()
+        );
     }
 }

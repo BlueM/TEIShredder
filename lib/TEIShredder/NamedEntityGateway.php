@@ -26,8 +26,6 @@
 
 namespace TEIShredder;
 
-use PDO;
-
 /**
  * Gateway for volume objects
  *
@@ -87,7 +85,7 @@ class NamedEntityGateway extends AbstractGateway
         $stm->execute(array($domain, $identifier));
 
         $notations = $count = array();
-        foreach ($stm->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($stm->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             $key = mb_convert_case(trim($row['notation']), MB_CASE_LOWER);
             if (empty($notations[$key])) {
                 $notations[$key] = array(

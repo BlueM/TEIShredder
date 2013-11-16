@@ -26,11 +26,6 @@
 
 namespace TEIShredder;
 
-use PDO;
-use Closure;
-use InvalidArgumentException;
-use UnexpectedValueException;
-
 /**
  * Configuration/dependency injection class.
  *
@@ -39,16 +34,16 @@ use UnexpectedValueException;
  * @copyright 2012 Carsten Bluem <carsten@bluem.net>
  * @link      https://github.com/BlueM/TEIShredder
  * @license   http://www.opensource.org/licenses/bsd-license.php BSD License
- * @property string               $prefix
- * @property FactoryInterface     $factory
- * @property string|array|Closure $titleCallback
- * @property string|array|Closure $plaintextCallback
- * @property array                $chunktags
- * @property array                $nostacktags
- * @property array                $ignorabletags
- * @property array                $structureleveltags
- * @property array                $blocktags
- * @property PDO                  $database
+ * @property string                $prefix
+ * @property FactoryInterface      $factory
+ * @property string|array|\Closure $titleCallback
+ * @property string|array|\Closure $plaintextCallback
+ * @property array                 $chunktags
+ * @property array                 $nostacktags
+ * @property array                 $ignorabletags
+ * @property array                 $structureleveltags
+ * @property array                 $blocktags
+ * @property \PDO                  $database
  */
 class Setup
 {
@@ -66,7 +61,9 @@ class Setup
      *
      * @var array Indexed array of element names
      */
-    protected $chunktags = array('pb', 'milestone', 'div', 'front', 'body', 'titlePage');
+    protected $chunktags = array(
+        'body', 'div', 'front', 'milestone', 'pb', 'titlePage'
+    );
 
     /**
      * Array of element types / tag names that mark the beginning of
@@ -99,16 +96,8 @@ class Setup
      * @var array Indexed array of element names
      */
     protected $blocktags = array(
-        'p',
-        'pb',
-        'div',
-        'milestone',
-        'figure',
-        'text',
-        'body',
-        'argument',
-        'lb',
-        'head'
+        'argument', 'body', 'div', 'figure', 'head', 'lb',
+        'milestone', 'p', 'pb', 'text'
     );
 
     /**
@@ -121,20 +110,24 @@ class Setup
     /**
      * Database table prefix.
      *
-     * @var PDO
+     * @var \PDO
      */
     protected $database;
 
     /**
      * Constructor.
      *
-     * @param PDO                       $db
+     * @param \PDO                      $db
      * @param FactoryInterface|null     $factory  [optional]
      * @param string                    $prefix
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct(PDO $db, FactoryInterface $factory = null, $prefix = '')
+    public function __construct(
+        \PDO $db,
+        FactoryInterface $factory = null,
+        $prefix = ''
+    )
     {
         $this->database = $db;
 
@@ -167,7 +160,9 @@ class Setup
                 $this->$name = $value;
                 break;
             default:
-                throw new UnexpectedValueException("Invalid property name “".$name."”.");
+                throw new \UnexpectedValueException(
+                    "Invalid property name “".$name."”."
+                );
         }
     }
 
@@ -177,13 +172,13 @@ class Setup
      * @param $name
      *
      * @return mixed
-     * @throws UnexpectedValueException
+     * @throws \UnexpectedValueException
      */
     public function __get($name)
     {
         if (in_array($name, array_keys(get_class_vars(__CLASS__)))) {
             return $this->$name;
         }
-        throw new UnexpectedValueException("Unexpected member name “".$name."”");
+        throw new \UnexpectedValueException("Invalid property name “".$name."”");
     }
 }

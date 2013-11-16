@@ -138,23 +138,22 @@ abstract class Base
 
     /**
      * Saves all the text data accumulated.
-     *
-     * May not be needed by subclasses. Empty default implementation.
-     * @codeCoverageIgnore
      */
     protected function save()
     {
-
+        // Empty default implementation.
+        // May not be needed by subclasses.
     }
 
     /**
      * Will be called right before processing starts.
      *
-     * May not be needed by subclasses. Empty default implementation.
-     * @codeCoverageIgnore
+     * Can be used to check certain conditions (should throw an exception
+     * if it fails) or to perform initialization steps.
      */
     protected function preProcessAction()
     {
-
+        // Empty default implementation.
+        // May not be needed by subclasses.
     }
 }

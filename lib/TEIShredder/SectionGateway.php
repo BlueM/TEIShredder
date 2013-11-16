@@ -26,9 +26,6 @@
 
 namespace TEIShredder;
 
-use InvalidArgumentException;
-use PDO;
-
 /**
  * Gateway for page objects
  *
@@ -55,16 +52,16 @@ class SectionGateway extends AbstractGateway
      * @param mixed $identifier Section ID
      *
      * @return Section
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function findByIdentifier($identifier)
     {
         $table = $this->tableName();
         $stm   = $this->db->prepare("SELECT * FROM $table WHERE id = ?");
         $stm->execute(array($identifier));
-        $stm->setFetchMode(PDO::FETCH_INTO, $this->factory->createSection());
+        $stm->setFetchMode(\PDO::FETCH_INTO, $this->factory->createSection());
         if (false === $obj = $stm->fetch()) {
-            throw new InvalidArgumentException('Invalid section ID');
+            throw new \InvalidArgumentException('Invalid section ID');
         }
         return $obj;
     }
@@ -80,12 +77,14 @@ class SectionGateway extends AbstractGateway
      * simply be left out (e.g. "title !=").
      *
      * @return Section[]
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function find()
     {
         $section    = $this->factory->createSection();
         $properties = array_keys($section->toArray());
-        return parent::performFind(get_class($section), $properties, 'id', func_get_args());
+        return parent::performFind(
+            get_class($section), $properties, 'id', func_get_args()
+        );
     }
 }

@@ -26,8 +26,6 @@
 
 namespace TEIShredder;
 
-use LogicException;
-
 /**
  * Model class for any XML element in the underlying TEI document that is
  * addressable (i.e.: that has an @xml:id attribute).
@@ -76,16 +74,16 @@ class Element extends Model
      * processed by a persistence layer.
      *
      * @return array
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function persistableData()
     {
         // Basic integrity check
         foreach (array('xmlid', 'element', 'page', 'chunk') as $property) {
-            if (is_null($this->$property) ||
-                '' === $this->$property
-            ) {
-                throw new LogicException("Integrity check failed: $property cannot be empty.");
+            if (is_null($this->$property) or '' === $this->$property) {
+                throw new \LogicException(
+                    "Integrity check failed: $property cannot be empty."
+                );
             }
         }
         return $this->toArray();

@@ -26,8 +26,6 @@
 
 namespace TEIShredder;
 
-use LogicException;
-
 /**
  * Model class for named entities in the underlying TEI document.
  *
@@ -116,23 +114,22 @@ class NamedEntity extends Model
      * processed by a persistence layer.
      *
      * @return array
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function persistableData()
     {
         // Basic integrity check
         foreach (array('page', 'domain', 'identifier', 'notation') as $property) {
-            if (is_null($this->$property) ||
-                '' === $this->$property
-            ) {
+            if (is_null($this->$property) or '' === $this->$property) {
                 $msg = sprintf(
-                    "Integrity check failed: %s cannot be empty (page %d, context: “%s[…]%s”.",
+                    "Integrity check failed: %s cannot be empty " .
+                    "(page %d, context: “%s[…]%s”.",
                     $property,
                     $this->page,
                     $this->contextstart,
                     $this->contextend
                 );
-                throw new LogicException($msg);
+                throw new \LogicException($msg);
             }
         }
 
@@ -162,7 +159,7 @@ class NamedEntity extends Model
         }
 
         if ('contextstart' == $name) {
-            if (mb_strlen($this->contextstart) >= $length &&
+            if (mb_strlen($this->contextstart) >= $length and
                 false !== $pos = strrpos($this->contextstart, ' ', -$length)
             ) {
                 // Limit length of the context start
@@ -172,7 +169,7 @@ class NamedEntity extends Model
         }
 
         if ('contextend' == $name) {
-            if (mb_strlen($this->contextend) >= $length &&
+            if (mb_strlen($this->contextend) >= $length and
                 false !== $pos = strpos($this->contextend, ' ', $length)
             ) {
                 // Limit length of the context end

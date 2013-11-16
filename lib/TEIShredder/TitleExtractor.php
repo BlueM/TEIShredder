@@ -26,8 +26,6 @@
 
 namespace TEIShredder;
 
-use SimpleXMLElement;
-
 /**
  * Class for extracting the title from a given piece of TEI.
  *
@@ -62,7 +60,7 @@ class TitleExtractor
      */
     public function extractTitle($xml)
     {
-        $sx = new SimpleXMLElement($xml);
+        $sx = new \SimpleXMLElement($xml);
 
         if (!isset($sx->head[0])) {
             return '';
