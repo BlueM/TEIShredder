@@ -168,18 +168,24 @@ abstract class AbstractGateway
             }
 
             if ($operator == '~') {
-                $where .= " AND $property LIKE ".$this->db->quote('%'.trim($value).'%');
+                $where[] = "$property LIKE ".$this->db->quote('%'.trim($value).'%');
             } else {
-                $where .= " AND $property $operator ".$this->db->quote(trim($value));
+                $where[] = "$property $operator ".$this->db->quote(trim($value));
             }
         }
 
-        $sql = "SELECT * FROM ".$this->tableName()." WHERE $where";
+        $sql = "SELECT * FROM ".$this->tableName();
+
+        if (count($where)) {
+            $sql .= ' WHERE ' . join(' AND ', $where);
+        }
+
         if ($orderby) {
             $sql .= " ORDER BY $orderby";
         }
+
         $stm = $this->db->query($sql);
-        $stm->setFetchMode(PDO::FETCH_CLASS, $class);
+        $stm->setFetchMode(\PDO::FETCH_CLASS, $class);
         return $stm->fetchAll();
     }
 }
