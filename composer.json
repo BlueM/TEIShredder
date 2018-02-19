@@ -3,7 +3,7 @@
     "description": "Indexing and retrieval of data from TEI-XML documents",
     "keywords": ["xml", "tei"],
     "homepage": "https://github.com/BlueM/TEIShredder",
-    "license": "BSD-2",
+    "license": "BSD-2-Clause",
     "authors": [
         {
             "name": "Carsten Blüm",
