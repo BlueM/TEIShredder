@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/BlueM/TEIShredder.png)](https://travis-ci.org/BlueM/TEIShredder)
-
 TEIShredder Overview
 =========================
 
